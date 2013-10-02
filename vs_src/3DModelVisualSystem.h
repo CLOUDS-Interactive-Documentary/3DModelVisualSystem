@@ -87,9 +87,13 @@ class CloudsVisualSystem3DModel : public CloudsVisualSystem {
 	
 	void loadShaders();
 	
-	void loadModel( string fileName );
+	void loadModel( string fileName, bool smoothing = true );
 	void calcBoundingBox();
 	void drawBoundingBox();
+	string vec3ToString( ofVec3f v, int precision=3 );
+	ofVec3f normalFrom3Points(ofVec3f p0, ofVec3f p1, ofVec3f p2);
+	void smoothVertices( ofMesh& facetedMesh, ofMesh& targetMesh, int precision=3 );
+	
 
     // if you use a custom camera to fly through the scene
 	// you must implement this method for the transitions to work properly
@@ -143,5 +147,8 @@ protected:
 	
 	
     ofMesh modelMesh;
+	bool bSmoothModel, bComputeSmoothNormals;
+	ofMesh smoothedMesh;
+	float discardThreshold;
 	
 };

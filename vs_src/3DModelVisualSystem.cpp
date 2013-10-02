@@ -81,6 +81,10 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	
 	//set defaults
 	gridLineWidth = 1.;
+	boundBoxLineWidth = 1.;
+	discardThreshold = 1.;
+	bSmoothModel = false;
+	bComputeSmoothNormals = false;
 	
 	//load our shaders
 	loadShaders();
@@ -133,7 +137,6 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	
 	boundBoxVbo.setVertexData( &bbVerts[0], bbVerts.size(), GL_STATIC_DRAW );
 	bbVerts.clear();
-	boundBoxLineWidth = 1.;
 	
 }
 
@@ -196,8 +199,13 @@ void CloudsVisualSystem3DModel::selfDraw(){
 	ofMultMatrix( modelTransform.getGlobalTransformMatrix() );
 	
 	normalShader.begin();
-	modelMesh.draw();
+//	normalShader.setUniform1f( "discardThreshold", discardThreshold );
+//	modelMesh.draw();
+	
+	smoothedMesh.draw();
+	
 	normalShader.end();
+	
 	
 	ofSetColor(255, 255, 255, 255);
 	drawBoundingBox();
@@ -314,8 +322,81 @@ void CloudsVisualSystem3DModel::drawBoundingBox(){
 };
 
 
-void CloudsVisualSystem3DModel::loadModel( string fileName )
+void CloudsVisualSystem3DModel::loadModel( string fileName, bool smoothing )
 {
 	ofxObjLoader::load( getVisualSystemDataPath() + fileName, modelMesh, true);
+	
+	smoothVertices( modelMesh, smoothedMesh );
+}
+
+string CloudsVisualSystem3DModel::vec3ToString( ofVec3f v, int precision ){
+	string outstr;
+	
+	outstr += ofToString( v.x, precision) + "_" + ofToString( v.y, precision) + "_" + ofToString( v.z, precision);
+	
+	return outstr;
+}
+
+ofVec3f CloudsVisualSystem3DModel::normalFrom3Points(ofVec3f p0, ofVec3f p1, ofVec3f p2)
+{
+	ofVec3f norm = (p2 - p1).cross( p0 - p1);
+	return norm.normalized();
+}
+
+void CloudsVisualSystem3DModel::smoothVertices( ofMesh& facetedMesh, ofMesh& targetMesh, int precision)
+{
+	map<string, unsigned int> mergeMap;
+	vector<ofVec3f>& v = facetedMesh.getVertices();
+	vector<ofIndexType>& indices = facetedMesh.getIndices();
+	
+	vector<ofVec3f> smoothVertices;
+	vector<ofVec3f> smoothNormals;
+	vector<ofIndexType> smoothIndices;
+	
+	//change face indices to match
+	
+	string vStr;
+	for (int i=0; i<v.size(); i++) {
+		vStr = vec3ToString( v[i] );
+		mergeMap[ vStr ] = i;
+	}
+	
+	//fill our smoothed vertex array with merged vertices
+	smoothVertices.resize( mergeMap.size() );
+	int svCount = 0;
+	for (map<string, unsigned int>::iterator it = mergeMap.begin(); it != mergeMap.end(); it++) {
+		smoothVertices[svCount] = v[it->second];
+		it->second = svCount;
+		svCount++;
+	}
+	
+	
+	//reconstruct our faces by reassigning ther indices
+	smoothIndices.resize( indices.size() );
+	for (int i=0; i<indices.size(); i++) {
+		smoothIndices[i] = mergeMap[ vec3ToString(v[indices[i]]) ];
+	}
+	
+	//calculate our normals
+	smoothNormals.resize( smoothVertices.size() );
+	ofVec3f n;
+	for (int i=0; i<smoothIndices.size(); i+=3) {
+		n = normalFrom3Points( smoothVertices[smoothIndices[i]],smoothVertices[smoothIndices[i+1]], smoothVertices[smoothIndices[i+2]] );
+		smoothNormals[smoothIndices[i]] += n;
+		smoothNormals[smoothIndices[i+1]] += n;
+		smoothNormals[smoothIndices[i+2]] += n;
+	}
+	
+	for (int i=0; i<smoothNormals.size(); i++) {
+		smoothNormals[i].normalize();
+	}
+	
+	
+	//setup our smoothed mesh
+	//TODO: texture coords!
+	targetMesh.addVertices( smoothVertices );
+	targetMesh.addNormals( smoothNormals );
+	targetMesh.addIndices( smoothIndices );
+	
 }
 
