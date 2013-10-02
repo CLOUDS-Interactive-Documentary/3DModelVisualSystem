@@ -86,6 +86,10 @@ class CloudsVisualSystem3DModel : public CloudsVisualSystem {
     void selfMouseReleased(ofMouseEventArgs& data);
 	
 	void loadShaders();
+	
+	void loadModel( string fileName );
+	void calcBoundingBox();
+	void drawBoundingBox();
 
     // if you use a custom camera to fly through the scene
 	// you must implement this method for the transitions to work properly
@@ -130,6 +134,9 @@ protected:
 	ofVec3f modelPos, modelScl;
 	ofQuaternion modelRot;
 	ofNode modelTransform;
+	ofVec3f minBound, maxBound, boundCenter;
+	ofVbo boundBoxVbo;
+	float boundBoxLineWidth;
 	
 	ofVbo modelNormalInfo;
 	ofShader modelNormalInfoShader;

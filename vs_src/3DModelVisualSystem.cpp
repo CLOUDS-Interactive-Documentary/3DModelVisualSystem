@@ -89,22 +89,51 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	modelScl.set( 1,1,1 );
 	ofxObjLoader::load( getVisualSystemDataPath() + "models/elephant.obj", modelMesh, true);
 	
-	//create a grid vbo
+	//setup a grid vbo
 	float gridDim = 100;
 	float halfGridDim = gridDim / 2;
 	vector<ofVec3f> gridVertices(gridDim * 4);
-	
 	for (int i=0; i<gridDim; i++) {
 		gridVertices[i*4+0].set(i - halfGridDim, 0,-halfGridDim);
 		gridVertices[i*4+1].set(i - halfGridDim, 0, halfGridDim);
 		gridVertices[i*4+2].set(-halfGridDim, 0, i - halfGridDim);
 		gridVertices[i*4+3].set( halfGridDim, 0, i - halfGridDim);
 	}
-	
 	grid.setVertexData( &gridVertices[0], gridVertices.size(), GL_STATIC_DRAW );
 	numGridVertices = gridVertices.size();
 	gridVertices.clear();
 	
+	//setup boundBox vbo
+	calcBoundingBox();
+	vector<ofVec3f> bbVerts(24);
+	bbVerts[0].set(-.5,-.5,-.5);
+	bbVerts[1].set( .5,-.5,-.5);
+	bbVerts[2].set(-.5, .5,-.5);
+	bbVerts[3].set( .5, .5,-.5);
+	bbVerts[4].set(-.5,-.5,-.5);
+	bbVerts[5].set(-.5, .5,-.5);
+	bbVerts[6].set( .5,-.5,-.5);
+	bbVerts[7].set( .5, .5,-.5);
+	bbVerts[8].set(-.5,-.5, .5);
+	bbVerts[9].set( .5,-.5, .5);
+	bbVerts[10].set(-.5, .5, .5);
+	bbVerts[11].set( .5, .5, .5);
+	bbVerts[12].set(-.5,-.5, .5);
+	bbVerts[13].set(-.5, .5, .5);
+	bbVerts[14].set( .5,-.5, .5);
+	bbVerts[15].set( .5, .5, .5);
+	bbVerts[16].set( .5, .5,-.5);
+	bbVerts[17].set( .5, .5, .5);
+	bbVerts[18].set(-.5, .5,-.5);
+	bbVerts[19].set(-.5, .5, .5);
+	bbVerts[20].set(-.5,-.5,-.5);
+	bbVerts[21].set(-.5,-.5, .5);
+	bbVerts[22].set( .5,-.5,-.5);
+	bbVerts[23].set( .5,-.5, .5);
+	
+	boundBoxVbo.setVertexData( &bbVerts[0], bbVerts.size(), GL_STATIC_DRAW );
+	bbVerts.clear();
+	boundBoxLineWidth = 1.;
 	
 }
 
@@ -157,7 +186,7 @@ void CloudsVisualSystem3DModel::selfDraw(){
 	modelRot.makeRotate( ofGetElapsedTimef()*10, 0, 1, 0);
 	if(modelScl.length() == 0.)	modelScl.y = .00001;
 	
-	modelTransform.setPosition( modelPos );
+	modelTransform.setPosition( modelPos + ofVec3f(0,maxBound.y,0) );
 	modelTransform.setOrientation( modelRot );
 	modelTransform.setScale( modelScl );
 	
@@ -169,6 +198,9 @@ void CloudsVisualSystem3DModel::selfDraw(){
 	normalShader.begin();
 	modelMesh.draw();
 	normalShader.end();
+	
+	ofSetColor(255, 255, 255, 255);
+	drawBoundingBox();
 	
 	ofPopMatrix();
 	
@@ -202,14 +234,19 @@ void CloudsVisualSystem3DModel::selfDrawBackground(){
 }
 // this is called when your system is no longer drawing.
 // Right after this selfUpdate() and selfDraw() won't be called any more
-void CloudsVisualSystem3DModel::selfEnd(){
+void CloudsVisualSystem3DModel::selfEnd()
+{
 	
 	simplePointcloud.clear();
 	
 }
 // this is called when you should clear all the memory and delet anything you made in setup
-void CloudsVisualSystem3DModel::selfExit(){
-	
+void CloudsVisualSystem3DModel::selfExit()
+{
+	//???: these should be here and not in selfEnd() right?
+	boundBoxVbo.clear();
+	modelMesh.clear();
+	grid.clear();
 }
 
 //events are called when the system is active
@@ -243,3 +280,41 @@ void CloudsVisualSystem3DModel::loadShaders(){
 	normalShader.load( getVisualSystemDataPath() + "shaders/normalShader" );
 	gridShader.load( getVisualSystemDataPath() + "shaders/gridShader" );
 }
+
+void CloudsVisualSystem3DModel::calcBoundingBox(){
+	minBound.set(10000000,10000000,10000000), maxBound.set(-10000000,-10000000,-10000000);
+	
+	vector<ofVec3f>& v = modelMesh.getVertices();
+	for(int i=0; i<v.size(); i++){
+		minBound.x = min(minBound.x, v[i].x);
+		minBound.y = min(minBound.y, v[i].y);
+		minBound.z = min(minBound.z, v[i].z);
+		
+		maxBound.x = max(maxBound.x, v[i].x);
+		maxBound.y = max(maxBound.y, v[i].y);
+		maxBound.z = max(maxBound.z, v[i].z);
+	}
+	
+	cout << minBound << " : " << maxBound << endl;
+	boundCenter = ( minBound + maxBound ) * .5;
+};
+
+
+void CloudsVisualSystem3DModel::drawBoundingBox(){
+	
+	glLineWidth( boundBoxLineWidth );
+	
+	ofPushMatrix();
+	ofTranslate(boundCenter);
+	ofScale(maxBound.x - minBound.x, maxBound.y - minBound.y, maxBound.z - minBound.z);
+
+	boundBoxVbo.draw(GL_LINES, 0, 24);
+	
+	ofPopMatrix();
+};
+
+
+void CloudsVisualSystem3DModel::loadModel( string fileName ){
+	
+}
+
