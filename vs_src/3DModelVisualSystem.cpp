@@ -87,7 +87,7 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	
 	//get list of models from the model directory
 	modelScl.set( 1,1,1 );
-	ofxObjLoader::load( getVisualSystemDataPath() + "models/elephant.obj", modelMesh, true);
+	loadModel("models/elephant.obj");
 	
 	//setup a grid vbo
 	float gridDim = 100;
@@ -295,7 +295,7 @@ void CloudsVisualSystem3DModel::calcBoundingBox(){
 		maxBound.z = max(maxBound.z, v[i].z);
 	}
 	
-	cout << minBound << " : " << maxBound << endl;
+	//cout << minBound << " : " << maxBound << endl;
 	boundCenter = ( minBound + maxBound ) * .5;
 };
 
@@ -314,7 +314,8 @@ void CloudsVisualSystem3DModel::drawBoundingBox(){
 };
 
 
-void CloudsVisualSystem3DModel::loadModel( string fileName ){
-	
+void CloudsVisualSystem3DModel::loadModel( string fileName )
+{
+	ofxObjLoader::load( getVisualSystemDataPath() + fileName, modelMesh, true);
 }
 
