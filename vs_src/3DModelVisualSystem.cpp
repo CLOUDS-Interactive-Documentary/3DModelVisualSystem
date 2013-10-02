@@ -199,10 +199,9 @@ void CloudsVisualSystem3DModel::selfDraw(){
 	ofMultMatrix( modelTransform.getGlobalTransformMatrix() );
 	
 	normalShader.begin();
-//	normalShader.setUniform1f( "discardThreshold", discardThreshold );
-//	modelMesh.draw();
+	normalShader.setUniform1f( "discardThreshold", discardThreshold );
 	
-	smoothedMesh.draw();
+	modelMesh.draw();
 	
 	normalShader.end();
 	
@@ -254,7 +253,6 @@ void CloudsVisualSystem3DModel::selfExit()
 	//???: these should be here and not in selfEnd() right?
 	boundBoxVbo.clear();
 	modelMesh.clear();
-	smoothedMesh.clear();
 	grid.clear();
 }
 
@@ -327,15 +325,14 @@ void CloudsVisualSystem3DModel::loadModel( string fileName, bool smoothing )
 {
 	ofxObjLoader::load( getVisualSystemDataPath() + fileName, modelMesh, true);
 	
-	smoothVertices( modelMesh, smoothedMesh );
+	if(smoothing)
+	{
+		smoothMesh( modelMesh, modelMesh );
+	}
 }
 
 string CloudsVisualSystem3DModel::vec3ToString( ofVec3f v, int precision ){
-	string outstr;
-	
-	outstr += ofToString( v.x, precision) + "_" + ofToString( v.y, precision) + "_" + ofToString( v.z, precision);
-	
-	return outstr;
+	return ofToString( v.x, precision) + "_" + ofToString( v.y, precision) + "_" + ofToString( v.z, precision);
 }
 
 ofVec3f CloudsVisualSystem3DModel::normalFrom3Points(ofVec3f p0, ofVec3f p1, ofVec3f p2)
@@ -344,12 +341,13 @@ ofVec3f CloudsVisualSystem3DModel::normalFrom3Points(ofVec3f p0, ofVec3f p1, ofV
 	return norm.normalized();
 }
 
-void CloudsVisualSystem3DModel::smoothVertices( ofMesh& facetedMesh, ofMesh& targetMesh, int precision)
+void CloudsVisualSystem3DModel::smoothMesh( ofMesh& facetedMesh, ofMesh& targetMesh, int precision)
 {
-	//get our vertex and face info
+	//get our vertex, uv and face info
 	vector<ofVec3f>& v = facetedMesh.getVertices();
 	vector<ofVec2f>& uv = facetedMesh.getTexCoords();
 	vector<ofIndexType>& indices = facetedMesh.getIndices();
+	bool hasTC = facetedMesh.getNumTexCoords();
 	
 	//use these to store our new mesh info
 	map<string, unsigned int> mergeMap;
@@ -364,14 +362,14 @@ void CloudsVisualSystem3DModel::smoothVertices( ofMesh& facetedMesh, ofMesh& tar
 		mergeMap[ vec3ToString( v[i], precision ) ] = i;
 	}
 	
-	//fill our smoothed vertex array with merged vertices
+	//fill our smoothed vertex array with merged vertices & tex coords
 	smoothVertices.resize( mergeMap.size() );
-	smoothTexCoords.resize( mergeMap.size() );
+	if(hasTC)	smoothTexCoords.resize( mergeMap.size() );
 	int smoothVertexCount = 0;
 	for (map<string, unsigned int>::iterator it = mergeMap.begin(); it != mergeMap.end(); it++)
 	{
 		smoothVertices[smoothVertexCount] = v[it->second];
-		smoothTexCoords[smoothVertexCount] = uv[it->second];
+		if(hasTC)	smoothTexCoords[smoothVertexCount] = uv[it->second];
 		it->second = smoothVertexCount;//store our new vertex index
 		smoothVertexCount++;
 	}
@@ -390,7 +388,7 @@ void CloudsVisualSystem3DModel::smoothVertices( ofMesh& facetedMesh, ofMesh& tar
 	ofVec3f n;
 	for (int i=0; i<smoothIndices.size(); i+=3)
 	{
-		n = normalFrom3Points( smoothVertices[smoothIndices[i]],smoothVertices[smoothIndices[i+1]], smoothVertices[smoothIndices[i+2]] );
+		n = normalFrom3Points( smoothVertices[smoothIndices[i]], smoothVertices[smoothIndices[i+1]], smoothVertices[smoothIndices[i+2]] );
 		smoothNormals[smoothIndices[i]] += n;
 		smoothNormals[smoothIndices[i+1]] += n;
 		smoothNormals[smoothIndices[i+2]] += n;
@@ -401,13 +399,66 @@ void CloudsVisualSystem3DModel::smoothVertices( ofMesh& facetedMesh, ofMesh& tar
 		smoothNormals[i].normalize();
 	}
 	
-	
-	//setup our smoothed mesh
+	//setup our smoothed mesh. this should still work if our targetMesh is our facetedMesh
 	targetMesh.clear();
 	targetMesh.addVertices( smoothVertices );
 	targetMesh.addNormals( smoothNormals );
-	targetMesh.addTexCoords(smoothTexCoords );
+	if(hasTC)	targetMesh.addTexCoords( smoothTexCoords );
 	targetMesh.addIndices( smoothIndices );
-	
 }
+
+
+void CloudsVisualSystem3DModel::facetMesh( ofMesh& smoothedMesh, ofMesh& targetMesh )
+{
+	//get our vertex, uv and face info
+	vector<ofVec3f>& v = smoothedMesh.getVertices();
+	vector<ofVec2f>& uv = smoothedMesh.getTexCoords();
+	vector<ofIndexType>& indices = smoothedMesh.getIndices();
+	bool hasTC = smoothedMesh.getNumTexCoords();
+	
+	//use these to store our new mesh info
+	vector<ofVec3f> facetedVertices( indices.size() );
+	vector<ofVec3f> facetedNormals( indices.size() );
+	vector<ofVec2f> facetedTexCoords;
+	if(hasTC){
+		facetedTexCoords.resize( indices.size() );
+	}
+	vector<ofIndexType> facetedIndices( indices.size() );
+	
+	//store vertex and uv data
+	for (int i=0; i < indices.size(); i++) {
+		facetedIndices[i] = i;
+		facetedVertices[i] = v[indices[i]];
+		if(hasTC)	facetedTexCoords[i] = uv[indices[i]];
+	}
+	
+	//calculate our normals
+	ofVec3f n;
+	for (int i=0; i < facetedIndices.size(); i+=3) {
+		n = normalFrom3Points( facetedVertices[i], facetedVertices[i+1], facetedVertices[i+2]);
+		facetedNormals[i] = n;
+		facetedNormals[i+1] = n;
+		facetedNormals[i+2] = n;
+	}
+	
+	//setup our faceted mesh. this should still work if our targetMesh is our facetedMesh
+	targetMesh.clear();
+	targetMesh.addVertices( facetedVertices );
+	targetMesh.addNormals( facetedNormals );
+	if(hasTC)	targetMesh.addTexCoords( facetedTexCoords );
+	targetMesh.addIndices( facetedIndices );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 

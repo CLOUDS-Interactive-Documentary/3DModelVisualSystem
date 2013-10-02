@@ -3,7 +3,7 @@
 #extension GL_ARB_texture_rectangle : enable
 
 uniform float specularScale = 1.;
-uniform float specularExpo = 32.;
+uniform float specularExpo = 64.;
 uniform float discardThreshold = .35;
 
 varying vec3 norm;
