@@ -254,6 +254,7 @@ void CloudsVisualSystem3DModel::selfExit()
 	//???: these should be here and not in selfEnd() right?
 	boundBoxVbo.clear();
 	modelMesh.clear();
+	smoothedMesh.clear();
 	grid.clear();
 }
 
@@ -345,38 +346,38 @@ ofVec3f CloudsVisualSystem3DModel::normalFrom3Points(ofVec3f p0, ofVec3f p1, ofV
 
 void CloudsVisualSystem3DModel::smoothVertices( ofMesh& facetedMesh, ofMesh& targetMesh, int precision)
 {
-	map<string, unsigned int> mergeMap;
+	//get our vertex and face info
 	vector<ofVec3f>& v = facetedMesh.getVertices();
 	vector<ofVec2f>& uv = facetedMesh.getTexCoords();
 	vector<ofIndexType>& indices = facetedMesh.getIndices();
 	
+	//use these to store our new mesh info
+	map<string, unsigned int> mergeMap;
 	vector<ofVec3f> smoothVertices;
 	vector<ofVec3f> smoothNormals;
 	vector<ofVec2f> smoothTexCoords;
 	vector<ofIndexType> smoothIndices;
 	
-	//change face indices to match
-	string vStr;
+	//merge our vertices by pointing near by vertices to the same index
 	for (int i=0; i<v.size(); i++)
 	{
-		vStr = vec3ToString( v[i], precision );
-		mergeMap[ vStr ] = i;
+		mergeMap[ vec3ToString( v[i], precision ) ] = i;
 	}
 	
 	//fill our smoothed vertex array with merged vertices
 	smoothVertices.resize( mergeMap.size() );
 	smoothTexCoords.resize( mergeMap.size() );
-	int svCount = 0;
+	int smoothVertexCount = 0;
 	for (map<string, unsigned int>::iterator it = mergeMap.begin(); it != mergeMap.end(); it++)
 	{
-		smoothVertices[svCount] = v[it->second];
-		smoothTexCoords[svCount] = uv[it->second];
-		it->second = svCount;//store our new vertex index
-		svCount++;
+		smoothVertices[smoothVertexCount] = v[it->second];
+		smoothTexCoords[smoothVertexCount] = uv[it->second];
+		it->second = smoothVertexCount;//store our new vertex index
+		smoothVertexCount++;
 	}
 	
 	
-	//reconstruct our faces by reassigning ther indices
+	//reconstruct our faces by reassigning ther indices to the merged vertices
 	smoothIndices.resize( indices.size() );
 	for (int i=0; i<indices.size(); i++)
 	{
@@ -402,7 +403,7 @@ void CloudsVisualSystem3DModel::smoothVertices( ofMesh& facetedMesh, ofMesh& tar
 	
 	
 	//setup our smoothed mesh
-	//TODO: texture coords!
+	targetMesh.clear();
 	targetMesh.addVertices( smoothVertices );
 	targetMesh.addNormals( smoothNormals );
 	targetMesh.addTexCoords(smoothTexCoords );
