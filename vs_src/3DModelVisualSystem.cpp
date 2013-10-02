@@ -347,47 +347,56 @@ void CloudsVisualSystem3DModel::smoothVertices( ofMesh& facetedMesh, ofMesh& tar
 {
 	map<string, unsigned int> mergeMap;
 	vector<ofVec3f>& v = facetedMesh.getVertices();
+	vector<ofVec2f>& uv = facetedMesh.getTexCoords();
 	vector<ofIndexType>& indices = facetedMesh.getIndices();
 	
 	vector<ofVec3f> smoothVertices;
 	vector<ofVec3f> smoothNormals;
+	vector<ofVec2f> smoothTexCoords;
 	vector<ofIndexType> smoothIndices;
 	
 	//change face indices to match
-	
 	string vStr;
-	for (int i=0; i<v.size(); i++) {
-		vStr = vec3ToString( v[i] );
+	for (int i=0; i<v.size(); i++)
+	{
+		vStr = vec3ToString( v[i], precision );
 		mergeMap[ vStr ] = i;
 	}
 	
 	//fill our smoothed vertex array with merged vertices
 	smoothVertices.resize( mergeMap.size() );
+	smoothTexCoords.resize( mergeMap.size() );
 	int svCount = 0;
-	for (map<string, unsigned int>::iterator it = mergeMap.begin(); it != mergeMap.end(); it++) {
+	for (map<string, unsigned int>::iterator it = mergeMap.begin(); it != mergeMap.end(); it++)
+	{
 		smoothVertices[svCount] = v[it->second];
-		it->second = svCount;
+		smoothTexCoords[svCount] = uv[it->second];
+		it->second = svCount;//store our new vertex index
 		svCount++;
 	}
 	
 	
 	//reconstruct our faces by reassigning ther indices
 	smoothIndices.resize( indices.size() );
-	for (int i=0; i<indices.size(); i++) {
-		smoothIndices[i] = mergeMap[ vec3ToString(v[indices[i]]) ];
+	for (int i=0; i<indices.size(); i++)
+	{
+		//use our old vertex poisition to retrieve our new index
+		smoothIndices[i] = mergeMap[ vec3ToString( v[ indices[i] ], precision ) ];
 	}
 	
 	//calculate our normals
 	smoothNormals.resize( smoothVertices.size() );
 	ofVec3f n;
-	for (int i=0; i<smoothIndices.size(); i+=3) {
+	for (int i=0; i<smoothIndices.size(); i+=3)
+	{
 		n = normalFrom3Points( smoothVertices[smoothIndices[i]],smoothVertices[smoothIndices[i+1]], smoothVertices[smoothIndices[i+2]] );
 		smoothNormals[smoothIndices[i]] += n;
 		smoothNormals[smoothIndices[i+1]] += n;
 		smoothNormals[smoothIndices[i+2]] += n;
 	}
 	
-	for (int i=0; i<smoothNormals.size(); i++) {
+	for (int i=0; i<smoothNormals.size(); i++)
+	{
 		smoothNormals[i].normalize();
 	}
 	
@@ -396,6 +405,7 @@ void CloudsVisualSystem3DModel::smoothVertices( ofMesh& facetedMesh, ofMesh& tar
 	//TODO: texture coords!
 	targetMesh.addVertices( smoothVertices );
 	targetMesh.addNormals( smoothNormals );
+	targetMesh.addTexCoords(smoothTexCoords );
 	targetMesh.addIndices( smoothIndices );
 	
 }

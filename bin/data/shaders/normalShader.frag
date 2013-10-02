@@ -4,7 +4,7 @@
 
 uniform float specularScale = 1.;
 uniform float specularExpo = 32.;
-uniform float discardThreshold = .25;
+uniform float discardThreshold = .35;
 
 varying vec3 norm;
 varying vec3 ePos;
