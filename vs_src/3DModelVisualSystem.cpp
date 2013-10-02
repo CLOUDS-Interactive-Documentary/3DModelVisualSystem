@@ -25,15 +25,36 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 //	customGui->addButton("Custom Button", false);
 //	customGui->addToggle("Custom Toggle", &customToggle);
 	
+	for (int i=0; i<objFiles.size(); i++) {
+		cout << "objFiles[i]: " << objFiles[i] << endl;
+	}
+	customGui->addRadio("model files", objFiles );
+	
 	ofAddListener(customGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
 	guis.push_back(customGui);
 	guimap[customGui->getName()] = customGui;
 }
 
-void CloudsVisualSystem3DModel::selfGuiEvent(ofxUIEventArgs &e){
-//	if(e.widget->getName() == "Custom Button"){
-//		cout << "Button pressed!" << endl;
-//	}
+void CloudsVisualSystem3DModel::selfGuiEvent(ofxUIEventArgs &e)
+{
+	string name = e.widget->getName();
+	int kind = e.widget->getKind();
+	
+	if( kind == OFX_UI_WIDGET_TOGGLE)
+	{
+		//load the model from the selected file
+		if(e.getToggle()->getValue())
+		{
+			for (int i=0; i<objFiles.size(); i++)
+			{
+				if(objFiles[i] == name )
+				{
+					cout << "loading model: " << name << endl;
+					loadModel( "models/" + name, false );
+				}
+			}
+		}
+	}
 }
 
 //Use system gui for global or logical settings, for exmpl
@@ -60,38 +81,33 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	
 	videoLoaded = false;
 	
-//	if(ofFile::doesFileExist(getVisualSystemDataPath() + "TestVideo/Jer_TestVideo.mov")){
-//		getRGBDVideoPlayer().setup(getVisualSystemDataPath() + "TestVideo/Jer_TestVideo.mov",
-//								   getVisualSystemDataPath() + "TestVideo/Jer_TestVideo.xml" );
-//		
-//		getRGBDVideoPlayer().swapAndPlay();
-//		
-//		for(int i = 0; i < 640; i += 2){
-//			for(int j = 0; j < 480; j+=2){
-//				simplePointcloud.addVertex(ofVec3f(i,j,0));
-//			}
-//		}
-//		
-//		pointcloudShader.load(getVisualSystemDataPath() + "shaders/rgbdcombined");
-//		videoLoaded = true;
-//	}
-//	
-	
-//	someImage.loadImage( getVisualSystemDataPath() + "images/someImage.png";
-	
 	//set defaults
 	gridLineWidth = 1.;
 	boundBoxLineWidth = 1.;
 	discardThreshold = 1.;
-	bSmoothModel = false;
-	bComputeSmoothNormals = false;
+//	bSmoothModel = false;
+//	bComputeSmoothNormals = false;
+	
+	maxDim = 200;
 	
 	//load our shaders
 	loadShaders();
 	
 	//get list of models from the model directory
 	modelScl.set( 1,1,1 );
-	loadModel("models/elephant.obj");
+//	loadModel( "models/house_wood.obj", false );
+	loadModel( "models/elephant.obj", false );
+//	loadModel( "models/Man_Bicycle.obj", false );
+	
+	
+	//store all our model names in the models directory
+	string path = getVisualSystemDataPath() + "models/";
+	ofDirectory dir;
+	dir.allowExt("obj");
+	dir.listDir( path );
+	for(int i = 0; i < dir.numFiles(); i++){
+		objFiles.push_back( dir.getName(i) );
+	}
 	
 	//setup a grid vbo
 	float gridDim = 100;
@@ -186,10 +202,11 @@ void CloudsVisualSystem3DModel::selfDraw(){
 
 	
 	//update the model transforms
-	modelRot.makeRotate( ofGetElapsedTimef()*10, 0, 1, 0);
+	modelRot.makeRotate( ofGetElapsedTimef()*2, 0, 1, 0);
 	if(modelScl.length() == 0.)	modelScl.y = .00001;
 	
-	modelTransform.setPosition( modelPos + ofVec3f(0,maxBound.y,0) );
+	modelTransform.setPosition( modelPos );//+ ofVec3f(0,min(maxBound.y,minBound.y),0) );
+	modelTransform.move(0, -minBound.y * modelScl.y, 0);
 	modelTransform.setOrientation( modelRot );
 	modelTransform.setScale( modelScl );
 	
@@ -321,11 +338,15 @@ void CloudsVisualSystem3DModel::drawBoundingBox(){
 };
 
 
-void CloudsVisualSystem3DModel::loadModel( string fileName, bool smoothing )
+void CloudsVisualSystem3DModel::loadModel( string fileName, bool bSmoothMesh )
 {
-	ofxObjLoader::load( getVisualSystemDataPath() + fileName, modelMesh, true);
+	ofxObjLoader::load( getVisualSystemDataPath() + fileName, modelMesh, true );
+	calcBoundingBox();
 	
-	if(smoothing)
+	float mScl = maxDim / max( maxBound.x - minBound.x, max(maxBound.y-minBound.y, maxBound.z - minBound.z ));
+	modelScl.set( mScl, mScl, mScl );
+	
+	if(bSmoothMesh)
 	{
 		smoothMesh( modelMesh, modelMesh );
 	}
@@ -343,6 +364,8 @@ ofVec3f CloudsVisualSystem3DModel::normalFrom3Points(ofVec3f p0, ofVec3f p1, ofV
 
 void CloudsVisualSystem3DModel::smoothMesh( ofMesh& facetedMesh, ofMesh& targetMesh, int precision)
 {
+	cout << "smoothing mesh" << endl;
+	
 	//get our vertex, uv and face info
 	vector<ofVec3f>& v = facetedMesh.getVertices();
 	vector<ofVec2f>& uv = facetedMesh.getTexCoords();
@@ -432,7 +455,7 @@ void CloudsVisualSystem3DModel::facetMesh( ofMesh& smoothedMesh, ofMesh& targetM
 		if(hasTC)	facetedTexCoords[i] = uv[indices[i]];
 	}
 	
-	//calculate our normals
+	//calculate face our normals
 	ofVec3f n;
 	for (int i=0; i < facetedIndices.size(); i+=3) {
 		n = normalFrom3Points( facetedVertices[i], facetedVertices[i+1], facetedVertices[i+2]);
@@ -441,7 +464,7 @@ void CloudsVisualSystem3DModel::facetMesh( ofMesh& smoothedMesh, ofMesh& targetM
 		facetedNormals[i+2] = n;
 	}
 	
-	//setup our faceted mesh. this should still work if our targetMesh is our facetedMesh
+	//setup our faceted mesh. this should still work if our targetMesh is our smoothMesh
 	targetMesh.clear();
 	targetMesh.addVertices( facetedVertices );
 	targetMesh.addNormals( facetedNormals );

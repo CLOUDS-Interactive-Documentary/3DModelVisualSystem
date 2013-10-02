@@ -87,7 +87,7 @@ class CloudsVisualSystem3DModel : public CloudsVisualSystem {
 	
 	void loadShaders();
 	
-	void loadModel( string fileName, bool smoothing = true );
+	void loadModel( string fileName, bool bSmoothMesh = false );
 	void calcBoundingBox();
 	void drawBoundingBox();
 	string vec3ToString( ofVec3f v, int precision=3 );
@@ -142,13 +142,16 @@ protected:
 	ofVec3f minBound, maxBound, boundCenter;
 	ofVbo boundBoxVbo;
 	float boundBoxLineWidth;
+	float maxDim;
+	
+	vector <string> objFiles;
 	
 	ofVbo modelNormalInfo;
 	ofShader modelNormalInfoShader;
 	
 	
     ofMesh modelMesh;
-	bool bSmoothModel, bComputeSmoothNormals;
+//	bool bSmoothModel, bComputeSmoothNormals;
 	float discardThreshold;
 	
 };
