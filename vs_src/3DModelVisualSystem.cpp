@@ -19,15 +19,16 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	customGui->setName("Custom");
 	customGui->setWidgetFontSize(OFX_UI_FONT_SMALL);
 	customGui->addFPS();
+	customGui->addSpacer();
+	customGui->addToggle("smooth model", false );
+	customGui->addSpacer();
 	
 //	customGui->addSlider("Custom Float 1", 1, 1000, &customFloat1);
 //	customGui->addSlider("Custom Float 2", 1, 1000, &customFloat2);
 //	customGui->addButton("Custom Button", false);
 //	customGui->addToggle("Custom Toggle", &customToggle);
 	
-	for (int i=0; i<objFiles.size(); i++) {
-		cout << "objFiles[i]: " << objFiles[i] << endl;
-	}
+	customGui->addLabel("obj files:");
 	customGui->addRadio("model files", objFiles );
 	
 	ofAddListener(customGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
@@ -42,15 +43,25 @@ void CloudsVisualSystem3DModel::selfGuiEvent(ofxUIEventArgs &e)
 	
 	if( kind == OFX_UI_WIDGET_TOGGLE)
 	{
+		if( name == "smooth model" )
+		{
+			bSmoothModel = e.getToggle()->getValue();
+			if( bSmoothModel ){
+				smoothMesh( modelMesh, modelMesh );
+			}else{
+				facetMesh( modelMesh, modelMesh );
+			}
+		}
+		
 		//load the model from the selected file
-		if(e.getToggle()->getValue())
+		else if( e.getToggle()->getValue() )
 		{
 			for (int i=0; i<objFiles.size(); i++)
 			{
 				if(objFiles[i] == name )
 				{
 					cout << "loading model: " << name << endl;
-					loadModel( "models/" + name, false );
+					loadModel( "models/" + name, bSmoothModel );
 				}
 			}
 		}
@@ -85,7 +96,7 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	gridLineWidth = 1.;
 	boundBoxLineWidth = 1.;
 	discardThreshold = 1.;
-//	bSmoothModel = false;
+	bSmoothModel = false;
 //	bComputeSmoothNormals = false;
 	
 	maxDim = 200;
@@ -96,7 +107,7 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	//get list of models from the model directory
 	modelScl.set( 1,1,1 );
 //	loadModel( "models/house_wood.obj", false );
-	loadModel( "models/elephant.obj", false );
+	loadModel( "models/elephant.obj", bSmoothModel );
 //	loadModel( "models/Man_Bicycle.obj", false );
 	
 	
