@@ -36,11 +36,6 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	
 	customGui->addSpacer();
 	
-//	customGui->addSlider("Custom Float 1", 1, 1000, &customFloat1);
-//	customGui->addSlider("Custom Float 2", 1, 1000, &customFloat2);
-//	customGui->addButton("Custom Button", false);
-//	customGui->addToggle("Custom Toggle", &customToggle);
-	
 	customGui->addLabel("obj files:");
 	customGui->addRadio("model files", objFiles );
 	
@@ -386,6 +381,7 @@ void CloudsVisualSystem3DModel::loadModel( string fileName, bool bSmoothMesh )
 	{
 		smoothMesh( modelMesh, modelMesh );
 	}
+	
 }
 
 string CloudsVisualSystem3DModel::vec3ToString( ofVec3f v, int precision ){

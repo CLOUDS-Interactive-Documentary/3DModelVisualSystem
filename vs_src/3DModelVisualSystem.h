@@ -146,15 +146,15 @@ protected:
 	float maxDim;
 	bool bSmoothModel, bWireframe;
 	
+	ofVbo modelVbo;
+	
 	
 	vector <string> objFiles;
 	
 	ofVbo modelNormalInfo;
 	ofShader modelNormalInfoShader;
 	
-	
-    ofMesh modelMesh;
-//	bool bSmoothModel, bComputeSmoothNormals;
+    ofVboMesh modelMesh;
 	float discardThreshold;
 	
 };
