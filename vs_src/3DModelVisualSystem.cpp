@@ -97,21 +97,14 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	boundBoxLineWidth = 1.;
 	discardThreshold = 1.;
 	bSmoothModel = false;
-//	bComputeSmoothNormals = false;
-	
 	maxDim = 200;
+	modelScl.set( 1,1,1 );
+	majorGridLineScale = 2.;
 	
 	//load our shaders
 	loadShaders();
 	
 	//get list of models from the model directory
-	modelScl.set( 1,1,1 );
-//	loadModel( "models/house_wood.obj", false );
-	loadModel( "models/elephant.obj", bSmoothModel );
-//	loadModel( "models/Man_Bicycle.obj", false );
-	
-	
-	//store all our model names in the models directory
 	string path = getVisualSystemDataPath() + "models/";
 	ofDirectory dir;
 	dir.allowExt("obj");
@@ -133,6 +126,25 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	grid.setVertexData( &gridVertices[0], gridVertices.size(), GL_STATIC_DRAW );
 	numGridVertices = gridVertices.size();
 	gridVertices.clear();
+	
+	for (int i=0; i<gridDim; i += 5) {
+//		gridVertices[i*4+0].set(i - halfGridDim, 0,-halfGridDim);
+//		gridVertices[i*4+1].set(i - halfGridDim, 0, halfGridDim);
+//		gridVertices[i*4+2].set(-halfGridDim, 0, i - halfGridDim);
+//		gridVertices[i*4+3].set( halfGridDim, 0, i - halfGridDim);
+		
+		gridVertices.push_back( ofVec3f(i - halfGridDim, 0,-halfGridDim) );
+		gridVertices.push_back( ofVec3f(i - halfGridDim, 0, halfGridDim) );
+		
+		gridVertices.push_back( ofVec3f(-halfGridDim, 0, i - halfGridDim) );
+		gridVertices.push_back( ofVec3f( halfGridDim, 0, i - halfGridDim) );
+	}
+	gridMajor.setVertexData( &gridVertices[0], gridVertices.size(), GL_STATIC_DRAW );
+	numGridMajorVertices = gridVertices.size();
+	gridVertices.clear();
+	
+	
+	
 	
 	//setup boundBox vbo
 	calcBoundingBox();
@@ -197,20 +209,8 @@ void CloudsVisualSystem3DModel::selfUpdate(){
 
 // selfDraw draws in 3D using the default ofEasyCamera
 // you can change the camera by returning getCameraRef()
-void CloudsVisualSystem3DModel::selfDraw(){
-	
-//	if(videoLoaded){
-//		ofPushMatrix();
-//		setupRGBDTransforms();
-//		pointcloudShader.begin();
-//		getRGBDVideoPlayer().setupProjectionUniforms(pointcloudShader);
-//		simplePointcloud.drawVertices();
-//		pointcloudShader.end();
-//		ofPopMatrix();
-//	}
-	
-	
-
+void CloudsVisualSystem3DModel::selfDraw()
+{
 	
 	//update the model transforms
 	modelRot.makeRotate( ofGetElapsedTimef()*2, 0, 1, 0);
@@ -250,7 +250,19 @@ void CloudsVisualSystem3DModel::selfDraw(){
 	
 	gridShader.begin();
 	grid.draw(GL_LINES, 0, numGridVertices );
+	
+	glLineWidth(gridLineWidth * majorGridLineScale);
+	
+	gridMajor.draw(GL_LINES, 0, numGridMajorVertices );
+	
+	ofSetColor(255, 55, 30, 100);
+	ofLine(-1000, 0, 0, 1000, 0, 0);
+	
+	ofSetColor( 55, 55, 255, 100);
+	ofLine( 0, 0, -1000, 0, 0, 1000);
+	
 	gridShader.end();
+	
 	
 	ofPopMatrix();
 	

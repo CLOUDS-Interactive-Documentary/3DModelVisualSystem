@@ -12,5 +12,5 @@ varying float dist;
 void main(void)
 {
 	float alpha = pow( max(0., 1. - dist / falloffDist), falloffExpo );
-	gl_FragColor = vec4( 1., 1., 1., alpha * alphaScale);
+	gl_FragColor = vec4( gl_Color.xyz, alpha * alphaScale);
 }

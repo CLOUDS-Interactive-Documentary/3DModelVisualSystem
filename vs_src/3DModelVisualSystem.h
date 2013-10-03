@@ -130,9 +130,11 @@ protected:
 	ofShader phongShader;
 	
 	float gridLineWidth;
-	int numGridVertices;
+	int numGridVertices, numGridMajorVertices;
 	ofVbo grid;
 	ofShader gridShader;
+	ofVbo gridMajor;
+	float majorGridLineScale;
 	
 	ofVbo model;
 	ofShader* modelShader;

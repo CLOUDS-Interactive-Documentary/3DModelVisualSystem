@@ -13,5 +13,7 @@ void main()
 	gl_Position = gl_ProjectionMatrix * ecPosition;
 	
 	dist = gl_Position.z;
+	
+	gl_FrontColor = gl_Color;
 }
 
