@@ -39,6 +39,11 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	customGui->addLabel("obj files:");
 	customGui->addRadio("model files", objFiles );
 	
+	customGui->addSpacer();
+	
+	customGui->addRadio("shaders", shaderNames );
+//	for (int i=0; i<shaderNames.size(); i++)	cout << shaderNames[i] << endl;
+	
 	ofAddListener(customGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
 	guis.push_back(customGui);
 	guimap[customGui->getName()] = customGui;
@@ -49,27 +54,44 @@ void CloudsVisualSystem3DModel::selfGuiEvent(ofxUIEventArgs &e)
 	string name = e.widget->getName();
 	int kind = e.widget->getKind();
 	
-	if( kind == OFX_UI_WIDGET_TOGGLE)
+	if( name == "smooth model" )
 	{
-		if( name == "smooth model" )
-		{
-			bSmoothModel = e.getToggle()->getValue();
-			if( bSmoothModel ){
-				smoothMesh( modelMesh, modelMesh );
-			}else{
-				facetMesh( modelMesh, modelMesh );
-			}
+		bSmoothModel = e.getToggle()->getValue();
+		if( bSmoothModel ){
+			smoothMesh( modelMesh, modelMesh );
+		}else{
+			facetMesh( modelMesh, modelMesh );
 		}
+	}
+	
+	else if( kind == OFX_UI_WIDGET_TOGGLE)
+	{
+		string parent = e.getToggle()->getParent()->getName();
 		
-		//load the model from the selected file
-		else if( e.getToggle()->getValue() )
+		if( e.getToggle()->getValue() )
 		{
-			for (int i=0; i<objFiles.size(); i++)
+			
+			if (parent == "shaders")
 			{
-				if(objFiles[i] == name )
+				//switch to this active shader from a shader map
+				
+				if(shaderMap.find( name ) != shaderMap.end() )
 				{
-					cout << "loading model: " << name << endl;
-					loadModel( "models/" + name, bSmoothModel );
+					cout << parent << " : " << name << " : " << shaderMap[ name ] << endl;
+					activeShader = shaderMap[ name ];
+				}
+			}
+			
+			else if(parent == "model files")
+			{
+				//load the model from the selected file
+				for (int i=0; i<objFiles.size(); i++)
+				{
+					if(objFiles[i] == name )
+					{
+						cout << "loading model: " << name << endl;
+						loadModel( "models/" + name, bSmoothModel );
+					}
 				}
 			}
 		}
@@ -111,6 +133,7 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	majorGridLineWidth = 1.5;
 	bWireframe = false;
 	wireframeLinewidth = .5;
+	activeShader = NULL;
 	
 	//load our shaders
 	loadShaders();
@@ -231,13 +254,17 @@ void CloudsVisualSystem3DModel::selfDraw()
 	ofPushMatrix();
 	ofMultMatrix( modelTransform.getGlobalTransformMatrix() );
 	
-	normalShader.begin();
-	normalShader.setUniform1f( "discardThreshold", discardThreshold );
-	
-	if(bWireframe)	glLineWidth( wireframeLinewidth );
-	bWireframe?	modelMesh.drawWireframe() : modelMesh.draw();
-	
-	normalShader.end();
+	if(activeShader != NULL )
+	{
+		
+		activeShader->begin();
+		activeShader->setUniform1f( "discardThreshold", discardThreshold );
+		
+		if(bWireframe)	glLineWidth( wireframeLinewidth );
+		bWireframe?	modelMesh.drawWireframe() : modelMesh.draw();
+		
+		activeShader->end();
+	}
 	
 	
 	//draw bounding box
@@ -331,9 +358,26 @@ void CloudsVisualSystem3DModel::selfMouseReleased(ofMouseEventArgs& data){
 	
 }
 
-void CloudsVisualSystem3DModel::loadShaders(){
+void CloudsVisualSystem3DModel::loadShaders()
+{
 	normalShader.load( getVisualSystemDataPath() + "shaders/normalShader" );
 	gridShader.load( getVisualSystemDataPath() + "shaders/gridShader" );
+	facingRatioShader.load( getVisualSystemDataPath() + "shaders/facingRatio" );
+	
+	shaderNames.clear();
+	addToShaderMap( "normalShader", &normalShader );
+	addToShaderMap( "gridShader", &gridShader );
+	addToShaderMap( "facingRatio", &facingRatioShader );
+}
+			  
+void CloudsVisualSystem3DModel::addToShaderMap( string name, ofShader* shader )
+{
+	if(shaderMap.find( name ) == shaderMap.end() )
+	{
+		shaderMap[ name ] = shader;
+		shaderNames.push_back( name );//just used for setting up the gui
+	}
+
 }
 
 void CloudsVisualSystem3DModel::calcBoundingBox(){

@@ -7,7 +7,7 @@ varying vec2 uv;
 
 void main()
 {
-	norm = normalize( gl_NormalMatrix * gl_Normal );
+	norm = gl_NormalMatrix * gl_Normal;
 	norm = norm;// * .5 + .5;
 	
 	vec4 ecPosition = gl_ModelViewMatrix * gl_Vertex;

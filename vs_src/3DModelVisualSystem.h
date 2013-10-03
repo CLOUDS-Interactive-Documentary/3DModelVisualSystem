@@ -86,6 +86,7 @@ class CloudsVisualSystem3DModel : public CloudsVisualSystem {
     void selfMouseReleased(ofMouseEventArgs& data);
 	
 	void loadShaders();
+	void addToShaderMap( string name, ofShader* shader );
 	
 	void loadModel( string fileName, bool bSmoothMesh = false );
 	void calcBoundingBox();
@@ -112,19 +113,17 @@ class CloudsVisualSystem3DModel : public CloudsVisualSystem {
 
 protected:
     
-    //  Your Stuff
-    //
-	
+    //  my Stuff
 	ofxUISuperCanvas* customGui;
-	bool customToggle;
-	float customFloat1;
-	float customFloat2;
 	
 	bool videoLoaded;
 	ofImage someImage;
 	ofShader pointcloudShader;
 	ofVboMesh simplePointcloud;
 	
+	vector<string> shaderNames;
+	map<string, ofShader*> shaderMap;
+	ofShader* activeShader;
 	ofShader normalShader;
 	ofShader facingRatioShader;
 	ofShader phongShader;
@@ -145,9 +144,6 @@ protected:
 	float boundBoxLineWidth, wireframeLinewidth;
 	float maxDim;
 	bool bSmoothModel, bWireframe;
-	
-	ofVbo modelVbo;
-	
 	
 	vector <string> objFiles;
 	

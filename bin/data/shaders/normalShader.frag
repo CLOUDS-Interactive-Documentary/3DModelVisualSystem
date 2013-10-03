@@ -12,7 +12,7 @@ varying vec2 uv;
 
 void main(void)
 {
-	float fr = dot( -normalize(ePos), norm ) ;
+	float fr = dot( -normalize(ePos), normalize( norm ) ) ;
 	
 	if( abs(fr) > discardThreshold)	discard;
 	fr *= specularScale * pow( fr* .5 + .5, specularExpo);
