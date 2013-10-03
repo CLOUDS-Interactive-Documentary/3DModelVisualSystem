@@ -142,7 +142,7 @@ protected:
 	ofVec3f minBound, maxBound, boundCenter;
 	ofVbo boundBoxVbo;
 	float boundBoxLineWidth, wireframeLinewidth;
-	float maxDim;
+	float maxDim, modelScale;
 	bool bSmoothModel, bWireframe;
 	
 	vector <string> objFiles;

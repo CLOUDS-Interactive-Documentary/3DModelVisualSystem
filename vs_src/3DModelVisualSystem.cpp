@@ -26,6 +26,7 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	customGui->addToggle("wireframe", &bWireframe );
 	customGui->addSlider("wireframeLinewidth", 0.5, 10, &wireframeLinewidth);
 	customGui->addSlider("discardThreshold", 0., 1, &discardThreshold);
+	customGui->addSlider("modelScale", .1, 10., &modelScale);
 	
 	customGui->addSpacer();
 	
@@ -130,6 +131,7 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	maxDim = 200;
 	modelScl.set( 1,1,1 );
 	gridScale = 25.;
+	modelScale = 1.;
 	majorGridLineWidth = 1.5;
 	bWireframe = false;
 	wireframeLinewidth = .5;
@@ -247,7 +249,7 @@ void CloudsVisualSystem3DModel::selfDraw()
 	modelTransform.setPosition( modelPos );//+ ofVec3f(0,min(maxBound.y,minBound.y),0) );
 	modelTransform.move(0, -minBound.y * modelScl.y, 0);
 	modelTransform.setOrientation( modelRot );
-	modelTransform.setScale( modelScl );
+	modelTransform.setScale( modelScl * modelScale );
 	
 	
 	//draw our model
