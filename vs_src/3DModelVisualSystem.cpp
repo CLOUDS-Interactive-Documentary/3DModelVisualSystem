@@ -75,7 +75,6 @@ void CloudsVisualSystem3DModel::selfGuiEvent(ofxUIEventArgs &e)
 			if (parent == "shaders")
 			{
 				//switch to this active shader from a shader map
-				
 				if(shaderMap.find( name ) != shaderMap.end() )
 				{
 					cout << parent << " : " << name << " : " << shaderMap[ name ] << endl;
@@ -247,7 +246,7 @@ void CloudsVisualSystem3DModel::selfDraw()
 	if(modelScl.length() == 0.)	modelScl.y = .00001;
 	
 	modelTransform.setPosition( modelPos );//+ ofVec3f(0,min(maxBound.y,minBound.y),0) );
-	modelTransform.move(0, -minBound.y * modelScl.y, 0);
+	modelTransform.move(0, -minBound.y * modelScl.y * modelScale, 0);
 	modelTransform.setOrientation( modelRot );
 	modelTransform.setScale( modelScl * modelScale );
 	
@@ -476,7 +475,7 @@ void CloudsVisualSystem3DModel::smoothMesh( ofMesh& facetedMesh, ofMesh& targetM
 	}
 	
 	
-	//reconstruct our faces by reassigning ther indices to the merged vertices
+	//reconstruct our faces by reassigning their indices to the merged vertices
 	smoothIndices.resize( indices.size() );
 	for (int i=0; i<indices.size(); i++)
 	{
@@ -533,7 +532,7 @@ void CloudsVisualSystem3DModel::facetMesh( ofMesh& smoothedMesh, ofMesh& targetM
 		if(hasTC)	facetedTexCoords[i] = uv[indices[i]];
 	}
 	
-	//calculate face our normals
+	//calculate our face normals
 	ofVec3f n;
 	for (int i=0; i < facetedIndices.size(); i+=3) {
 		n = normalFrom3Points( facetedVertices[i], facetedVertices[i+1], facetedVertices[i+2]);
