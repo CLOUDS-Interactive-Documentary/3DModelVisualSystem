@@ -22,6 +22,7 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	customGui->addSpacer();
 	customGui->addToggle("smooth model", false );
 	customGui->addToggle("wireframe", &bWireframe );
+	customGui->addSlider("wireframeLinewidth", 0, 10, &wireframeLinewidth);
 	customGui->addSpacer();
 	
 //	customGui->addSlider("Custom Float 1", 1, 1000, &customFloat1);
@@ -102,6 +103,7 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	modelScl.set( 1,1,1 );
 	majorGridLineScale = 1.5;
 	bWireframe = false;
+	wireframeLinewidth = .5;
 	
 	//load our shaders
 	loadShaders();
@@ -225,6 +227,7 @@ void CloudsVisualSystem3DModel::selfDraw()
 	normalShader.begin();
 	normalShader.setUniform1f( "discardThreshold", discardThreshold );
 	
+	if(bWireframe)	glLineWidth( wireframeLinewidth );
 	bWireframe?	modelMesh.drawWireframe() : modelMesh.draw();
 	
 	normalShader.end();
