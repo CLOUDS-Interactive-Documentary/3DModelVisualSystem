@@ -17,6 +17,6 @@ void main(void)
 	if( abs(fr) > discardThreshold)	discard;
 	fr *= specularScale * pow( fr* .5 + .5, specularExpo);
 	
-	gl_FragColor = vec4( vec3( fr ), 1.);
+	gl_FragColor = vec4( gl_Color.xyz + fr, gl_Color.w );
 }
 

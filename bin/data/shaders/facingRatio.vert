@@ -16,5 +16,7 @@ void main()
 	gl_Position = gl_ProjectionMatrix * ecPosition;
 	
 	uv = gl_MultiTexCoord0.xy;
+	
+	gl_FrontColor = gl_Color;
 }
 

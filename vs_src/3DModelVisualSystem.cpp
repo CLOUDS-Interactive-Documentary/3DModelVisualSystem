@@ -43,11 +43,29 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	customGui->addSpacer();
 	
 	customGui->addRadio("shaders", shaderNames );
-//	for (int i=0; i<shaderNames.size(); i++)	cout << shaderNames[i] << endl;
 	
 	ofAddListener(customGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
 	guis.push_back(customGui);
 	guimap[customGui->getName()] = customGui;
+	
+	
+	modelUIGui = new ofxUISuperCanvas("modelUIGui", gui);
+	modelUIGui->copyCanvasStyle(gui);
+	modelUIGui->copyCanvasProperties(gui);
+	modelUIGui->setName("modelUIGui");
+	modelUIGui->setWidgetFontSize(OFX_UI_FONT_SMALL);
+	modelUIGui->addSpacer();
+	modelUIGui->addLabel("arrows");
+	modelUIGui->addSlider("arrowRadius", 1, 50, &arrowRadius);
+	modelUIGui->addSlider("arrowHeight", 1, 250, &arrowHeight);
+	modelUIGui->addSlider("arrowPointHeight", 0, .9, &arrowPointHeight);
+	
+	
+	ofAddListener(modelUIGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
+	guis.push_back(modelUIGui);
+	guimap[modelUIGui->getName()] = modelUIGui;
+
+	
 }
 
 void CloudsVisualSystem3DModel::selfGuiEvent(ofxUIEventArgs &e)
@@ -63,6 +81,11 @@ void CloudsVisualSystem3DModel::selfGuiEvent(ofxUIEventArgs &e)
 		}else{
 			facetMesh( modelMesh, modelMesh );
 		}
+	}
+	
+	else if(name == "arrowHeight" || name == "arrowRadius" || name == "arrowPointHeight" )
+	{
+		resizeTheArrowMesh( arrowRadius, arrowHeight, arrowPointHeight );
 	}
 	
 	else if( kind == OFX_UI_WIDGET_TOGGLE)
@@ -136,8 +159,18 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	wireframeLinewidth = .5;
 	activeShader = NULL;
 	
+	arrowRadius = 25;
+	arrowHeight = 100;
+	arrowPointHeight = .75;
+	
+	
+	
 	//load our shaders
 	loadShaders();
+	
+	//load our non-model meshes
+	ofxObjLoader::load("arrow.obj", arrowMesh, true );
+	resizeTheArrowMesh( arrowRadius, arrowHeight, arrowPointHeight );
 	
 	//get list of models from the model directory
 	string path = getVisualSystemDataPath() + "models/";
@@ -251,6 +284,7 @@ void CloudsVisualSystem3DModel::selfDraw()
 	modelTransform.setScale( modelScl * modelScale );
 	
 	
+	
 	//draw our model
 	ofPushMatrix();
 	ofMultMatrix( modelTransform.getGlobalTransformMatrix() );
@@ -271,6 +305,35 @@ void CloudsVisualSystem3DModel::selfDraw()
 	//draw bounding box
 	ofSetColor(255, 255, 255, 255);
 	drawBoundingBox();
+	
+	ofPopMatrix();
+	
+	
+	//draw arrows at model's min bound
+	ofPushMatrix();
+	ofTranslate( minBound * modelTransform.getGlobalTransformMatrix() );
+	ofMultMatrix( modelTransform.getGlobalOrientation() );
+	
+	ofSetColor(0, 255, 0);
+	ofPushMatrix();
+	ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
+	arrowMesh.draw();
+	ofPopMatrix();
+	
+	ofSetColor(255, 0, 0);
+	ofPushMatrix();
+	ofRotate(90, 1, 0, 0);
+	ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
+	arrowMesh.draw();
+	ofPopMatrix();
+	
+	ofSetColor(0, 0, 255);
+	ofPushMatrix();
+	ofRotate(90, 1, 0, 0);
+	ofRotate(90, 0, 0, -1);
+	ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
+	arrowMesh.draw();
+	ofPopMatrix();
 	
 	ofPopMatrix();
 	
@@ -549,6 +612,23 @@ void CloudsVisualSystem3DModel::facetMesh( ofMesh& smoothedMesh, ofMesh& targetM
 	targetMesh.addIndices( facetedIndices );
 }
 
+void CloudsVisualSystem3DModel::resizeTheArrowMesh( float radius, float height, float pointBaseHight ){
+	//the top pointy part of the mesh vertices are 1-12 but not 6.	1,...,5,7,...,12
+	
+	vector<ofVec3f> v = arrowMesh.getVertices();
+
+	for (int i=0; i<v.size(); i++) {
+		if(v[i].y > .1 && v[i].y < .9){
+			v[i].y = pointBaseHight;
+		}
+		
+	}
+	
+	arrowMesh.clearVertices();
+	arrowMesh.addVertices( v );
+	
+	arrowScale.set( radius/2, height, radius/2 );
+}
 
 
 

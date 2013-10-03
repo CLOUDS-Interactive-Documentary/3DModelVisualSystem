@@ -96,6 +96,8 @@ class CloudsVisualSystem3DModel : public CloudsVisualSystem {
 	void smoothMesh( ofMesh& facetedMesh, ofMesh& targetMesh, int precision=3 );
 	void facetMesh( ofMesh& smoothedMesh, ofMesh& targetMesh );
 	
+	void resizeTheArrowMesh( float radius, float height, float arrowBase = .25 );
+	
 
     // if you use a custom camera to fly through the scene
 	// you must implement this method for the transitions to work properly
@@ -115,6 +117,7 @@ protected:
     
     //  my Stuff
 	ofxUISuperCanvas* customGui;
+	ofxUISuperCanvas* modelUIGui;
 	
 	bool videoLoaded;
 	ofImage someImage;
@@ -152,5 +155,12 @@ protected:
 	
     ofVboMesh modelMesh;
 	float discardThreshold;
+	
+	
+	//3d modeling-ish widgetty type things
+	ofVboMesh arrowMesh;
+	ofVec3f arrowScale;
+	
+	float arrowRadius, arrowHeight, arrowPointHeight;
 	
 };
