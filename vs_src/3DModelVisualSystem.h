@@ -129,12 +129,11 @@ protected:
 	ofShader facingRatioShader;
 	ofShader phongShader;
 	
-	float gridLineWidth;
+	float gridLineWidth, gridScale, majorGridLineWidth;
 	int numGridVertices, numGridMajorVertices;
 	ofVbo grid;
 	ofShader gridShader;
 	ofVbo gridMajor;
-	float majorGridLineScale;
 	
 	ofVbo model;
 	ofShader* modelShader;
@@ -143,9 +142,8 @@ protected:
 	ofNode modelTransform;
 	ofVec3f minBound, maxBound, boundCenter;
 	ofVbo boundBoxVbo;
-	float boundBoxLineWidth;
+	float boundBoxLineWidth, wireframeLinewidth;
 	float maxDim;
-	float wireframeLinewidth;
 	bool bSmoothModel, bWireframe;
 	
 	

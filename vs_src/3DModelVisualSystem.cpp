@@ -19,10 +19,21 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	customGui->setName("Custom");
 	customGui->setWidgetFontSize(OFX_UI_FONT_SMALL);
 	customGui->addFPS();
+	
 	customGui->addSpacer();
+	
 	customGui->addToggle("smooth model", false );
 	customGui->addToggle("wireframe", &bWireframe );
-	customGui->addSlider("wireframeLinewidth", 0, 10, &wireframeLinewidth);
+	customGui->addSlider("wireframeLinewidth", 0.5, 10, &wireframeLinewidth);
+	customGui->addSlider("discardThreshold", 0., 1, &discardThreshold);
+	
+	customGui->addSpacer();
+	
+	customGui->addSlider("gridLineWidth", 0.5, 10, &gridLineWidth);
+	customGui->addSlider("boundBoxLineWidth", 0.5, 10, &boundBoxLineWidth);
+	customGui->addSlider("majorGridLineWidth", 0.5, 10, &majorGridLineWidth);
+	customGui->addSlider("gridScale", 1., 100., &gridScale);
+	
 	customGui->addSpacer();
 	
 //	customGui->addSlider("Custom Float 1", 1, 1000, &customFloat1);
@@ -101,7 +112,8 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	bSmoothModel = false;
 	maxDim = 200;
 	modelScl.set( 1,1,1 );
-	majorGridLineScale = 1.5;
+	gridScale = 25.;
+	majorGridLineWidth = 1.5;
 	bWireframe = false;
 	wireframeLinewidth = .5;
 	
@@ -233,6 +245,7 @@ void CloudsVisualSystem3DModel::selfDraw()
 	normalShader.end();
 	
 	
+	//draw bounding box
 	ofSetColor(255, 255, 255, 255);
 	drawBoundingBox();
 	
@@ -240,22 +253,21 @@ void CloudsVisualSystem3DModel::selfDraw()
 	
 	
 	//draw grid
-	float gridScale = 25.;
 	glLineWidth( gridLineWidth );
 	
 	ofSetColor(255,255, 255, 100 );
 	
 	ofPushMatrix();
-	ofScale( gridScale,gridScale,gridScale );
+	ofScale( gridScale, gridScale, gridScale );
 	
 	gridShader.begin();
 	grid.draw(GL_LINES, 0, numGridVertices );
 	
-	glLineWidth(gridLineWidth * majorGridLineScale);
+	glLineWidth( majorGridLineWidth );
 	gridMajor.draw(GL_LINES, 0, numGridMajorVertices );
 	
 	
-	glLineWidth(gridLineWidth * majorGridLineScale * 2);
+	glLineWidth(gridLineWidth * majorGridLineWidth * 2);
 	ofSetColor(255, 55, 30, 100);
 	ofLine(-1000, 0, 0, 1000, 0, 0);
 	
