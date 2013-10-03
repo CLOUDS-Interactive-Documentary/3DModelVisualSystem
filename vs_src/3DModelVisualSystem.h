@@ -150,6 +150,8 @@ protected:
 	float maxDim, modelScale;
 	bool bSmoothModel, bWireframe;
 	ofColor modelColor;
+	float specularExpo;
+	float specularScale;
 	
 	
 	vector <string> objFiles;

@@ -29,6 +29,9 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	customGui->addSlider("modelScale", .1, 10., &modelScale);
 	customGui->addImageSampler("c1", &colorMap, (float)colorMap.getWidth()/2, (float)colorMap.getHeight()/2 );
 	
+	customGui->addSlider("specularExpo", 1, 128, &specularExpo);
+	customGui->addSlider("specularScale", 0., 1.0, &specularScale);
+	
 	customGui->addSpacer();
 	
 	customGui->addSlider("gridLineWidth", 0.5, 10, &gridLineWidth);
@@ -161,6 +164,8 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	gridScale = 25.;
 	modelScale = 1.;
 	modelColor.set(10,10,11);
+	specularExpo = 32;
+	specularScale = .75;
 	majorGridLineWidth = 1.5;
 	bWireframe = false;
 	wireframeLinewidth = .5;
@@ -304,6 +309,11 @@ void CloudsVisualSystem3DModel::selfDraw()
 		
 		activeShader->begin();
 		activeShader->setUniform1f( "discardThreshold", discardThreshold );
+		activeShader->setUniform1f( "specularExpo", specularExpo );
+		activeShader->setUniform1f( "specularScale", specularScale );
+//		uniform float specularScale = 1.;
+//		uniform float specularExpo = 64.;
+//		uniform float discardThreshold = .35;
 		
 		if(bWireframe)	glLineWidth( wireframeLinewidth );
 		bWireframe?	modelMesh.drawWireframe() : modelMesh.draw();
