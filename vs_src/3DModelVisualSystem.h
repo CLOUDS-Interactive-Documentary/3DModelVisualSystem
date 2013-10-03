@@ -145,7 +145,7 @@ protected:
 	ofVbo boundBoxVbo;
 	float boundBoxLineWidth;
 	float maxDim;
-	bool bSmoothModel;
+	bool bSmoothModel, bWireframe;
 	
 	vector <string> objFiles;
 	

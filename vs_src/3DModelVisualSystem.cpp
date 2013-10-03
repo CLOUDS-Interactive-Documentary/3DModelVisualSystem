@@ -21,6 +21,7 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	customGui->addFPS();
 	customGui->addSpacer();
 	customGui->addToggle("smooth model", false );
+	customGui->addToggle("wireframe", &bWireframe );
 	customGui->addSpacer();
 	
 //	customGui->addSlider("Custom Float 1", 1, 1000, &customFloat1);
@@ -99,7 +100,8 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	bSmoothModel = false;
 	maxDim = 200;
 	modelScl.set( 1,1,1 );
-	majorGridLineScale = 2.;
+	majorGridLineScale = 1.5;
+	bWireframe = false;
 	
 	//load our shaders
 	loadShaders();
@@ -117,7 +119,8 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	float gridDim = 100;
 	float halfGridDim = gridDim / 2;
 	vector<ofVec3f> gridVertices(gridDim * 4);
-	for (int i=0; i<gridDim; i++) {
+	for (int i=0; i<gridDim; i++)
+	{
 		gridVertices[i*4+0].set(i - halfGridDim, 0,-halfGridDim);
 		gridVertices[i*4+1].set(i - halfGridDim, 0, halfGridDim);
 		gridVertices[i*4+2].set(-halfGridDim, 0, i - halfGridDim);
@@ -127,23 +130,16 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	numGridVertices = gridVertices.size();
 	gridVertices.clear();
 	
-	for (int i=0; i<gridDim; i += 5) {
-//		gridVertices[i*4+0].set(i - halfGridDim, 0,-halfGridDim);
-//		gridVertices[i*4+1].set(i - halfGridDim, 0, halfGridDim);
-//		gridVertices[i*4+2].set(-halfGridDim, 0, i - halfGridDim);
-//		gridVertices[i*4+3].set( halfGridDim, 0, i - halfGridDim);
-		
+	for (int i=0; i<gridDim; i += 5)
+	{
 		gridVertices.push_back( ofVec3f(i - halfGridDim, 0,-halfGridDim) );
-		gridVertices.push_back( ofVec3f(i - halfGridDim, 0, halfGridDim) );
-		
+		gridVertices.push_back( ofVec3f(i - halfGridDim, 0, halfGridDim) );	
 		gridVertices.push_back( ofVec3f(-halfGridDim, 0, i - halfGridDim) );
 		gridVertices.push_back( ofVec3f( halfGridDim, 0, i - halfGridDim) );
 	}
 	gridMajor.setVertexData( &gridVertices[0], gridVertices.size(), GL_STATIC_DRAW );
 	numGridMajorVertices = gridVertices.size();
 	gridVertices.clear();
-	
-	
 	
 	
 	//setup boundBox vbo
@@ -229,7 +225,7 @@ void CloudsVisualSystem3DModel::selfDraw()
 	normalShader.begin();
 	normalShader.setUniform1f( "discardThreshold", discardThreshold );
 	
-	modelMesh.draw();
+	bWireframe?	modelMesh.drawWireframe() : modelMesh.draw();
 	
 	normalShader.end();
 	
@@ -241,20 +237,22 @@ void CloudsVisualSystem3DModel::selfDraw()
 	
 	
 	//draw grid
+	float gridScale = 25.;
 	glLineWidth( gridLineWidth );
 	
 	ofSetColor(255,255, 255, 100 );
 	
 	ofPushMatrix();
-	ofScale( 25,25,25 );
+	ofScale( gridScale,gridScale,gridScale );
 	
 	gridShader.begin();
 	grid.draw(GL_LINES, 0, numGridVertices );
 	
 	glLineWidth(gridLineWidth * majorGridLineScale);
-	
 	gridMajor.draw(GL_LINES, 0, numGridMajorVertices );
 	
+	
+	glLineWidth(gridLineWidth * majorGridLineScale * 2);
 	ofSetColor(255, 55, 30, 100);
 	ofLine(-1000, 0, 0, 1000, 0, 0);
 	
