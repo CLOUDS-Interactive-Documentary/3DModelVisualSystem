@@ -12,11 +12,12 @@ varying vec2 uv;
 
 void main(void)
 {
-	float fr = dot( -normalize(ePos), normalize( norm ) ) ;
+	vec3 normal = normalize( norm );
+	float fr = dot( -normalize(ePos), normal ) ;
 	
 	if( abs(fr) > discardThreshold)	discard;
 	fr *= specularScale * pow( fr* .5 + .5, specularExpo);
 	
-	gl_FragColor = vec4( norm * .5 + .5 + fr, 1.);
+	gl_FragColor = vec4( normal * .5 + .5 + fr, 1.);
 }
 
