@@ -124,6 +124,8 @@ protected:
 	ofShader pointcloudShader;
 	ofVboMesh simplePointcloud;
 	
+	ofImage colorMap;
+	
 	vector<string> shaderNames;
 	map<string, ofShader*> shaderMap;
 	ofShader* activeShader;
@@ -147,6 +149,8 @@ protected:
 	float boundBoxLineWidth, wireframeLinewidth;
 	float maxDim, modelScale;
 	bool bSmoothModel, bWireframe;
+	ofColor modelColor;
+	
 	
 	vector <string> objFiles;
 	

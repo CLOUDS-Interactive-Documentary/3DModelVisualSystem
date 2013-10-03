@@ -27,6 +27,7 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	customGui->addSlider("wireframeLinewidth", 0.5, 10, &wireframeLinewidth);
 	customGui->addSlider("discardThreshold", 0., 1, &discardThreshold);
 	customGui->addSlider("modelScale", .1, 10., &modelScale);
+	customGui->addImageSampler("c1", &colorMap, (float)colorMap.getWidth()/2, (float)colorMap.getHeight()/2 );
 	
 	customGui->addSpacer();
 	
@@ -86,6 +87,11 @@ void CloudsVisualSystem3DModel::selfGuiEvent(ofxUIEventArgs &e)
 	else if(name == "arrowHeight" || name == "arrowRadius" || name == "arrowPointHeight" )
 	{
 		resizeTheArrowMesh( arrowRadius, arrowHeight, arrowPointHeight );
+	}
+	
+	else if( e.widget->getName() == "c1"){
+		ofxUIImageSampler* sampler = (ofxUIImageSampler *) e.widget;
+		modelColor = sampler->getColor();
 	}
 	
 	else if( kind == OFX_UI_WIDGET_TOGGLE)
@@ -154,6 +160,7 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	modelScl.set( 1,1,1 );
 	gridScale = 25.;
 	modelScale = 1.;
+	modelColor.set(10,10,11);
 	majorGridLineWidth = 1.5;
 	bWireframe = false;
 	wireframeLinewidth = .5;
@@ -163,6 +170,8 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	arrowHeight = 100;
 	arrowPointHeight = .75;
 	
+	
+	colorMap.loadImage( getVisualSystemDataPath() + "GUI/defaultColorPalette.png" );
 	
 	
 	//load our shaders
@@ -289,6 +298,7 @@ void CloudsVisualSystem3DModel::selfDraw()
 	ofPushMatrix();
 	ofMultMatrix( modelTransform.getGlobalTransformMatrix() );
 	
+	ofSetColor(modelColor);
 	if(activeShader != NULL )
 	{
 		
