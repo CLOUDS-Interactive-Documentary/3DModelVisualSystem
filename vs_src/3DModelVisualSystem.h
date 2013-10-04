@@ -101,6 +101,7 @@ class CloudsVisualSystem3DModel : public CloudsVisualSystem {
 	void resizeTheArrowMesh( float radius, float height, float arrowBase = .25 );
 	void loadCameraLineModel( ofVbo& vbo, string loc );
 	void setupMultipleCameras( ofVec3f targetPos );
+	void aimMultipleViews( ofVec3f targetPos );
 	void drawMultipleViewCameras(float cameraScale);
 		
 	void drawScene( ofCamera* cam = NULL );
@@ -146,7 +147,7 @@ protected:
 	ofShader facingRatioShader;
 	ofShader phongShader;
 	
-	float gridLineWidth, gridScale, majorGridLineWidth;
+	float gridLineWidth, gridScale, majorGridLineWidth, gridDim;
 	int numGridVertices, numGridMajorVertices;
 	ofVbo grid;
 	ofShader gridShader;

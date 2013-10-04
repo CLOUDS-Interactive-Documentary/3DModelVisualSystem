@@ -203,6 +203,8 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	
 	//set our defaults
 	gridLineWidth = 1.;
+	gridDim = 250;
+	
 	boundBoxLineWidth = 1.;
 	discardThreshold = 1.;
 	bSmoothModel = false;
@@ -293,7 +295,7 @@ void CloudsVisualSystem3DModel::selfDraw()
 {
 	
 	//update the model transforms
-	modelRot.makeRotate( ofGetElapsedTimef()*2, 0, 1, 0);
+	modelRot.makeRotate( 0, 0, 1, 0);//ofGetElapsedTimef()*2
 	if(modelScl.length() == 0.)	modelScl.y = .00001;
 	
 	modelTransform.setPosition( modelPos );//+ ofVec3f(0,min(maxBound.y,minBound.y),0) );
@@ -301,23 +303,27 @@ void CloudsVisualSystem3DModel::selfDraw()
 	modelTransform.setOrientation( modelRot );
 	modelTransform.setScale( modelScl * modelScale );
 	
+	aimMultipleViews( modelTransform.getPosition() );
+	
 	//draw from single view
-	if(singleViewName == "persp view")
+	if(currentSingleCam == &perspCam)
 	{
 		drawScenePerspective();
 	}
-	else if(singleViewName == "left view")
+	else if(currentSingleCam == &leftCam)
 	{
 		drawSceneLeft();
 	}
-	else if(singleViewName == "front view")
+	else if(currentSingleCam == &frontCam)
 	{
 		drawSceneFront();
 	}
-	else if(singleViewName == "plan view")
+	else if(currentSingleCam == &planCam)
 	{
 		drawScenePlan();
 	}
+	
+	
 	
 //	ofPushMatrix();
 //	ofMultMatrix(persptiveCameraNode.getGlobalTransformMatrix());
@@ -362,6 +368,10 @@ void CloudsVisualSystem3DModel::selfExit()
 void CloudsVisualSystem3DModel::selfKeyPressed(ofKeyEventArgs & args){
 	if( args.key == 'l' || args.key == 'L' ){
 		loadShaders();
+	}
+	
+	if(args.key == 'm')
+	{
 	}
 }
 void CloudsVisualSystem3DModel::selfKeyReleased(ofKeyEventArgs & args){
@@ -451,18 +461,30 @@ void CloudsVisualSystem3DModel::loadCameraLineModel( ofVbo& vbo, string loc ){
 
 void CloudsVisualSystem3DModel::setupMultipleCameras( ofVec3f targetPos )
 {
-	leftCam.setPosition(-500, targetPos.y, 0 );
+	leftCam.setPosition(-200 + targetPos.x, targetPos.y, 0 );
 	leftCam.lookAt(targetPos);
 	
-	planCam.setPosition( targetPos.x, targetPos.y + 500, targetPos.z );
+	planCam.setPosition( targetPos.x, targetPos.y + 200, targetPos.z );
 	planCam.lookAt(targetPos, ofVec3f(0, 0, -1));
 	
-	frontCam.setPosition(0, targetPos.y, -500 );
+	frontCam.setPosition(0, targetPos.y, -200 + targetPos.z );
+	frontCam.lookAt(targetPos);
+}
+
+void CloudsVisualSystem3DModel::aimMultipleViews( ofVec3f targetPos )
+{
+	leftCam.lookAt(targetPos);
+	
+	planCam.lookAt(targetPos, ofVec3f(0, 0, -1));
+	
 	frontCam.lookAt(targetPos);
 }
 
 void CloudsVisualSystem3DModel::drawMultipleViewCameras( float cameraScale )
 {
+//	ofVec3f targetPos =  - ofVec3f(0,-minBound.y * modelScl.y * modelScale,0)
+	
+	ofVec3f targetPos = (minBound*.5 + maxBound*.5) * modelTransform.getGlobalTransformMatrix();
 	
 	//persp
 	if(currentSingleCam != &perspCam )
@@ -470,6 +492,7 @@ void CloudsVisualSystem3DModel::drawMultipleViewCameras( float cameraScale )
 		ofSetColor( perspCamColor );
 		ofPushMatrix();
 		ofMultMatrix( perspCam.getGlobalTransformMatrix() );
+
 		ofScale( cameraScale, cameraScale, cameraScale);
 		cameraLines.draw( GL_LINES, 0, cameraLinesNumVertices );
 		ofPopMatrix();
@@ -550,8 +573,6 @@ void CloudsVisualSystem3DModel::setupBoundingBoxVbo()
 
 void CloudsVisualSystem3DModel::setupGridVbos()
 {
-	
-	float gridDim = 100;
 	float halfGridDim = gridDim / 2;
 	vector<ofVec3f> gridVertices(gridDim * 4);
 	for (int i=0; i<gridDim; i++)
@@ -806,31 +827,34 @@ void CloudsVisualSystem3DModel::drawScene( ofCamera* cam )
 	ofPopMatrix();
 	
 	
-	//draw grid
-	glLineWidth( gridLineWidth );
-	
+	//draw infinite grid by positioning it infront of the camera
 	ofSetColor(255,255, 255, 100 );
+	gridShader.begin();
+	
+	ofVec3f camPos = cam->getPosition();
+	camPos += cam->getUpDir().cross(cam->getSideDir()).normalize() * gridDim * gridScale * .5;
 	
 	ofPushMatrix();
+	ofTranslate( floor(camPos.x/gridScale) * gridScale, 0, floor(camPos.z/gridScale) * gridScale );
 	ofScale( gridScale, gridScale, gridScale );
 	
-	gridShader.begin();
+	glLineWidth( gridLineWidth );
 	grid.draw(GL_LINES, 0, numGridVertices );
 	
+	ofPopMatrix();
+	
+	
+	
+	ofPushMatrix();
+	ofTranslate( floor(camPos.x/(gridScale*5.))*5.*gridScale, 0, floor(camPos.z/(gridScale*5.))*5.*gridScale);
+	ofScale( gridScale, gridScale, gridScale );
+
 	glLineWidth( majorGridLineWidth );
 	gridMajor.draw(GL_LINES, 0, numGridMajorVertices );
 	
-	
-	glLineWidth(gridLineWidth * majorGridLineWidth * 2);
-	ofSetColor(255, 55, 30, 100);
-	ofLine(-1000, 0, 0, 1000, 0, 0);
-	
-	ofSetColor( 55, 55, 255, 100);
-	ofLine( 0, 0, -1000, 0, 0, 1000);
+	ofPopMatrix();
 	
 	gridShader.end();
-	
-	ofPopMatrix();
 	
 	
 	//draw camera lines

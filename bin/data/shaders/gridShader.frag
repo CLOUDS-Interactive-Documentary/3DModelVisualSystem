@@ -2,7 +2,7 @@
 #version 120
 #extension GL_ARB_texture_rectangle : enable
 
-uniform float falloffDist =  1000.;
+uniform float falloffDist =  2000.;
 uniform float falloffExpo = 2.;
 uniform float alphaScale = 1.;
 
