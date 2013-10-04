@@ -131,6 +131,7 @@ protected:
     //  my Stuff
 	ofxUISuperCanvas* customGui;
 	ofxUISuperCanvas* modelUIGui;
+	ofxUISuperCanvas* gridGui;
 	ofxUISuperCanvas* cameraViewsGui;
 	
 	bool videoLoaded;
@@ -147,7 +148,7 @@ protected:
 	ofShader facingRatioShader;
 	ofShader phongShader;
 	
-	float gridLineWidth, gridScale, majorGridLineWidth, gridDim;
+	float gridLineWidth, gridScale, majorGridLineWidth, gridDim, gridFalloff, gridFalloffExpo, gridFalloffScale, gridAlphaScale;
 	int numGridVertices, numGridMajorVertices;
 	ofVbo grid;
 	ofShader gridShader;

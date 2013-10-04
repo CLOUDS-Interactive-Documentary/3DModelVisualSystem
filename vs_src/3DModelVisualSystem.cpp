@@ -34,13 +34,6 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	
 	customGui->addSpacer();
 	
-	customGui->addSlider("gridLineWidth", 0.5, 10, &gridLineWidth);
-	customGui->addSlider("boundBoxLineWidth", 0.5, 10, &boundBoxLineWidth);
-	customGui->addSlider("majorGridLineWidth", 0.5, 10, &majorGridLineWidth);
-	customGui->addSlider("gridScale", 1., 100., &gridScale);
-	
-	customGui->addSpacer();
-	
 	customGui->addLabel("obj files:");
 	customGui->addRadio("model files", objFiles );
 	
@@ -51,6 +44,35 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	ofAddListener(customGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
 	guis.push_back(customGui);
 	guimap[customGui->getName()] = customGui;
+	
+	
+	
+	gridGui = new ofxUISuperCanvas("Grid", gui);
+	gridGui->copyCanvasStyle(gui);
+	gridGui->copyCanvasProperties(gui);
+	gridGui->setName("Grid");
+	gridGui->setWidgetFontSize(OFX_UI_FONT_SMALL);
+	gridGui->addFPS();
+	
+	gridGui->addSpacer();
+	
+	gridGui->addSlider("gridLineWidth", 0.5, 10, &gridLineWidth);
+	gridGui->addSlider("boundBoxLineWidth", 0.5, 10, &boundBoxLineWidth);
+	gridGui->addSlider("majorGridLineWidth", 0.5, 10, &majorGridLineWidth);
+	gridGui->addSlider("gridScale", 1., 100., &gridScale);
+	
+	gridGui->addSlider("gridFalloffDist", 100, 5000, &gridFalloff );
+	gridGui->addSlider("gridFalloffExpo", .6, 10, &gridFalloffExpo );
+	gridGui->addSlider("gridFalloffScale", .5, 2., &gridFalloffScale );
+	gridGui->addSlider("gridAlphaScale", .5, 2., &gridAlphaScale );
+	
+	gridGui->addSpacer();
+		
+	ofAddListener(gridGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
+	guis.push_back(gridGui);
+	guimap[gridGui->getName()] = gridGui;
+	
+	
 	
 	
 	modelUIGui = new ofxUISuperCanvas("modelUIGui", gui);
@@ -202,20 +224,25 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	videoLoaded = false;
 	
 	//set our defaults
-	gridLineWidth = 1.;
-	gridDim = 250;
-	
 	boundBoxLineWidth = 1.;
 	discardThreshold = 1.;
 	bSmoothModel = false;
 	maxDim = 200;
 	modelScl.set( 1,1,1 );
-	gridScale = 25.;
 	modelScale = 1.;
 	modelColor.set(10,10,11);
 	specularExpo = 32;
 	specularScale = .75;
+	
+	gridScale = 25.;
+	gridFalloff =  2000.;
+	gridFalloffExpo = 2.;
+	gridFalloffScale = 1.2;
+	gridAlphaScale = 1.;
+	gridLineWidth = 1.;
+	gridDim = 250;
 	majorGridLineWidth = 1.5;
+	
 	bWireframe = false;
 	wireframeLinewidth = .5;
 	activeShader = NULL;
@@ -828,11 +855,29 @@ void CloudsVisualSystem3DModel::drawScene( ofCamera* cam )
 	
 	
 	//draw infinite grid by positioning it infront of the camera
-	ofSetColor(255,255, 255, 100 );
-	gridShader.begin();
 	
+
 	ofVec3f camPos = cam->getPosition();
 	camPos += cam->getUpDir().cross(cam->getSideDir()).normalize() * gridDim * gridScale * .5;
+
+	ofSetColor(255,255, 255, 150 );// make this an adjustable color
+	
+	gridShader.begin();
+	gridShader.setUniform1f("halfGridDim", gridDim * .5 );
+	gridShader.setUniform1f("falloffDist", gridFalloff );
+	gridShader.setUniform1f("falloffExpo", gridFalloffExpo );
+	gridShader.setUniform1f("falloffScl", gridFalloffScale );
+	gridShader.setUniform1f("alphaScale", gridAlphaScale );
+	
+	ofPushMatrix();
+	ofTranslate( floor(camPos.x/(gridScale*5.))*5.*gridScale, 0, floor(camPos.z/(gridScale*5.))*5.*gridScale);
+	ofScale( gridScale * 5,gridScale * 5,gridScale * 5 );
+	
+	glLineWidth( majorGridLineWidth );
+	//	gridMajor.draw(GL_LINES, 0, numGridMajorVertices );
+	grid.draw(GL_LINES, 0, numGridVertices );
+	
+	ofPopMatrix();
 	
 	ofPushMatrix();
 	ofTranslate( floor(camPos.x/gridScale) * gridScale, 0, floor(camPos.z/gridScale) * gridScale );
@@ -840,17 +885,6 @@ void CloudsVisualSystem3DModel::drawScene( ofCamera* cam )
 	
 	glLineWidth( gridLineWidth );
 	grid.draw(GL_LINES, 0, numGridVertices );
-	
-	ofPopMatrix();
-	
-	
-	
-	ofPushMatrix();
-	ofTranslate( floor(camPos.x/(gridScale*5.))*5.*gridScale, 0, floor(camPos.z/(gridScale*5.))*5.*gridScale);
-	ofScale( gridScale, gridScale, gridScale );
-
-	glLineWidth( majorGridLineWidth );
-	gridMajor.draw(GL_LINES, 0, numGridMajorVertices );
 	
 	ofPopMatrix();
 	
