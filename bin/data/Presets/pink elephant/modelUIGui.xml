@@ -1,0 +1,22 @@
+<Canvas>
+    <Kind>42</Kind>
+    <Name>modelUIGui</Name>
+    <IsMinified>1</IsMinified>
+    <XPosition>1.000000000</XPosition>
+    <YPosition>24.000000000</YPosition>
+</Canvas>
+<Widget>
+    <Kind>4</Kind>
+    <Name>arrowRadius</Name>
+    <Value>13.310344696</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>arrowHeight</Name>
+    <Value>111.394088745</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>arrowPointHeight</Name>
+    <Value>0.758128047</Value>
+</Widget>
