@@ -1,0 +1,47 @@
+<Canvas>
+    <Kind>42</Kind>
+    <Name>Grid</Name>
+    <IsMinified>0</IsMinified>
+    <XPosition>238.000000000</XPosition>
+    <YPosition>16.000000000</YPosition>
+</Canvas>
+<Widget>
+    <Kind>4</Kind>
+    <Name>gridLineWidth</Name>
+    <Value>1.108374357</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>boundBoxLineWidth</Name>
+    <Value>1.000000000</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>majorGridLineWidth</Name>
+    <Value>1.500000000</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>gridScale</Name>
+    <Value>18.068965912</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>gridFalloffDist</Name>
+    <Value>3551.724121094</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>gridFalloffExpo</Name>
+    <Value>1.248275876</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>gridFalloffScale</Name>
+    <Value>1.032019615</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>gridAlphaScale</Name>
+    <Value>1.216748714</Value>
+</Widget>
