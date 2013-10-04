@@ -63,13 +63,28 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	modelUIGui->addSlider("arrowRadius", 1, 50, &arrowRadius);
 	modelUIGui->addSlider("arrowHeight", 1, 250, &arrowHeight);
 	modelUIGui->addSlider("arrowPointHeight", 0, .9, &arrowPointHeight);
-	
-	
+
 	ofAddListener(modelUIGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
 	guis.push_back(modelUIGui);
 	guimap[modelUIGui->getName()] = modelUIGui;
 
 	
+	//camera views
+	vector<string> viewNames;
+	viewNames.push_back("front view"),viewNames.push_back("plan view"),viewNames.push_back("left view"),viewNames.push_back("persp view");
+	
+	cameraViewsGui = new ofxUISuperCanvas("cameraViewsGui", gui);
+	cameraViewsGui->copyCanvasStyle(gui);
+	cameraViewsGui->copyCanvasProperties(gui);
+	cameraViewsGui->setName("cameraViewsGui");
+	cameraViewsGui->setWidgetFontSize(OFX_UI_FONT_SMALL);
+	cameraViewsGui->addSpacer();
+	cameraViewsGui->addRadio("camera views", viewNames );
+	
+	
+	ofAddListener(cameraViewsGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
+	guis.push_back(cameraViewsGui);
+	guimap[cameraViewsGui->getName()] = cameraViewsGui;
 }
 
 void CloudsVisualSystem3DModel::selfGuiEvent(ofxUIEventArgs &e)
@@ -126,6 +141,38 @@ void CloudsVisualSystem3DModel::selfGuiEvent(ofxUIEventArgs &e)
 					}
 				}
 			}
+			
+			else if(parent == "camera views")
+			{
+				cout << "set current camera to view: " << name << endl;
+				singleViewName = name;
+				
+				leftCam.disableMouseInput();
+				frontCam.disableMouseInput();
+				planCam.disableMouseInput();
+				perspCam.disableMouseInput();
+				
+				if(name == "left view" )
+				{
+					currentSingleCam = &leftCam;
+					leftCam.enableMouseInput();
+				}
+				else if(name == "front view" )
+				{
+					currentSingleCam = &frontCam;
+					frontCam.enableMouseInput();
+				}
+				else if(name == "persp view" )
+				{
+					currentSingleCam = &getCameraRef();
+					perspCam.enableMouseInput();
+				}
+				else if(name == "plan view" )
+				{
+					currentSingleCam = &planCam;
+					planCam.enableMouseInput();
+				}
+			}
 		}
 	}
 }
@@ -154,7 +201,7 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	
 	videoLoaded = false;
 	
-	//set defaults
+	//set our defaults
 	gridLineWidth = 1.;
 	boundBoxLineWidth = 1.;
 	discardThreshold = 1.;
@@ -177,10 +224,9 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	
 	cameraLineWidth = .5;
 	cameraLineScale = 30;
-	
+	singleViewName = "persp view";
 	
 	colorMap.loadImage( getVisualSystemDataPath() + "GUI/defaultColorPalette.png" );
-	
 	
 	//load our shaders
 	loadShaders();
@@ -255,104 +301,23 @@ void CloudsVisualSystem3DModel::selfDraw()
 	modelTransform.setOrientation( modelRot );
 	modelTransform.setScale( modelScl * modelScale );
 	
-	
-	
-	//draw our model
-	ofPushMatrix();
-	ofMultMatrix( modelTransform.getGlobalTransformMatrix() );
-	
-	ofSetColor(modelColor);
-	if(activeShader != NULL )
+	//draw from single view
+	if(singleViewName == "persp view")
 	{
-		
-		activeShader->begin();
-		activeShader->setUniform1f( "discardThreshold", discardThreshold );
-		activeShader->setUniform1f( "specularExpo", specularExpo );
-		activeShader->setUniform1f( "specularScale", specularScale );
-//		uniform float specularScale = 1.;
-//		uniform float specularExpo = 64.;
-//		uniform float discardThreshold = .35;
-		
-		if(bWireframe)	glLineWidth( wireframeLinewidth );
-		bWireframe?	modelMesh.drawWireframe() : modelMesh.draw();
-		
-		activeShader->end();
+		drawScenePerspective();
 	}
-	
-	
-	//draw bounding box
-	ofSetColor(255, 255, 255, 255);
-	drawBoundingBox();
-	
-	ofPopMatrix();
-	
-	
-	//draw arrows at model's min bound
-	ofPushMatrix();
-	ofTranslate( minBound * modelTransform.getGlobalTransformMatrix() );
-	ofMultMatrix( modelTransform.getGlobalOrientation() );
-	
-	ofSetColor(0, 255, 0);
-	ofPushMatrix();
-	ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
-	arrowMesh.draw();
-	ofPopMatrix();
-	
-	ofSetColor(255, 0, 0);
-	ofPushMatrix();
-	ofRotate(90, 1, 0, 0);
-	ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
-	arrowMesh.draw();
-	ofPopMatrix();
-	
-	ofSetColor(0, 0, 255);
-	ofPushMatrix();
-	ofRotate(90, 1, 0, 0);
-	ofRotate(90, 0, 0, -1);
-	ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
-	arrowMesh.draw();
-	ofPopMatrix();
-	
-	ofPopMatrix();
-	
-	
-	//draw grid
-	glLineWidth( gridLineWidth );
-	
-	ofSetColor(255,255, 255, 100 );
-	
-	ofPushMatrix();
-	ofScale( gridScale, gridScale, gridScale );
-	
-	gridShader.begin();
-	grid.draw(GL_LINES, 0, numGridVertices );
-	
-	glLineWidth( majorGridLineWidth );
-	gridMajor.draw(GL_LINES, 0, numGridMajorVertices );
-	
-	
-	glLineWidth(gridLineWidth * majorGridLineWidth * 2);
-	ofSetColor(255, 55, 30, 100);
-	ofLine(-1000, 0, 0, 1000, 0, 0);
-	
-	ofSetColor( 55, 55, 255, 100);
-	ofLine( 0, 0, -1000, 0, 0, 1000);
-	
-	gridShader.end();
-	
-	
-	ofPopMatrix();
-	
-	
-	//draw camera lines
-	persptiveCameraNode.setPosition( sin(ofGetElapsedTimef() ) * 200, modelTransform.getGlobalPosition().y, cos(ofGetElapsedTimef() ) * 200 );
-	persptiveCameraNode.setScale(30);
-	persptiveCameraNode.lookAt(modelTransform.getGlobalPosition());
-	
-	glLineWidth( cameraLineWidth );
-	
-	setupMultipleCameras( modelTransform.getGlobalPosition() );
-	drawMultipleViewCameras( cameraLineScale );
+	else if(singleViewName == "left view")
+	{
+		drawSceneLeft();
+	}
+	else if(singleViewName == "front view")
+	{
+		drawSceneFront();
+	}
+	else if(singleViewName == "plan view")
+	{
+		drawScenePlan();
+	}
 	
 //	ofPushMatrix();
 //	ofMultMatrix(persptiveCameraNode.getGlobalTransformMatrix());
@@ -498,29 +463,56 @@ void CloudsVisualSystem3DModel::setupMultipleCameras( ofVec3f targetPos )
 
 void CloudsVisualSystem3DModel::drawMultipleViewCameras( float cameraScale )
 {
+	
+	//persp
+	if(currentSingleCam != &perspCam )
+	{
+		ofSetColor( perspCamColor );
+		ofPushMatrix();
+		ofMultMatrix( perspCam.getGlobalTransformMatrix() );
+		ofScale( cameraScale, cameraScale, cameraScale);
+		cameraLines.draw( GL_LINES, 0, cameraLinesNumVertices );
+		ofPopMatrix();
+	}
+	
 	//left
-	ofSetColor( leftCamColor );
-	ofPushMatrix();
-	ofMultMatrix( leftCam.getGlobalTransformMatrix() );
-	ofScale( cameraScale, cameraScale, cameraScale);
-	cameraLines.draw( GL_LINES, 0, cameraLinesNumVertices );
-	ofPopMatrix();
+	if(currentSingleCam != &leftCam)
+	{
+		ofSetColor( leftCamColor );
+		ofPushMatrix();
+		ofMultMatrix( leftCam.getGlobalTransformMatrix() );
+		ofScale( cameraScale, cameraScale, cameraScale);
+		
+		cameraLines.draw( GL_LINES, 0, cameraLinesNumVertices );
+		
+		ofPopMatrix();
+	}
 	
 	//front
-	ofSetColor( frontCamColor );
-	ofPushMatrix();
-	ofMultMatrix( frontCam.getGlobalTransformMatrix() );
-	ofScale( cameraScale, cameraScale, cameraScale);
-	cameraLines.draw( GL_LINES, 0, cameraLinesNumVertices );
-	ofPopMatrix();
+	if(currentSingleCam != &frontCam)
+	{
+		ofSetColor( frontCamColor );
+		ofPushMatrix();
+		ofMultMatrix( frontCam.getGlobalTransformMatrix() );
+		ofScale( cameraScale, cameraScale, cameraScale);
+		
+		cameraLines.draw( GL_LINES, 0, cameraLinesNumVertices );
+		
+		ofPopMatrix();
+	}
 	
 	//plan
-	ofSetColor( planCamColor );
-	ofPushMatrix();
-	ofMultMatrix( planCam.getGlobalTransformMatrix() );
-	ofScale( cameraScale, cameraScale, cameraScale);
-	cameraLines.draw( GL_LINES, 0, cameraLinesNumVertices );
-	ofPopMatrix();
+	if(currentSingleCam != &planCam)
+	{
+		ofSetColor( planCamColor );
+		ofPushMatrix();
+		ofMultMatrix( planCam.getGlobalTransformMatrix() );
+		ofScale( cameraScale, cameraScale, cameraScale);
+		
+		cameraLines.draw( GL_LINES, 0, cameraLinesNumVertices );
+		
+		ofPopMatrix();
+	}
 }
 
 void CloudsVisualSystem3DModel::setupBoundingBoxVbo()
@@ -585,7 +577,8 @@ void CloudsVisualSystem3DModel::setupGridVbos()
 	gridVertices.clear();
 }
 
-void CloudsVisualSystem3DModel::drawBoundingBox(){
+void CloudsVisualSystem3DModel::drawBoundingBox()
+{
 	
 	glLineWidth( boundBoxLineWidth );
 	
@@ -597,7 +590,6 @@ void CloudsVisualSystem3DModel::drawBoundingBox(){
 	
 	ofPopMatrix();
 };
-
 
 void CloudsVisualSystem3DModel::loadModel( string fileName, bool bSmoothMesh )
 {
@@ -614,7 +606,8 @@ void CloudsVisualSystem3DModel::loadModel( string fileName, bool bSmoothMesh )
 	
 }
 
-string CloudsVisualSystem3DModel::vec3ToString( ofVec3f v, int precision ){
+string CloudsVisualSystem3DModel::vec3ToString( ofVec3f v, int precision )
+{
 	return ofToString( v.x, precision) + "_" + ofToString( v.y, precision) + "_" + ofToString( v.z, precision);
 }
 
@@ -734,7 +727,8 @@ void CloudsVisualSystem3DModel::facetMesh( ofMesh& smoothedMesh, ofMesh& targetM
 	targetMesh.addIndices( facetedIndices );
 }
 
-void CloudsVisualSystem3DModel::resizeTheArrowMesh( float radius, float height, float pointBaseHight ){
+void CloudsVisualSystem3DModel::resizeTheArrowMesh( float radius, float height, float pointBaseHight )
+{
 	//the top pointy part of the mesh vertices are 1-12 but not 6.	1,...,5,7,...,12
 	
 	vector<ofVec3f> v = arrowMesh.getVertices();
@@ -752,11 +746,129 @@ void CloudsVisualSystem3DModel::resizeTheArrowMesh( float radius, float height, 
 	arrowScale.set( radius/2, height, radius/2 );
 }
 
-
-void CloudsVisualSystem3DModel::drawPerspective(){
-	//draws a perspective view with our default camera
+void CloudsVisualSystem3DModel::drawScene( ofCamera* cam )
+{
+	if(cam != NULL)	cam->begin();
+	
+	//draw our model
+	ofPushMatrix();
+	ofMultMatrix( modelTransform.getGlobalTransformMatrix() );
+	
+	ofSetColor(modelColor);
+	if(activeShader != NULL )
+	{
+		
+		activeShader->begin();
+		activeShader->setUniform1f( "discardThreshold", discardThreshold );
+		activeShader->setUniform1f( "specularExpo", specularExpo );
+		activeShader->setUniform1f( "specularScale", specularScale );
+		
+		if(bWireframe)	glLineWidth( wireframeLinewidth );
+		bWireframe?	modelMesh.drawWireframe() : modelMesh.draw();
+		
+		activeShader->end();
+	}
+	
+	
+	//draw bounding box
+	ofSetColor(255, 255, 255, 255);
+	drawBoundingBox();
+	
+	ofPopMatrix();
+	
+	
+	//draw arrows at model's min bound
+	ofPushMatrix();
+	ofTranslate( minBound * modelTransform.getGlobalTransformMatrix() );
+	ofMultMatrix( modelTransform.getGlobalOrientation() );
+	
+	ofSetColor(0, 255, 0);
+	ofPushMatrix();
+	ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
+	arrowMesh.draw();
+	ofPopMatrix();
+	
+	ofSetColor(255, 0, 0);
+	ofPushMatrix();
+	ofRotate(90, 1, 0, 0);
+	ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
+	arrowMesh.draw();
+	ofPopMatrix();
+	
+	ofSetColor(0, 0, 255);
+	ofPushMatrix();
+	ofRotate(90, 1, 0, 0);
+	ofRotate(90, 0, 0, -1);
+	ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
+	arrowMesh.draw();
+	ofPopMatrix();
+	
+	ofPopMatrix();
+	
+	
+	//draw grid
+	glLineWidth( gridLineWidth );
+	
+	ofSetColor(255,255, 255, 100 );
+	
+	ofPushMatrix();
+	ofScale( gridScale, gridScale, gridScale );
+	
+	gridShader.begin();
+	grid.draw(GL_LINES, 0, numGridVertices );
+	
+	glLineWidth( majorGridLineWidth );
+	gridMajor.draw(GL_LINES, 0, numGridMajorVertices );
+	
+	
+	glLineWidth(gridLineWidth * majorGridLineWidth * 2);
+	ofSetColor(255, 55, 30, 100);
+	ofLine(-1000, 0, 0, 1000, 0, 0);
+	
+	ofSetColor( 55, 55, 255, 100);
+	ofLine( 0, 0, -1000, 0, 0, 1000);
+	
+	gridShader.end();
+	
+	ofPopMatrix();
+	
+	
+	//draw camera lines
+	persptiveCameraNode.setPosition( sin(ofGetElapsedTimef() ) * 200, modelTransform.getGlobalPosition().y, cos(ofGetElapsedTimef() ) * 200 );
+	persptiveCameraNode.setScale(30);
+	persptiveCameraNode.lookAt(modelTransform.getGlobalPosition());
+	
+	glLineWidth( cameraLineWidth );
+	
+	//setupMultipleCameras( modelTransform.getGlobalPosition() );
+	drawMultipleViewCameras( cameraLineScale );
+	
+	if( cam != NULL)	cam->end();
 }
 
+void CloudsVisualSystem3DModel::drawScenePerspective()
+{
+	//draws a perspective view with our default camera
+	drawScene( &perspCam );
+}
+
+void CloudsVisualSystem3DModel::drawScenePlan()
+{
+	planCam.lookAt(modelTransform.getGlobalPosition(), ofVec3f(0, 0, -1));
+	drawScene( &planCam );
+}
+
+void CloudsVisualSystem3DModel::drawSceneFront()
+{
+	frontCam.lookAt(modelTransform.getGlobalPosition() );
+	drawScene( &frontCam );
+}
+
+void CloudsVisualSystem3DModel::drawSceneLeft()
+{
+	leftCam.lookAt(modelTransform.getGlobalPosition() );
+	drawScene( &leftCam );
+}
 
 
 

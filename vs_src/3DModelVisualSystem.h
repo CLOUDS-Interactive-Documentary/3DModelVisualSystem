@@ -103,10 +103,11 @@ class CloudsVisualSystem3DModel : public CloudsVisualSystem {
 	void setupMultipleCameras( ofVec3f targetPos );
 	void drawMultipleViewCameras(float cameraScale);
 		
-	void drawPerspective();
-	void drawPlan();
-	void drawFront();
-	void drawLeft();
+	void drawScene( ofCamera* cam = NULL );
+	void drawScenePerspective();
+	void drawScenePlan();
+	void drawSceneFront();
+	void drawSceneLeft();
 	
 
     // if you use a custom camera to fly through the scene
@@ -117,10 +118,11 @@ class CloudsVisualSystem3DModel : public CloudsVisualSystem {
 
 	//
 	ofCamera& getCameraRef(){
-		if(videoLoaded){
-			return cloudsCamera;
-		}
-		return CloudsVisualSystem::getCameraRef();
+//		if(videoLoaded){
+//			return cloudsCamera;
+//		}
+//		return CloudsVisualSystem::getCameraRef();
+		return perspCam;
 	}
 
 protected:
@@ -128,6 +130,7 @@ protected:
     //  my Stuff
 	ofxUISuperCanvas* customGui;
 	ofxUISuperCanvas* modelUIGui;
+	ofxUISuperCanvas* cameraViewsGui;
 	
 	bool videoLoaded;
 	ofImage someImage;
@@ -184,9 +187,12 @@ protected:
 	ofVbo cameraLines;
 	int cameraLinesNumVertices;
 	float cameraLineWidth, cameraLineScale;
+	string singleViewName;
+	ofCamera* currentSingleCam;
 	
 	ofNode persptiveCameraNode;
-	ofColor perspectiveCamColor;
+	ofEasyCam perspCam;
+	ofColor perspCamColor;
 	
 	ofNode leftCameraNode;
 	ofColor leftCamColor;
