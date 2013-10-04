@@ -100,7 +100,7 @@ class CloudsVisualSystem3DModel : public CloudsVisualSystem {
 	
 	void resizeTheArrowMesh( float radius, float height, float arrowBase = .25 );
 	void loadCameraLineModel( ofVbo& vbo, string loc );
-	void setupMultipleCameras( ofVec3f targetPos );
+	void setupMultipleCameras( ofVec3f targetPos, float distance=500.f );
 	void aimMultipleViews( ofVec3f targetPos );
 	void drawMultipleViewCameras(float cameraScale);
 		

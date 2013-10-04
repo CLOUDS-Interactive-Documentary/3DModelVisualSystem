@@ -330,7 +330,9 @@ void CloudsVisualSystem3DModel::selfDraw()
 	modelTransform.setOrientation( modelRot );
 	modelTransform.setScale( modelScl * modelScale );
 	
-	aimMultipleViews( modelTransform.getPosition() );
+//	aimMultipleViews( modelTransform.getPosition() );
+	
+	setupMultipleCameras( modelTransform.getPosition() );
 	
 	//draw from single view
 	if(currentSingleCam == &perspCam)
@@ -486,15 +488,15 @@ void CloudsVisualSystem3DModel::loadCameraLineModel( ofVbo& vbo, string loc ){
 	buffer.clear();
 }
 
-void CloudsVisualSystem3DModel::setupMultipleCameras( ofVec3f targetPos )
+void CloudsVisualSystem3DModel::setupMultipleCameras( ofVec3f targetPos, float distance )
 {
-	leftCam.setPosition(-200 + targetPos.x, targetPos.y, 0 );
+	leftCam.setPosition(-distance + targetPos.x, targetPos.y, 0 );
 	leftCam.lookAt(targetPos);
 	
-	planCam.setPosition( targetPos.x, targetPos.y + 200, targetPos.z );
+	planCam.setPosition( targetPos.x, targetPos.y + distance, targetPos.z );
 	planCam.lookAt(targetPos, ofVec3f(0, 0, -1));
 	
-	frontCam.setPosition(0, targetPos.y, -200 + targetPos.z );
+	frontCam.setPosition(0, targetPos.y, -distance + targetPos.z );
 	frontCam.lookAt(targetPos);
 }
 
