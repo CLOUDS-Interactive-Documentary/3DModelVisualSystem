@@ -85,6 +85,8 @@ class CloudsVisualSystem3DModel : public CloudsVisualSystem {
     void selfMousePressed(ofMouseEventArgs& data);
     void selfMouseReleased(ofMouseEventArgs& data);
 	
+	void setupBoundingBoxVbo();
+	void setupGridVbos();
 	void loadShaders();
 	void addToShaderMap( string name, ofShader* shader );
 	
@@ -97,6 +99,12 @@ class CloudsVisualSystem3DModel : public CloudsVisualSystem {
 	void facetMesh( ofMesh& smoothedMesh, ofMesh& targetMesh );
 	
 	void resizeTheArrowMesh( float radius, float height, float arrowBase = .25 );
+	void loadCameraLineModel( ofVbo& vbo, string loc );
+		
+	void drawPerspective();
+	void drawPlan();
+	void drawFront();
+	void drawLeft();
 	
 
     // if you use a custom camera to fly through the scene
@@ -125,6 +133,10 @@ protected:
 	ofVboMesh simplePointcloud;
 	
 	ofImage colorMap;
+	
+	ofVbo cameraLines;
+	int cameraLinesNumVertices;
+	ofNode persptiveCameraNode;
 	
 	vector<string> shaderNames;
 	map<string, ofShader*> shaderMap;

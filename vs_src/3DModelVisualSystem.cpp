@@ -186,6 +186,8 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	ofxObjLoader::load("arrow.obj", arrowMesh, true );
 	resizeTheArrowMesh( arrowRadius, arrowHeight, arrowPointHeight );
 	
+	loadCameraLineModel( cameraLines, "cameraVertices.txt" );
+	
 	//get list of models from the model directory
 	string path = getVisualSystemDataPath() + "models/";
 	ofDirectory dir;
@@ -195,63 +197,12 @@ void CloudsVisualSystem3DModel::selfSetup(){
 		objFiles.push_back( dir.getName(i) );
 	}
 	
-	//setup a grid vbo
-	float gridDim = 100;
-	float halfGridDim = gridDim / 2;
-	vector<ofVec3f> gridVertices(gridDim * 4);
-	for (int i=0; i<gridDim; i++)
-	{
-		gridVertices[i*4+0].set(i - halfGridDim, 0,-halfGridDim);
-		gridVertices[i*4+1].set(i - halfGridDim, 0, halfGridDim);
-		gridVertices[i*4+2].set(-halfGridDim, 0, i - halfGridDim);
-		gridVertices[i*4+3].set( halfGridDim, 0, i - halfGridDim);
-	}
-	grid.setVertexData( &gridVertices[0], gridVertices.size(), GL_STATIC_DRAW );
-	numGridVertices = gridVertices.size();
-	gridVertices.clear();
-	
-	for (int i=0; i<gridDim; i += 5)
-	{
-		gridVertices.push_back( ofVec3f(i - halfGridDim, 0,-halfGridDim) );
-		gridVertices.push_back( ofVec3f(i - halfGridDim, 0, halfGridDim) );	
-		gridVertices.push_back( ofVec3f(-halfGridDim, 0, i - halfGridDim) );
-		gridVertices.push_back( ofVec3f( halfGridDim, 0, i - halfGridDim) );
-	}
-	gridMajor.setVertexData( &gridVertices[0], gridVertices.size(), GL_STATIC_DRAW );
-	numGridMajorVertices = gridVertices.size();
-	gridVertices.clear();
-	
+	//setup a grid vbos
+	setupGridVbos();
 	
 	//setup boundBox vbo
+	setupBoundingBoxVbo();
 	calcBoundingBox();
-	vector<ofVec3f> bbVerts(24);
-	bbVerts[0].set(-.5,-.5,-.5);
-	bbVerts[1].set( .5,-.5,-.5);
-	bbVerts[2].set(-.5, .5,-.5);
-	bbVerts[3].set( .5, .5,-.5);
-	bbVerts[4].set(-.5,-.5,-.5);
-	bbVerts[5].set(-.5, .5,-.5);
-	bbVerts[6].set( .5,-.5,-.5);
-	bbVerts[7].set( .5, .5,-.5);
-	bbVerts[8].set(-.5,-.5, .5);
-	bbVerts[9].set( .5,-.5, .5);
-	bbVerts[10].set(-.5, .5, .5);
-	bbVerts[11].set( .5, .5, .5);
-	bbVerts[12].set(-.5,-.5, .5);
-	bbVerts[13].set(-.5, .5, .5);
-	bbVerts[14].set( .5,-.5, .5);
-	bbVerts[15].set( .5, .5, .5);
-	bbVerts[16].set( .5, .5,-.5);
-	bbVerts[17].set( .5, .5, .5);
-	bbVerts[18].set(-.5, .5,-.5);
-	bbVerts[19].set(-.5, .5, .5);
-	bbVerts[20].set(-.5,-.5,-.5);
-	bbVerts[21].set(-.5,-.5, .5);
-	bbVerts[22].set( .5,-.5,-.5);
-	bbVerts[23].set( .5,-.5, .5);
-	
-	boundBoxVbo.setVertexData( &bbVerts[0], bbVerts.size(), GL_STATIC_DRAW );
-	bbVerts.clear();
 	
 }
 
@@ -382,6 +333,21 @@ void CloudsVisualSystem3DModel::selfDraw()
 	
 	gridShader.end();
 	
+	
+	ofPopMatrix();
+	
+	
+	//draw camera lines
+	persptiveCameraNode.setPosition( sin(ofGetElapsedTimef() ) * 200, modelTransform.getGlobalPosition().y, cos(ofGetElapsedTimef() ) * 200 );
+	persptiveCameraNode.setScale(30);
+	persptiveCameraNode.lookAt(modelTransform.getGlobalPosition());
+	
+	ofSetColor(200, 200, 200, 100);
+	glLineWidth( 2 );
+	ofPushMatrix();
+	ofMultMatrix(persptiveCameraNode.getGlobalTransformMatrix());
+	
+	cameraLines.draw(GL_LINES, 0, cameraLinesNumVertices );
 	
 	ofPopMatrix();
 	
@@ -651,10 +617,96 @@ void CloudsVisualSystem3DModel::resizeTheArrowMesh( float radius, float height, 
 }
 
 
+void CloudsVisualSystem3DModel::drawPerspective(){
+	//draws a perspective view with our default camera
+}
 
+void CloudsVisualSystem3DModel::loadCameraLineModel( ofVbo& vbo, string loc ){
+	ofBuffer buffer = ofBufferFromFile( loc );
+	vbo.clear();
+	vector<ofVec3f> points;
+    if(buffer.size())
+	{
+		while (buffer.isLastLine() == false)
+		{
+			string line = buffer.getNextLine();
+			vector<string> vals = ofSplitString( line, ",");
+			
+			for (int i=0; i<vals.size(); i+=3)
+			{
+				points.push_back( ofVec3f( ofToFloat(vals[i]), ofToFloat(vals[i+1]), ofToFloat(vals[i+2]) ) );
+			}
+		}
+		
+    }
+	
+	vbo.setVertexData( &points[0], points.size(), GL_STATIC_DRAW );
+	cameraLinesNumVertices = points.size();
+	points.clear();
+	buffer.clear();
+}
 
+void CloudsVisualSystem3DModel::setupBoundingBoxVbo()
+{
+	
+	vector<ofVec3f> bbVerts(24);
+	bbVerts[0].set(-.5,-.5,-.5);
+	bbVerts[1].set( .5,-.5,-.5);
+	bbVerts[2].set(-.5, .5,-.5);
+	bbVerts[3].set( .5, .5,-.5);
+	bbVerts[4].set(-.5,-.5,-.5);
+	bbVerts[5].set(-.5, .5,-.5);
+	bbVerts[6].set( .5,-.5,-.5);
+	bbVerts[7].set( .5, .5,-.5);
+	bbVerts[8].set(-.5,-.5, .5);
+	bbVerts[9].set( .5,-.5, .5);
+	bbVerts[10].set(-.5, .5, .5);
+	bbVerts[11].set( .5, .5, .5);
+	bbVerts[12].set(-.5,-.5, .5);
+	bbVerts[13].set(-.5, .5, .5);
+	bbVerts[14].set( .5,-.5, .5);
+	bbVerts[15].set( .5, .5, .5);
+	bbVerts[16].set( .5, .5,-.5);
+	bbVerts[17].set( .5, .5, .5);
+	bbVerts[18].set(-.5, .5,-.5);
+	bbVerts[19].set(-.5, .5, .5);
+	bbVerts[20].set(-.5,-.5,-.5);
+	bbVerts[21].set(-.5,-.5, .5);
+	bbVerts[22].set( .5,-.5,-.5);
+	bbVerts[23].set( .5,-.5, .5);
+	
+	boundBoxVbo.setVertexData( &bbVerts[0], bbVerts.size(), GL_STATIC_DRAW );
+	bbVerts.clear();
+}
 
-
+void CloudsVisualSystem3DModel::setupGridVbos()
+{
+	
+	float gridDim = 100;
+	float halfGridDim = gridDim / 2;
+	vector<ofVec3f> gridVertices(gridDim * 4);
+	for (int i=0; i<gridDim; i++)
+	{
+		gridVertices[i*4+0].set(i - halfGridDim, 0,-halfGridDim);
+		gridVertices[i*4+1].set(i - halfGridDim, 0, halfGridDim);
+		gridVertices[i*4+2].set(-halfGridDim, 0, i - halfGridDim);
+		gridVertices[i*4+3].set( halfGridDim, 0, i - halfGridDim);
+	}
+	grid.setVertexData( &gridVertices[0], gridVertices.size(), GL_STATIC_DRAW );
+	numGridVertices = gridVertices.size();
+	gridVertices.clear();
+	
+	for (int i=0; i<gridDim; i += 5)
+	{
+		gridVertices.push_back( ofVec3f(i - halfGridDim, 0,-halfGridDim) );
+		gridVertices.push_back( ofVec3f(i - halfGridDim, 0, halfGridDim) );
+		gridVertices.push_back( ofVec3f(-halfGridDim, 0, i - halfGridDim) );
+		gridVertices.push_back( ofVec3f( halfGridDim, 0, i - halfGridDim) );
+	}
+	gridMajor.setVertexData( &gridVertices[0], gridVertices.size(), GL_STATIC_DRAW );
+	numGridMajorVertices = gridVertices.size();
+	gridVertices.clear();
+}
 
 
 
