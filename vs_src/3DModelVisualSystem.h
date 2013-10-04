@@ -100,6 +100,8 @@ class CloudsVisualSystem3DModel : public CloudsVisualSystem {
 	
 	void resizeTheArrowMesh( float radius, float height, float arrowBase = .25 );
 	void loadCameraLineModel( ofVbo& vbo, string loc );
+	void setupMultipleCameras( ofVec3f targetPos );
+	void drawMultipleViewCameras(float cameraScale);
 		
 	void drawPerspective();
 	void drawPlan();
@@ -133,10 +135,6 @@ protected:
 	ofVboMesh simplePointcloud;
 	
 	ofImage colorMap;
-	
-	ofVbo cameraLines;
-	int cameraLinesNumVertices;
-	ofNode persptiveCameraNode;
 	
 	vector<string> shaderNames;
 	map<string, ofShader*> shaderMap;
@@ -176,9 +174,30 @@ protected:
 	
 	
 	//3d modeling-ish widgetty type things
+	
+	//xyz arrows
 	ofVboMesh arrowMesh;
 	ofVec3f arrowScale;
-	
 	float arrowRadius, arrowHeight, arrowPointHeight;
+
+	//multiple view cameras
+	ofVbo cameraLines;
+	int cameraLinesNumVertices;
+	float cameraLineWidth, cameraLineScale;
 	
+	ofNode persptiveCameraNode;
+	ofColor perspectiveCamColor;
+	
+	ofNode leftCameraNode;
+	ofColor leftCamColor;
+	ofEasyCam leftCam;
+	
+	ofNode planCameraNode;
+	ofColor planCamColor;
+	ofEasyCam planCam;
+	
+	ofNode frontCameraNode;
+	ofColor frontCamColor;
+	ofEasyCam frontCam;
+
 };
