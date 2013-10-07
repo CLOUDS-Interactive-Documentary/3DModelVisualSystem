@@ -273,6 +273,7 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	dir.listDir( path );
 	for(int i = 0; i < dir.numFiles(); i++){
 		objFiles.push_back( dir.getName(i) );
+		cout << "OBJ FILE NAME: " << dir.getName( i ) << endl;
 	}
 	
 	//setup a grid vbos
@@ -330,9 +331,9 @@ void CloudsVisualSystem3DModel::selfDraw()
 	modelTransform.setOrientation( modelRot );
 	modelTransform.setScale( modelScl * modelScale );
 	
-//	aimMultipleViews( modelTransform.getPosition() );
+	aimMultipleViews( modelTransform.getPosition() );
 	
-	setupMultipleCameras( modelTransform.getPosition() );
+//	setupMultipleCameras( modelTransform.getPosition() );
 	
 	//draw from single view
 	if(currentSingleCam == &perspCam)
@@ -490,23 +491,28 @@ void CloudsVisualSystem3DModel::loadCameraLineModel( ofVbo& vbo, string loc ){
 
 void CloudsVisualSystem3DModel::setupMultipleCameras( ofVec3f targetPos, float distance )
 {
+	leftCam.enableOrtho();
 	leftCam.setPosition(-distance + targetPos.x, targetPos.y, 0 );
-	leftCam.lookAt(targetPos);
 	
+	planCam.enableOrtho();
 	planCam.setPosition( targetPos.x, targetPos.y + distance, targetPos.z );
-	planCam.lookAt(targetPos, ofVec3f(0, 0, -1));
 	
+	frontCam.enableOrtho();
 	frontCam.setPosition(0, targetPos.y, -distance + targetPos.z );
-	frontCam.lookAt(targetPos);
+	
+	aimMultipleViews( targetPos );
 }
 
 void CloudsVisualSystem3DModel::aimMultipleViews( ofVec3f targetPos )
 {
 	leftCam.lookAt(targetPos);
+	leftCam.setTarget( targetPos );
 	
 	planCam.lookAt(targetPos, ofVec3f(0, 0, -1));
+	planCam.setTarget( targetPos );
 	
 	frontCam.lookAt(targetPos);
+	frontCam.setTarget( targetPos );
 }
 
 void CloudsVisualSystem3DModel::drawMultipleViewCameras( float cameraScale )
