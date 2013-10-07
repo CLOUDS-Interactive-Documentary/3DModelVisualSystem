@@ -431,9 +431,9 @@ void CloudsVisualSystem3DModel::selfMouseReleased(ofMouseEventArgs& data){
 
 void CloudsVisualSystem3DModel::loadShaders()
 {
-	normalShader.load( getVisualSystemDataPath() + "shaders/normalShader" );
-	gridShader.load( getVisualSystemDataPath() + "shaders/gridShader" );
-	facingRatioShader.load( getVisualSystemDataPath() + "shaders/facingRatio" );
+	normalShader.load( getVisualSystemDataPath() + "3DModelShaders/normalShader" );
+	gridShader.load( getVisualSystemDataPath() + "3DModelShaders/gridShader" );
+	facingRatioShader.load( getVisualSystemDataPath() + "3DModelShaders/facingRatio" );
 	
 	shaderNames.clear();
 	addToShaderMap( "normalShader", &normalShader );

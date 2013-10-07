@@ -81,12 +81,14 @@
 		4695E2CA17513D99003001E2 /* ofxCameraSaveLoad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4695E2C817513D99003001E2 /* ofxCameraSaveLoad.cpp */; };
 		5010A27817FBCC46002B3377 /* glm.c in Sources */ = {isa = PBXBuildFile; fileRef = 5010A27017FBCC46002B3377 /* glm.c */; };
 		5010A27917FBCC46002B3377 /* ofxObjLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5010A27417FBCC46002B3377 /* ofxObjLoader.cpp */; };
-		5010A28117FBD161002B3377 /* facingRatio.frag in Sources */ = {isa = PBXBuildFile; fileRef = 5010A27D17FBD161002B3377 /* facingRatio.frag */; };
-		5010A28217FBD161002B3377 /* facingRatio.vert in Sources */ = {isa = PBXBuildFile; fileRef = 5010A27E17FBD161002B3377 /* facingRatio.vert */; };
-		5010A28317FBD161002B3377 /* normalShader.frag in Sources */ = {isa = PBXBuildFile; fileRef = 5010A27F17FBD161002B3377 /* normalShader.frag */; };
-		5010A28417FBD161002B3377 /* normalShader.vert in Sources */ = {isa = PBXBuildFile; fileRef = 5010A28017FBD161002B3377 /* normalShader.vert */; };
-		5010A28717FBD877002B3377 /* gridShader.frag in Sources */ = {isa = PBXBuildFile; fileRef = 5010A28517FBD877002B3377 /* gridShader.frag */; };
-		5010A28817FBD877002B3377 /* gridShader.vert in Sources */ = {isa = PBXBuildFile; fileRef = 5010A28617FBD877002B3377 /* gridShader.vert */; };
+		501275FC18032A5000E155B4 /* facingRatio.frag in Sources */ = {isa = PBXBuildFile; fileRef = 501275F418032A5000E155B4 /* facingRatio.frag */; };
+		501275FD18032A5000E155B4 /* facingRatio.vert in Sources */ = {isa = PBXBuildFile; fileRef = 501275F518032A5000E155B4 /* facingRatio.vert */; };
+		501275FE18032A5000E155B4 /* gridShader.frag in Sources */ = {isa = PBXBuildFile; fileRef = 501275F618032A5000E155B4 /* gridShader.frag */; };
+		501275FF18032A5000E155B4 /* gridShader.vert in Sources */ = {isa = PBXBuildFile; fileRef = 501275F718032A5000E155B4 /* gridShader.vert */; };
+		5012760018032A5000E155B4 /* normalShader.frag in Sources */ = {isa = PBXBuildFile; fileRef = 501275F818032A5000E155B4 /* normalShader.frag */; };
+		5012760118032A5000E155B4 /* normalShader.vert in Sources */ = {isa = PBXBuildFile; fileRef = 501275F918032A5000E155B4 /* normalShader.vert */; };
+		5012760218032A5000E155B4 /* rgbdcombined.frag in Sources */ = {isa = PBXBuildFile; fileRef = 501275FA18032A5000E155B4 /* rgbdcombined.frag */; };
+		5012760318032A5000E155B4 /* rgbdcombined.vert in Sources */ = {isa = PBXBuildFile; fileRef = 501275FB18032A5000E155B4 /* rgbdcombined.vert */; };
 		644DD7FC17A206F2009950CB /* ofxAVFVideoPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 644DD7F717A206F2009950CB /* ofxAVFVideoPlayer.mm */; };
 		644DD7FD17A206F2009950CB /* ofxAVFVideoRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 644DD7F917A206F2009950CB /* ofxAVFVideoRenderer.m */; };
 		644DD80417A2072B009950CB /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 644DD80117A2072B009950CB /* AVFoundation.framework */; };
@@ -112,8 +114,6 @@
 		E761F4D81622CA3D00029E43 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E761F4D71622CA3D00029E43 /* Accelerate.framework */; };
 		E7D26E5817A2E63A00652876 /* CloudsRGBDVideoPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E7D26E5617A2E63A00652876 /* CloudsRGBDVideoPlayer.cpp */; };
 		E7D26E5C17A2F0CF00652876 /* CloudsRGBDCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E7D26E5A17A2F0CF00652876 /* CloudsRGBDCamera.cpp */; };
-		E7D26E6217A31C0D00652876 /* rgbdcombined.frag in Sources */ = {isa = PBXBuildFile; fileRef = E7D26E6017A31C0D00652876 /* rgbdcombined.frag */; };
-		E7D26E6317A31C0D00652876 /* rgbdcombined.vert in Sources */ = {isa = PBXBuildFile; fileRef = E7D26E6117A31C0D00652876 /* rgbdcombined.vert */; };
 		E7E077E515D3B63C0020DFD4 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7E077E415D3B63C0020DFD4 /* CoreVideo.framework */; };
 		E7E077E815D3B6510020DFD4 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7E077E715D3B6510020DFD4 /* QTKit.framework */; };
 /* End PBXBuildFile section */
@@ -388,12 +388,14 @@
 		5010A27217FBCC46002B3377 /* Readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Readme.md; sourceTree = "<group>"; };
 		5010A27417FBCC46002B3377 /* ofxObjLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxObjLoader.cpp; sourceTree = "<group>"; };
 		5010A27517FBCC46002B3377 /* ofxObjLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxObjLoader.h; sourceTree = "<group>"; };
-		5010A27D17FBD161002B3377 /* facingRatio.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = facingRatio.frag; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.glsl; };
-		5010A27E17FBD161002B3377 /* facingRatio.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = facingRatio.vert; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.glsl; };
-		5010A27F17FBD161002B3377 /* normalShader.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = normalShader.frag; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.glsl; };
-		5010A28017FBD161002B3377 /* normalShader.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = normalShader.vert; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.glsl; };
-		5010A28517FBD877002B3377 /* gridShader.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = gridShader.frag; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.glsl; };
-		5010A28617FBD877002B3377 /* gridShader.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = gridShader.vert; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.glsl; };
+		501275F418032A5000E155B4 /* facingRatio.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = facingRatio.frag; path = bin/data/3DModelShaders/facingRatio.frag; sourceTree = SOURCE_ROOT; };
+		501275F518032A5000E155B4 /* facingRatio.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = facingRatio.vert; path = bin/data/3DModelShaders/facingRatio.vert; sourceTree = SOURCE_ROOT; };
+		501275F618032A5000E155B4 /* gridShader.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = gridShader.frag; path = bin/data/3DModelShaders/gridShader.frag; sourceTree = SOURCE_ROOT; };
+		501275F718032A5000E155B4 /* gridShader.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = gridShader.vert; path = bin/data/3DModelShaders/gridShader.vert; sourceTree = SOURCE_ROOT; };
+		501275F818032A5000E155B4 /* normalShader.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = normalShader.frag; path = bin/data/3DModelShaders/normalShader.frag; sourceTree = SOURCE_ROOT; };
+		501275F918032A5000E155B4 /* normalShader.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = normalShader.vert; path = bin/data/3DModelShaders/normalShader.vert; sourceTree = SOURCE_ROOT; };
+		501275FA18032A5000E155B4 /* rgbdcombined.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = rgbdcombined.frag; path = bin/data/3DModelShaders/rgbdcombined.frag; sourceTree = SOURCE_ROOT; };
+		501275FB18032A5000E155B4 /* rgbdcombined.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = rgbdcombined.vert; path = bin/data/3DModelShaders/rgbdcombined.vert; sourceTree = SOURCE_ROOT; };
 		644DD7F617A206F2009950CB /* ofxAVFVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxAVFVideoPlayer.h; sourceTree = "<group>"; };
 		644DD7F717A206F2009950CB /* ofxAVFVideoPlayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ofxAVFVideoPlayer.mm; sourceTree = "<group>"; };
 		644DD7F817A206F2009950CB /* ofxAVFVideoRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxAVFVideoRenderer.h; sourceTree = "<group>"; };
@@ -427,8 +429,6 @@
 		E7D26E5717A2E63A00652876 /* CloudsRGBDVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloudsRGBDVideoPlayer.h; sourceTree = "<group>"; };
 		E7D26E5A17A2F0CF00652876 /* CloudsRGBDCamera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CloudsRGBDCamera.cpp; sourceTree = "<group>"; };
 		E7D26E5B17A2F0CF00652876 /* CloudsRGBDCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloudsRGBDCamera.h; sourceTree = "<group>"; };
-		E7D26E6017A31C0D00652876 /* rgbdcombined.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = rgbdcombined.frag; sourceTree = "<group>"; };
-		E7D26E6117A31C0D00652876 /* rgbdcombined.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = rgbdcombined.vert; sourceTree = "<group>"; };
 		E7E077E415D3B63C0020DFD4 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		E7E077E715D3B6510020DFD4 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
@@ -1137,7 +1137,7 @@
 			children = (
 				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
 				E4EB6923138AFD0F00A09F29 /* Project.xcconfig */,
-				E7D26E5F17A31C0D00652876 /* shaders */,
+				E7D26E5F17A31C0D00652876 /* 3DModelShaders */,
 				E4B69E1C0A3A1BDC003C02F2 /* src */,
 				3DA45C5F179DB6C3002EC0AC /* vs_src */,
 				3DA460BE179ED608002EC0AC /* VisualSystemsLibrary */,
@@ -1167,19 +1167,19 @@
 			name = openFrameworks;
 			sourceTree = "<group>";
 		};
-		E7D26E5F17A31C0D00652876 /* shaders */ = {
+		E7D26E5F17A31C0D00652876 /* 3DModelShaders */ = {
 			isa = PBXGroup;
 			children = (
-				5010A28517FBD877002B3377 /* gridShader.frag */,
-				5010A28617FBD877002B3377 /* gridShader.vert */,
-				5010A27D17FBD161002B3377 /* facingRatio.frag */,
-				5010A27E17FBD161002B3377 /* facingRatio.vert */,
-				5010A27F17FBD161002B3377 /* normalShader.frag */,
-				5010A28017FBD161002B3377 /* normalShader.vert */,
-				E7D26E6017A31C0D00652876 /* rgbdcombined.frag */,
-				E7D26E6117A31C0D00652876 /* rgbdcombined.vert */,
+				501275F418032A5000E155B4 /* facingRatio.frag */,
+				501275F518032A5000E155B4 /* facingRatio.vert */,
+				501275F618032A5000E155B4 /* gridShader.frag */,
+				501275F718032A5000E155B4 /* gridShader.vert */,
+				501275F818032A5000E155B4 /* normalShader.frag */,
+				501275F918032A5000E155B4 /* normalShader.vert */,
+				501275FA18032A5000E155B4 /* rgbdcombined.frag */,
+				501275FB18032A5000E155B4 /* rgbdcombined.vert */,
 			);
-			name = shaders;
+			name = 3DModelShaders;
 			path = bin/data/shaders;
 			sourceTree = "<group>";
 		};
@@ -1344,16 +1344,16 @@
 				644DD7FD17A206F2009950CB /* ofxAVFVideoRenderer.m in Sources */,
 				E7D26E5817A2E63A00652876 /* CloudsRGBDVideoPlayer.cpp in Sources */,
 				E7D26E5C17A2F0CF00652876 /* CloudsRGBDCamera.cpp in Sources */,
-				E7D26E6217A31C0D00652876 /* rgbdcombined.frag in Sources */,
-				E7D26E6317A31C0D00652876 /* rgbdcombined.vert in Sources */,
 				5010A27817FBCC46002B3377 /* glm.c in Sources */,
 				5010A27917FBCC46002B3377 /* ofxObjLoader.cpp in Sources */,
-				5010A28117FBD161002B3377 /* facingRatio.frag in Sources */,
-				5010A28217FBD161002B3377 /* facingRatio.vert in Sources */,
-				5010A28317FBD161002B3377 /* normalShader.frag in Sources */,
-				5010A28417FBD161002B3377 /* normalShader.vert in Sources */,
-				5010A28717FBD877002B3377 /* gridShader.frag in Sources */,
-				5010A28817FBD877002B3377 /* gridShader.vert in Sources */,
+				501275FC18032A5000E155B4 /* facingRatio.frag in Sources */,
+				501275FD18032A5000E155B4 /* facingRatio.vert in Sources */,
+				501275FE18032A5000E155B4 /* gridShader.frag in Sources */,
+				501275FF18032A5000E155B4 /* gridShader.vert in Sources */,
+				5012760018032A5000E155B4 /* normalShader.frag in Sources */,
+				5012760118032A5000E155B4 /* normalShader.vert in Sources */,
+				5012760218032A5000E155B4 /* rgbdcombined.frag in Sources */,
+				5012760318032A5000E155B4 /* rgbdcombined.vert in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
