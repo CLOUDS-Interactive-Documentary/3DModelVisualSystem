@@ -224,6 +224,8 @@ void CloudsVisualSystem3DModel::selfSetup()
 	
 	//get list of models from the model directory
 	string path = getVisualSystemDataPath() + "models/";
+	cout << "model path: " << path << endl;
+	
 	ofDirectory dir;
 	dir.allowExt("obj");
 	dir.listDir( path );
@@ -232,9 +234,10 @@ void CloudsVisualSystem3DModel::selfSetup()
 		cout << "OBJ FILE NAME: " << dir.getName( i ) << endl;
 	}
 	
-	videoLoaded = false;
 	
 	//set our defaults
+	videoLoaded = false;
+	
 	boundBoxLineWidth = 1.;
 	discardThreshold = 1.;
 	bSmoothModel = false;
@@ -314,7 +317,7 @@ void CloudsVisualSystem3DModel::selfSceneTransformation(){
 //normal update call
 void CloudsVisualSystem3DModel::selfUpdate(){
 
-	cout << "WTF" << endl;
+//	cout << "WTF" << endl;
 	
 	
 }
