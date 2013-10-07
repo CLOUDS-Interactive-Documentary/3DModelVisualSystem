@@ -219,7 +219,18 @@ void CloudsVisualSystem3DModel::guiRenderEvent(ofxUIEventArgs &e){
 // selfSetup is called when the visual system is first instantiated
 // This will be called during a "loading" screen, so any big images or
 // geometry should be loaded here
-void CloudsVisualSystem3DModel::selfSetup(){
+void CloudsVisualSystem3DModel::selfSetup()
+{
+	
+	//get list of models from the model directory
+	string path = getVisualSystemDataPath() + "models/";
+	ofDirectory dir;
+	dir.allowExt("obj");
+	dir.listDir( path );
+	for(int i = 0; i < dir.numFiles(); i++){
+		objFiles.push_back( dir.getName(i) );
+		cout << "OBJ FILE NAME: " << dir.getName( i ) << endl;
+	}
 	
 	videoLoaded = false;
 	
@@ -265,16 +276,7 @@ void CloudsVisualSystem3DModel::selfSetup(){
 	resizeTheArrowMesh( arrowRadius, arrowHeight, arrowPointHeight );
 	
 	loadCameraLineModel( cameraLines, "cameraVertices.txt" );
-	
-	//get list of models from the model directory
-	string path = getVisualSystemDataPath() + "models/";
-	ofDirectory dir;
-	dir.allowExt("obj");
-	dir.listDir( path );
-	for(int i = 0; i < dir.numFiles(); i++){
-		objFiles.push_back( dir.getName(i) );
-		cout << "OBJ FILE NAME: " << dir.getName( i ) << endl;
-	}
+
 	
 	//setup a grid vbos
 	setupGridVbos();
