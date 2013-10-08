@@ -689,6 +689,8 @@ void CloudsVisualSystem3DModel::loadModel( string fileName, bool bSmoothMesh )
 		smoothMesh( modelMesh, modelMesh );
 	}
 	
+	
+	setupMultipleCameras( (minBound + maxBound) * .2, minBound.distance(maxBound) );
 }
 
 string CloudsVisualSystem3DModel::vec3ToString( ofVec3f v, int precision )
