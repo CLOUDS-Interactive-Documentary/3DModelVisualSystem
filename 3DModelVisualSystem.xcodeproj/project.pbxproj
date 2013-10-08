@@ -89,6 +89,8 @@
 		5012760118032A5000E155B4 /* normalShader.vert in Sources */ = {isa = PBXBuildFile; fileRef = 501275F918032A5000E155B4 /* normalShader.vert */; };
 		5012760218032A5000E155B4 /* rgbdcombined.frag in Sources */ = {isa = PBXBuildFile; fileRef = 501275FA18032A5000E155B4 /* rgbdcombined.frag */; };
 		5012760318032A5000E155B4 /* rgbdcombined.vert in Sources */ = {isa = PBXBuildFile; fileRef = 501275FB18032A5000E155B4 /* rgbdcombined.vert */; };
+		5012761D18033E6100E155B4 /* ofxGameCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5012761918033E6100E155B4 /* ofxGameCamera.cpp */; };
+		501276231803430B00E155B4 /* CloudsOrthoCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 501276211803430B00E155B4 /* CloudsOrthoCamera.cpp */; };
 		644DD7FC17A206F2009950CB /* ofxAVFVideoPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 644DD7F717A206F2009950CB /* ofxAVFVideoPlayer.mm */; };
 		644DD7FD17A206F2009950CB /* ofxAVFVideoRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 644DD7F917A206F2009950CB /* ofxAVFVideoRenderer.m */; };
 		644DD80417A2072B009950CB /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 644DD80117A2072B009950CB /* AVFoundation.framework */; };
@@ -396,6 +398,10 @@
 		501275F918032A5000E155B4 /* normalShader.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = normalShader.vert; path = bin/data/3DModelShaders/normalShader.vert; sourceTree = SOURCE_ROOT; };
 		501275FA18032A5000E155B4 /* rgbdcombined.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = rgbdcombined.frag; path = bin/data/3DModelShaders/rgbdcombined.frag; sourceTree = SOURCE_ROOT; };
 		501275FB18032A5000E155B4 /* rgbdcombined.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = rgbdcombined.vert; path = bin/data/3DModelShaders/rgbdcombined.vert; sourceTree = SOURCE_ROOT; };
+		5012761918033E6100E155B4 /* ofxGameCamera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxGameCamera.cpp; sourceTree = "<group>"; };
+		5012761A18033E6100E155B4 /* ofxGameCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxGameCamera.h; sourceTree = "<group>"; };
+		501276211803430B00E155B4 /* CloudsOrthoCamera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CloudsOrthoCamera.cpp; sourceTree = "<group>"; };
+		501276221803430B00E155B4 /* CloudsOrthoCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloudsOrthoCamera.h; sourceTree = "<group>"; };
 		644DD7F617A206F2009950CB /* ofxAVFVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxAVFVideoPlayer.h; sourceTree = "<group>"; };
 		644DD7F717A206F2009950CB /* ofxAVFVideoPlayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ofxAVFVideoPlayer.mm; sourceTree = "<group>"; };
 		644DD7F817A206F2009950CB /* ofxAVFVideoRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxAVFVideoRenderer.h; sourceTree = "<group>"; };
@@ -829,6 +835,8 @@
 		3DA45C5F179DB6C3002EC0AC /* vs_src */ = {
 			isa = PBXGroup;
 			children = (
+				501276211803430B00E155B4 /* CloudsOrthoCamera.cpp */,
+				501276221803430B00E155B4 /* CloudsOrthoCamera.h */,
 				3DA460BB179EC5C2002EC0AC /* 3DModelVisualSystem.h */,
 				3DA460BA179EC5C2002EC0AC /* 3DModelVisualSystem.cpp */,
 			);
@@ -1042,6 +1050,24 @@
 			path = src;
 			sourceTree = "<group>";
 		};
+		5012760418033E6000E155B4 /* ofxGameCamera */ = {
+			isa = PBXGroup;
+			children = (
+				5012761818033E6100E155B4 /* src */,
+			);
+			name = ofxGameCamera;
+			path = ../../../addons/ofxGameCamera;
+			sourceTree = "<group>";
+		};
+		5012761818033E6100E155B4 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				5012761918033E6100E155B4 /* ofxGameCamera.cpp */,
+				5012761A18033E6100E155B4 /* ofxGameCamera.h */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 		644DD7E417A206F2009950CB /* ofxAVFVideoPlayer */ = {
 			isa = PBXGroup;
 			children = (
@@ -1065,6 +1091,7 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
+				5012760418033E6000E155B4 /* ofxGameCamera */,
 				5010A25D17FBCC46002B3377 /* ofxObjLoader */,
 				644DD7E417A206F2009950CB /* ofxAVFVideoPlayer */,
 				3DEFE10E176E7D8000139095 /* ofxXmlSettings */,
@@ -1354,6 +1381,8 @@
 				5012760118032A5000E155B4 /* normalShader.vert in Sources */,
 				5012760218032A5000E155B4 /* rgbdcombined.frag in Sources */,
 				5012760318032A5000E155B4 /* rgbdcombined.vert in Sources */,
+				5012761D18033E6100E155B4 /* ofxGameCamera.cpp in Sources */,
+				501276231803430B00E155B4 /* CloudsOrthoCamera.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

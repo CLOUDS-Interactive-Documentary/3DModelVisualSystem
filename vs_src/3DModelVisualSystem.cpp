@@ -93,7 +93,7 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	
 	//camera views
 	vector<string> viewNames;
-	viewNames.push_back("front view"),viewNames.push_back("plan view"),viewNames.push_back("left view"),viewNames.push_back("persp view");
+	viewNames.push_back("front view"),viewNames.push_back("plan view"),viewNames.push_back("left view"),viewNames.push_back("persp view"),viewNames.push_back("four view");
 	
 	cameraViewsGui = new ofxUISuperCanvas("cameraViewsGui", gui);
 	cameraViewsGui->copyCanvasStyle(gui);
@@ -178,20 +178,35 @@ void CloudsVisualSystem3DModel::selfGuiEvent(ofxUIEventArgs &e)
 				{
 					currentSingleCam = &leftCam;
 					leftCam.enableMouseInput();
+					bFourView = false;
 				}
 				else if(name == "front view" )
 				{
 					currentSingleCam = &frontCam;
 					frontCam.enableMouseInput();
+					bFourView = false;
 				}
 				else if(name == "persp view" )
 				{
 					currentSingleCam = &getCameraRef();
 					perspCam.enableMouseInput();
+					bFourView = false;
 				}
 				else if(name == "plan view" )
 				{
 					currentSingleCam = &planCam;
+					planCam.enableMouseInput();
+					bFourView = false;
+				}
+				else if( name == "four view")
+				{
+					bFourView = true;
+					perspCam.enableMouseInput();
+					
+					leftCam.enableMouseInput();
+					
+					frontCam.enableMouseInput();
+					
 					planCam.enableMouseInput();
 				}
 			}
@@ -268,6 +283,7 @@ void CloudsVisualSystem3DModel::selfSetup()
 	cameraLineWidth = .5;
 	cameraLineScale = 30;
 	singleViewName = "persp view";
+	bFourView = false;
 	
 	colorMap.loadImage( getVisualSystemDataPath() + "GUI/defaultColorPalette.png" );
 	
@@ -336,12 +352,25 @@ void CloudsVisualSystem3DModel::selfDraw()
 	modelTransform.setOrientation( modelRot );
 	modelTransform.setScale( modelScl * modelScale );
 	
-	aimMultipleViews( modelTransform.getPosition() );
-	
-//	setupMultipleCameras( modelTransform.getPosition() );
+//	aimMultipleViews( modelTransform.getPosition() );
+	setupMultipleCameras( modelTransform.getPosition() );
 	
 	//draw from single view
-	if(currentSingleCam == &perspCam)
+	if( bFourView )
+	{
+		int hw = ofGetWidth()/2;
+		int hh = ofGetHeight()/2;
+		
+		drawSceneLeft( ofRectangle(0,0,hw,hh), .5 );
+		
+		drawSceneFront( ofRectangle(hw,0,hw,hh), .5 );
+		
+		drawScenePlan( ofRectangle(0,hh,hw,hh), .5 );
+		
+		drawScenePerspective( ofRectangle(hw,hh,hw,hh), .5 );
+		
+	}
+	else if(currentSingleCam == &perspCam)
 	{
 		drawScenePerspective();
 	}
@@ -357,16 +386,6 @@ void CloudsVisualSystem3DModel::selfDraw()
 	{
 		drawScenePlan();
 	}
-	
-	
-	
-//	ofPushMatrix();
-//	ofMultMatrix(persptiveCameraNode.getGlobalTransformMatrix());
-//	
-//	cameraLines.draw(GL_LINES, 0, cameraLinesNumVertices );
-//	
-//	ofPopMatrix();
-	
 }
 
 // draw any debug stuff here
@@ -510,24 +529,29 @@ void CloudsVisualSystem3DModel::setupMultipleCameras( ofVec3f targetPos, float d
 
 void CloudsVisualSystem3DModel::aimMultipleViews( ofVec3f targetPos )
 {
-	leftCam.lookAt(targetPos);
-	leftCam.setTarget( targetPos );
+	float distance = 500;
+//	leftCam.setPosition(-distance + targetPos.x, targetPos.y, 0 );
+	leftCam.lookAt( targetPos );
 	
-	planCam.lookAt(targetPos, ofVec3f(0, 0, -1));
-	planCam.setTarget( targetPos );
+//	planCam.setPosition( targetPos.x, targetPos.y + distance, targetPos.z );
+	planCam.lookAt( targetPos, ofVec3f(0,0,1) );
 	
-	frontCam.lookAt(targetPos);
-	frontCam.setTarget( targetPos );
+//	frontCam.setPosition(0, targetPos.y, -distance + targetPos.z );
+	frontCam.lookAt( targetPos );
 }
 
-void CloudsVisualSystem3DModel::drawMultipleViewCameras( float cameraScale )
+void CloudsVisualSystem3DModel::drawMultipleViewCameras( float cameraScale, ofCamera* cam )
 {
+	if(cam == NULL)
+	{
+		cam = currentSingleCam;
+	}
 //	ofVec3f targetPos =  - ofVec3f(0,-minBound.y * modelScl.y * modelScale,0)
 	
 	ofVec3f targetPos = (minBound*.5 + maxBound*.5) * modelTransform.getGlobalTransformMatrix();
 	
 	//persp
-	if(currentSingleCam != &perspCam )
+	if(cam != &perspCam )
 	{
 		ofSetColor( perspCamColor );
 		ofPushMatrix();
@@ -539,7 +563,7 @@ void CloudsVisualSystem3DModel::drawMultipleViewCameras( float cameraScale )
 	}
 	
 	//left
-	if(currentSingleCam != &leftCam)
+	else if(cam != &leftCam)
 	{
 		ofSetColor( leftCamColor );
 		ofPushMatrix();
@@ -552,7 +576,7 @@ void CloudsVisualSystem3DModel::drawMultipleViewCameras( float cameraScale )
 	}
 	
 	//front
-	if(currentSingleCam != &frontCam)
+	if(cam != &frontCam)
 	{
 		ofSetColor( frontCamColor );
 		ofPushMatrix();
@@ -565,7 +589,7 @@ void CloudsVisualSystem3DModel::drawMultipleViewCameras( float cameraScale )
 	}
 	
 	//plan
-	if(currentSingleCam != &planCam)
+	if(cam != &planCam)
 	{
 		ofSetColor( planCamColor );
 		ofPushMatrix();
@@ -807,9 +831,12 @@ void CloudsVisualSystem3DModel::resizeTheArrowMesh( float radius, float height, 
 	arrowScale.set( radius/2, height, radius/2 );
 }
 
-void CloudsVisualSystem3DModel::drawScene( ofCamera* cam )
+void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle viewRect, float viewPortScale )
 {
-	if(cam != NULL)	cam->begin();
+	if(cam != NULL)
+	{
+		cam->begin( viewRect, viewPortScale );
+	}
 	
 	//draw our model
 	ofPushMatrix();
@@ -904,41 +931,34 @@ void CloudsVisualSystem3DModel::drawScene( ofCamera* cam )
 	gridShader.end();
 	
 	
-	//draw camera lines
-	persptiveCameraNode.setPosition( sin(ofGetElapsedTimef() ) * 200, modelTransform.getGlobalPosition().y, cos(ofGetElapsedTimef() ) * 200 );
-	persptiveCameraNode.setScale(30);
-	persptiveCameraNode.lookAt(modelTransform.getGlobalPosition());
-	
-	glLineWidth( cameraLineWidth );
-	
-	//setupMultipleCameras( modelTransform.getGlobalPosition() );
-	drawMultipleViewCameras( cameraLineScale );
+	//draw wireframe view cameras to the scene
+	drawMultipleViewCameras( cameraLineScale, cam );
 	
 	if( cam != NULL)	cam->end();
 }
 
-void CloudsVisualSystem3DModel::drawScenePerspective()
+void CloudsVisualSystem3DModel::drawScenePerspective( ofRectangle viewRect, float viewPortScale )
 {
 	//draws a perspective view with our default camera
-	drawScene( &perspCam );
+	drawScene( &perspCam, viewRect, viewPortScale );
 }
 
-void CloudsVisualSystem3DModel::drawScenePlan()
+void CloudsVisualSystem3DModel::drawScenePlan( ofRectangle viewRect, float viewPortScale )
 {
-	planCam.lookAt(modelTransform.getGlobalPosition(), ofVec3f(0, 0, -1));
-	drawScene( &planCam );
+//	planCam.lookAt(modelTransform.getGlobalPosition(), ofVec3f(0, 0, -1));
+	drawScene( &planCam, viewRect, viewPortScale );
 }
 
-void CloudsVisualSystem3DModel::drawSceneFront()
+void CloudsVisualSystem3DModel::drawSceneFront( ofRectangle viewRect, float viewPortScale )
 {
-	frontCam.lookAt(modelTransform.getGlobalPosition() );
-	drawScene( &frontCam );
+//	frontCam.lookAt(modelTransform.getGlobalPosition() );
+	drawScene( &frontCam, viewRect, viewPortScale  );
 }
 
-void CloudsVisualSystem3DModel::drawSceneLeft()
+void CloudsVisualSystem3DModel::drawSceneLeft( ofRectangle viewRect, float viewPortScale )
 {
-	leftCam.lookAt(modelTransform.getGlobalPosition() );
-	drawScene( &leftCam );
+//	leftCam.lookAt(modelTransform.getGlobalPosition() );
+	drawScene( &leftCam, viewRect, viewPortScale );
 }
 
 

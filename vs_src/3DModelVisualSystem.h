@@ -12,6 +12,7 @@
 
 #include "ofxObjLoader.h"
 #include "CloudsVisualSystem.h"
+#include "CloudsOrthoCamera.h"
 
 //TODO: rename this to your own visual system
 class CloudsVisualSystem3DModel : public CloudsVisualSystem {
@@ -102,13 +103,14 @@ class CloudsVisualSystem3DModel : public CloudsVisualSystem {
 	void loadCameraLineModel( ofVbo& vbo, string loc );
 	void setupMultipleCameras( ofVec3f targetPos, float distance=500.f );
 	void aimMultipleViews( ofVec3f targetPos );
-	void drawMultipleViewCameras(float cameraScale);
+	void drawMultipleViewCameras(float cameraScale, ofCamera* cam = NULL );
 		
-	void drawScene( ofCamera* cam = NULL );
-	void drawScenePerspective();
-	void drawScenePlan();
-	void drawSceneFront();
-	void drawSceneLeft();
+	void drawScene( CloudsOrthoCamera* cam = NULL, ofRectangle viewRect=ofGetCurrentViewport(), float viewPortScale = 1. );
+	
+	void drawScenePerspective( ofRectangle viewRect=ofGetCurrentViewport(), float viewPortScale = 1. );
+	void drawScenePlan( ofRectangle viewRect=ofGetCurrentViewport(), float viewPortScale = 1. );
+	void drawSceneFront( ofRectangle viewRect=ofGetCurrentViewport(), float viewPortScale = 1. );
+	void drawSceneLeft( ofRectangle viewRect=ofGetCurrentViewport(), float viewPortScale = 1. );
 	
 
     // if you use a custom camera to fly through the scene
@@ -193,19 +195,21 @@ protected:
 	ofCamera* currentSingleCam;
 	
 	ofNode persptiveCameraNode;
-	ofEasyCam perspCam;
+	CloudsOrthoCamera perspCam;
 	ofColor perspCamColor;
 	
 	ofNode leftCameraNode;
 	ofColor leftCamColor;
-	ofEasyCam leftCam;
+	CloudsOrthoCamera leftCam;
 	
 	ofNode planCameraNode;
 	ofColor planCamColor;
-	ofEasyCam planCam;
+	CloudsOrthoCamera planCam;
 	
 	ofNode frontCameraNode;
 	ofColor frontCamColor;
-	ofEasyCam frontCam;
+	CloudsOrthoCamera frontCam;
+	
+	bool bFourView;
 
 };
