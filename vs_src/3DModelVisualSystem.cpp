@@ -529,14 +529,10 @@ void CloudsVisualSystem3DModel::setupMultipleCameras( ofVec3f targetPos, float d
 
 void CloudsVisualSystem3DModel::aimMultipleViews( ofVec3f targetPos )
 {
-	float distance = 500;
-//	leftCam.setPosition(-distance + targetPos.x, targetPos.y, 0 );
 	leftCam.lookAt( targetPos );
 	
-//	planCam.setPosition( targetPos.x, targetPos.y + distance, targetPos.z );
 	planCam.lookAt( targetPos, ofVec3f(0,0,1) );
 	
-//	frontCam.setPosition(0, targetPos.y, -distance + targetPos.z );
 	frontCam.lookAt( targetPos );
 }
 
@@ -546,9 +542,6 @@ void CloudsVisualSystem3DModel::drawMultipleViewCameras( float cameraScale, ofCa
 	{
 		cam = currentSingleCam;
 	}
-//	ofVec3f targetPos =  - ofVec3f(0,-minBound.y * modelScl.y * modelScale,0)
-	
-	ofVec3f targetPos = (minBound*.5 + maxBound*.5) * modelTransform.getGlobalTransformMatrix();
 	
 	//persp
 	if(cam != &perspCam )
@@ -897,12 +890,10 @@ void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle v
 	
 	
 	//draw infinite grid by positioning it infront of the camera
-	
-
 	ofVec3f camPos = cam->getPosition();
 	camPos += cam->getUpDir().cross(cam->getSideDir()).normalize() * gridDim * gridScale * .5;
 
-	ofSetColor(255,255, 255, 150 );// make this an adjustable color
+	ofSetColor(255,255, 255, 150 );// make this an adjustable color in th GUI
 	
 	gridShader.begin();
 	gridShader.setUniform1f("halfGridDim", gridDim * .5 );
@@ -947,19 +938,16 @@ void CloudsVisualSystem3DModel::drawScenePerspective( ofRectangle viewRect, floa
 
 void CloudsVisualSystem3DModel::drawScenePlan( ofRectangle viewRect, float viewPortScale )
 {
-//	planCam.lookAt(modelTransform.getGlobalPosition(), ofVec3f(0, 0, -1));
 	drawScene( &planCam, viewRect, viewPortScale );
 }
 
 void CloudsVisualSystem3DModel::drawSceneFront( ofRectangle viewRect, float viewPortScale )
 {
-//	frontCam.lookAt(modelTransform.getGlobalPosition() );
 	drawScene( &frontCam, viewRect, viewPortScale  );
 }
 
 void CloudsVisualSystem3DModel::drawSceneLeft( ofRectangle viewRect, float viewPortScale )
 {
-//	leftCam.lookAt(modelTransform.getGlobalPosition() );
 	drawScene( &leftCam, viewRect, viewPortScale );
 }
 
