@@ -5,11 +5,6 @@
 #include "3DModelVisualSystem.h"
 #include "CloudsRGBDVideoPlayer.h"
 
-//#include "CloudsRGBDVideoPlayer.h"
-//#ifdef AVF_PLAYER
-//#include "ofxAVFVideoPlayer.h"
-//#endif
-
 //These methods let us add custom GUI parameters and respond to their events
 void CloudsVisualSystem3DModel::selfSetupGui(){
 
@@ -39,12 +34,12 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	
 	customGui->addSpacer();
 	
+	customGui->addLabel("shaders:");
 	customGui->addRadio("shaders", shaderNames );
 	
 	ofAddListener(customGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
 	guis.push_back(customGui);
 	guimap[customGui->getName()] = customGui;
-	
 	
 	
 	gridGui = new ofxUISuperCanvas("Grid", gui);
@@ -73,8 +68,6 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	guimap[gridGui->getName()] = gridGui;
 	
 	
-	
-	
 	modelUIGui = new ofxUISuperCanvas("modelUIGui", gui);
 	modelUIGui->copyCanvasStyle(gui);
 	modelUIGui->copyCanvasProperties(gui);
@@ -89,7 +82,6 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	ofAddListener(modelUIGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
 	guis.push_back(modelUIGui);
 	guimap[modelUIGui->getName()] = modelUIGui;
-
 	
 	//camera views
 	vector<string> viewNames;
@@ -102,7 +94,6 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	cameraViewsGui->setWidgetFontSize(OFX_UI_FONT_SMALL);
 	cameraViewsGui->addSpacer();
 	cameraViewsGui->addRadio("camera views", viewNames );
-	
 	
 	ofAddListener(cameraViewsGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
 	guis.push_back(cameraViewsGui);
