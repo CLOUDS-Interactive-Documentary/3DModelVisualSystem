@@ -64,14 +64,7 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	gridGui->addImageSampler("gridMajorColor", &colorMap, (float)colorMap.getWidth()/2, (float)colorMap.getHeight()/2 );
 	gridGui->addSlider("gridMajorAlpha", 0, 255, &gridMajorAlpha );
 	gridGui->addSlider("gridMajorBrightness", 0, 1, &gridMajorBrightness );
-	
-	gridGui->addSpacer();
-	
-	gridGui->addSlider("gridFalloffDist", 100, 5000, &gridFalloff );
-	gridGui->addSlider("gridFalloffExpo", .6, 10, &gridFalloffExpo );
-	gridGui->addSlider("gridFalloffScale", .5, 2., &gridFalloffScale );
 	gridGui->addSlider("gridAlphaScale", .5, 2., &gridAlphaScale );
-	
 	
 	
 	gridGui->addSpacer();
@@ -79,6 +72,27 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	ofAddListener(gridGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
 	guis.push_back(gridGui);
 	guimap[gridGui->getName()] = gridGui;
+
+	
+	fogGui = new ofxUISuperCanvas("fogGui", gui);
+	fogGui->copyCanvasStyle(gui);
+	fogGui->copyCanvasProperties(gui);
+	fogGui->setName("fogGui");
+	fogGui->setWidgetFontSize(OFX_UI_FONT_SMALL);
+	fogGui->addSpacer();
+	
+	gridGui->addSpacer();
+	
+	fogGui->addSlider("fogFalloffDistance", 100, 5000, &fogFalloffDistance );
+	fogGui->addSlider("fogFalloffExpo", .6, 10, &fogFalloffExpo );
+	fogGui->addSlider("fogFalloffScale", .5, 2., &fogFalloffScale );
+	
+	ofAddListener(fogGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
+	guis.push_back(fogGui);
+	guimap[fogGui->getName()] = fogGui;
+	
+	
+	
 	
 	
 	modelUIGui = new ofxUISuperCanvas("modelUIGui", gui);
@@ -118,7 +132,7 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 
 void CloudsVisualSystem3DModel::selfGuiEvent(ofxUIEventArgs &e)
 {
-	cout << "e.getName(): " << e.getName() << endl;
+//	cout << "e.getName(): " << e.getName() << endl;
 	string name = e.widget->getName();
 	int kind = e.widget->getKind();
 	
@@ -295,9 +309,9 @@ void CloudsVisualSystem3DModel::selfSetup()
 	
 	gridScale = 25.;
 	gridMajorScale = 10;
-	gridFalloff =  2000.;
-	gridFalloffExpo = 2.;
-	gridFalloffScale = 1.2;
+	fogFalloffDistance =  2000.;
+	fogFalloffExpo = 2.;
+	fogFalloffScale = 1.2;
 	gridAlphaScale = 1.;
 	gridLineWidth = 1.;
 	gridDim = 1000;
@@ -916,6 +930,9 @@ void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle v
 		activeShader->setUniform1f( "discardThreshold", discardThreshold );
 		activeShader->setUniform1f( "specularExpo", specularExpo );
 		activeShader->setUniform1f( "specularScale", specularScale );
+		activeShader->setUniform1f("falloffDist", fogFalloffDistance );
+		activeShader->setUniform1f("falloffExpo", fogFalloffExpo );
+		activeShader->setUniform1f("falloffScl", fogFalloffScale );
 		
 		if(bWireframe)	glLineWidth( wireframeLinewidth );
 		bWireframe?	modelMesh.drawWireframe() : modelMesh.draw();
@@ -968,9 +985,9 @@ void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle v
 	
 	gridShader.begin();
 	gridShader.setUniform1f("halfGridDim", gridDim * .5 );
-	gridShader.setUniform1f("falloffDist", gridFalloff );
-	gridShader.setUniform1f("falloffExpo", gridFalloffExpo );
-	gridShader.setUniform1f("falloffScl", gridFalloffScale );
+	gridShader.setUniform1f("falloffDist", fogFalloffDistance );
+	gridShader.setUniform1f("falloffExpo", fogFalloffExpo );
+	gridShader.setUniform1f("falloffScl", fogFalloffScale );
 	gridShader.setUniform1f("alphaScale", gridAlphaScale );
 	
 	ofPushMatrix();

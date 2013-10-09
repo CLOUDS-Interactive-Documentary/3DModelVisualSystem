@@ -12,14 +12,18 @@ varying vec3 ePos;
 varying float dist;
 varying vec2 endVal;
 
+
+float nearClip = 1.;
+
+
 float linearizeDepth( in float d ) {
-    return (2.0) / (falloffDist + 1. - d * (falloffDist - 1.));
+    return (2.0 * nearClip) / (falloffDist + nearClip - d * (falloffDist - nearClip));
 }
 
 
 void main(void)
 {
-	float alpha = pow(1. - linearizeDepth( gl_FragCoord.z ), falloffExpo) * falloffScl;// pow( max(0., 1. - dist / falloffDist) * falloffScl, falloffExpo );
+	float alpha = pow((1. - linearizeDepth( gl_FragCoord.z )) * falloffScl, falloffExpo);// pow( max(0., 1. - dist / falloffDist) * falloffScl, falloffExpo );
 //	alpha *=  1. - length(endVal) / halfGridDim;
 	
 	
