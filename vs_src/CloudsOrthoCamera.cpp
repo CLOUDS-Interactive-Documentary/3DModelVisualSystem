@@ -43,7 +43,7 @@ CloudsOrthoCamera::CloudsOrthoCamera(){
 	reset();
 	enableMouseInput();
 	
-	orthoViewScale = 2.;
+	orthoViewScale = 1.;
 }
 
 //----------------------------------------
@@ -96,7 +96,7 @@ void CloudsOrthoCamera::begin(ofRectangle viewport ){
 ofMatrix4x4 CloudsOrthoCamera::getProjectionMatrix(ofRectangle viewport) const {
 	if(isOrtho) {
 		ofMatrix4x4 ortho;
-		ortho.makeOrthoMatrix(0, viewport.width * orthoViewScale, 0, viewport.height * orthoViewScale, nearClip, farClip);
+		ortho.makeOrthoMatrix(0, viewport.width * orthoViewScale, 0, viewport.height * orthoViewScale, -farClip * orthoViewScale, farClip * orthoViewScale);
 		return ortho;
 	}else{
 		float aspect = forceAspectRatio ? aspectRatio : viewport.width/viewport.height;
@@ -236,7 +236,7 @@ void CloudsOrthoCamera::updateTranslation(){
 	}
 	move((getXAxis() * moveX) + (getYAxis() * moveY) + (getZAxis() * moveZ));
 	
-	if( getOrtho() )	orthoViewScale = ofClamp( orthoViewScale + moveZ * .1, .1, 100 );
+	if( getOrtho() )	orthoViewScale = ofClamp( orthoViewScale + moveZ * .01, .1, 100 );
 }
 //----------------------------------------
 void CloudsOrthoCamera::updateRotation(){
