@@ -52,7 +52,7 @@ public:
 	//----------------------------------------
 	ofMatrix4x4 getProjectionMatrix(ofRectangle viewport) const;
 	//----------------------------------------
-	ofMatrix4x4 getModelViewMatrix(float viewPortScale=1.) const;
+	ofMatrix4x4 getModelViewMatrix(ofRectangle viewport) const;
 	
 private:
 	void setDistance(float distance, bool save);

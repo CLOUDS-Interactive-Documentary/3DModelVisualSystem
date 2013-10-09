@@ -87,7 +87,7 @@ void CloudsOrthoCamera::begin(ofRectangle viewport, float viewPortScale){
 	ofLoadMatrix( this->getProjectionMatrix(viewport) );
 
 	ofSetMatrixMode(OF_MATRIX_MODELVIEW);
-	ofLoadMatrix( getModelViewMatrix( viewPortScale ) );// ofMatrix4x4::getInverseOf(getGlobalTransformMatrix()) );
+	ofLoadMatrix( getModelViewMatrix( viewport ) );// ofMatrix4x4::getInverseOf(getGlobalTransformMatrix()) );
 	ofViewport(viewport);
 }
 
@@ -106,13 +106,12 @@ ofMatrix4x4 CloudsOrthoCamera::getProjectionMatrix(ofRectangle viewport) const {
 	}
 }
 //----------------------------------------
-ofMatrix4x4 CloudsOrthoCamera::getModelViewMatrix(float viewPortScale) const {
+ofMatrix4x4 CloudsOrthoCamera::getModelViewMatrix(ofRectangle viewport) const {
 	ofMatrix4x4 gtm = getGlobalTransformMatrix();
 	ofMatrix4x4 matModelView;
 	matModelView.makeInvertOf( gtm );
 
-		if(getOrtho())	matModelView.translate( viewPortScale * ofGetWidth()/2, viewPortScale * ofGetHeight()/2, 0);
-//	matModelView.translate( viewPortScale * ofGetWidth()/2, viewPortScale * ofGetHeight()/2, 0);
+	if(getOrtho())	matModelView.translate( viewport.getWidth()/2, viewport.getHeight()/2, 0);
 	
 	return matModelView;
 }
