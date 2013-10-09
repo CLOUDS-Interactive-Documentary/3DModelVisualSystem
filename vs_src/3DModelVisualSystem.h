@@ -108,10 +108,10 @@ class CloudsVisualSystem3DModel : public CloudsVisualSystem {
 		
 	void drawScene( CloudsOrthoCamera* cam = NULL, ofRectangle viewRect=ofGetCurrentViewport() );
 	
-	void drawScenePerspective( ofRectangle viewRect=ofGetCurrentViewport(), float viewPortScale = 1. );
-	void drawScenePlan( ofRectangle viewRect=ofGetCurrentViewport(), float viewPortScale = 1. );
-	void drawSceneFront( ofRectangle viewRect=ofGetCurrentViewport(), float viewPortScale = 1. );
-	void drawSceneLeft( ofRectangle viewRect=ofGetCurrentViewport(), float viewPortScale = 1. );
+	void drawScenePerspective( ofRectangle viewRect=ofGetCurrentViewport() );
+	void drawScenePlan( ofRectangle viewRect=ofGetCurrentViewport() );
+	void drawSceneFront( ofRectangle viewRect=ofGetCurrentViewport() );
+	void drawSceneLeft( ofRectangle viewRect=ofGetCurrentViewport() );
 	
 
     // if you use a custom camera to fly through the scene

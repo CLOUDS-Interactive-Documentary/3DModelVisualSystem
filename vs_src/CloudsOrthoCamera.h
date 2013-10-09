@@ -54,6 +54,9 @@ public:
 	//----------------------------------------
 	ofMatrix4x4 getModelViewMatrix(ofRectangle viewport = ofGetCurrentViewport()) const;
 	
+	
+	bool bExploreMode;
+	
 private:
 	void setDistance(float distance, bool save);
 	

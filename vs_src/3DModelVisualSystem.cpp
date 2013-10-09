@@ -92,9 +92,6 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	guimap[fogGui->getName()] = fogGui;
 	
 	
-	
-	
-	
 	modelUIGui = new ofxUISuperCanvas("modelUIGui", gui);
 	modelUIGui->copyCanvasStyle(gui);
 	modelUIGui->copyCanvasProperties(gui);
@@ -336,6 +333,8 @@ void CloudsVisualSystem3DModel::selfSetup()
 	
 	colorMap.loadImage( getVisualSystemDataPath() + "GUI/defaultColorPalette.png" );
 	
+	perspCam.bExploreMode = true;
+	
 	//load our shaders
 	loadShaders();
 	
@@ -428,7 +427,7 @@ void CloudsVisualSystem3DModel::selfDraw()
 	}
 	else if(currentSingleCam == &perspCam)
 	{
-		drawScenePerspective();
+		drawScenePerspective( ofGetCurrentViewport() );
 	}
 	else if(currentSingleCam == &leftCam)
 	{
@@ -1021,23 +1020,58 @@ void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle v
 	if( cam != NULL)	cam->end();
 }
 
-void CloudsVisualSystem3DModel::drawScenePerspective( ofRectangle viewRect, float viewPortScale )
+void CloudsVisualSystem3DModel::drawScenePerspective( ofRectangle viewRect )
 {
+//	ofRectangle viewport = viewRect;
+//
+//	float mouseScl = .5;
+//	float deadZone = .05;
+//	float moveZone = .4;
+//	float cameraSpeed = 1.;
+//	
+//	if(viewport.inside( ofGetMouseX(), ofGetMouseY()) && !ofGetMousePressed())
+//	{
+//		//convert mouse coords in to somethin we can work with
+//		float mx = ofMap( ofGetMouseX(), viewport.getLeft(), viewport.getRight(), 1., -1., true );
+//		float my = ofMap( ofGetMouseY(), viewport.getTop(), viewport.getBottom(), 1., -1., true );
+//		float dist = ofVec2f(mx, my).length();
+//		
+//		if(dist > deadZone)
+//		{
+//			float weight = ofClamp( dist - deadZone, 0, 1 );
+//			
+//			//dead zone in the middle where nowe just sit an stare
+//			mx *= weight;
+//			my *= weight;
+//			
+//			float pan = mx * mouseScl;
+//			float tilt = my * mouseScl;
+//			
+//			//rotate our camera accordingly
+//			perspCam.pan( pan );
+//			perspCam.tilt( tilt );
+//		}
+//		
+//		ofVec3f vel = perspCam.getLookAtDir();
+//		perspCam.move( vel * ofClamp(1. - dist, 0, 1) * cameraSpeed );		
+//
+//	}
+	
 	//draws a perspective view with our default camera
 	drawScene( &perspCam, viewRect );
 }
 
-void CloudsVisualSystem3DModel::drawScenePlan( ofRectangle viewRect, float viewPortScale )
+void CloudsVisualSystem3DModel::drawScenePlan( ofRectangle viewRect )
 {
 	drawScene( &planCam, viewRect );
 }
 
-void CloudsVisualSystem3DModel::drawSceneFront( ofRectangle viewRect, float viewPortScale )
+void CloudsVisualSystem3DModel::drawSceneFront( ofRectangle viewRect )
 {
 	drawScene( &frontCam, viewRect );
 }
 
-void CloudsVisualSystem3DModel::drawSceneLeft( ofRectangle viewRect, float viewPortScale )
+void CloudsVisualSystem3DModel::drawSceneLeft( ofRectangle viewRect )
 {
 	drawScene( &leftCam, viewRect );
 }

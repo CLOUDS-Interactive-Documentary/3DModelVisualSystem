@@ -55,6 +55,7 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
     if(!bDistanceSet && bAutoDistance){
         setDistance(getImagePlaneDistance(viewport), true);
     }
+	
     if(bMouseInputEnabled){
 		
 		rotationFactor = sensitivityRot * 180 / min(viewport.width, viewport.height);
@@ -67,6 +68,43 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 		}else if (bDoTranslate) {
 			updateTranslation();
 		}
+	}
+	
+	float mouseScl = .5;
+	float moveZone = .1;
+	float cameraSpeed = 1.;
+	
+	if(viewport.inside( ofGetMouseX(), ofGetMouseY()) && !ofGetMousePressed())
+	{
+		//convert mouse coords in to somethin we can work with
+		float mx = ofMap( ofGetMouseX(), viewport.getLeft(), viewport.getRight(), 1., -1., true );
+		float my = ofMap( ofGetMouseY(), viewport.getTop(), viewport.getBottom(), 1., -1., true );
+		float dist = ofVec2f(mx, my).length();
+		
+		if(dist > moveZone)
+		{
+			float weight = ofMap( dist - moveZone, 0, 1, 0, 1, true );
+			
+			//dead zone in the middle where nowe just sit an stare
+			mx *= weight;
+			my *= weight;
+			
+			float panVal = mx * mouseScl;
+			float tiltVal = my * mouseScl;
+			
+			//rotate our camera accordingly
+			pan( panVal );
+			tilt( tiltVal );
+		}
+		
+		ofVec3f vel = getLookAtDir();
+//		move( vel * ofClamp(1. - dist, 0, 1) * cameraSpeed );
+		move( vel * cameraSpeed );
+		
+		target.setPosition( getPosition() + vel * 10. );
+	}
+	if(!viewport.inside( ofGetMouseX(), ofGetMouseY()) && bExploreMode){
+		cout << "mouse not in view port" << ofGetFrameNum()<< endl;
 	}
 }
 //----------------------------------------
