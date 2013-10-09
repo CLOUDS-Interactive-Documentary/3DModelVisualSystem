@@ -2,8 +2,8 @@
     <Kind>42</Kind>
     <Name>cameraViewsGui</Name>
     <IsMinified>0</IsMinified>
-    <XPosition>31.000000000</XPosition>
-    <YPosition>329.000000000</YPosition>
+    <XPosition>117.000000000</XPosition>
+    <YPosition>331.000000000</YPosition>
 </Canvas>
 <Widget>
     <Kind>2</Kind>
@@ -24,4 +24,9 @@
     <Kind>2</Kind>
     <Name>persp view</Name>
     <Value>1</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>four view</Name>
+    <Value>0</Value>
 </Widget>

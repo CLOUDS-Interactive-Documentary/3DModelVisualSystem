@@ -156,7 +156,7 @@ protected:
 	ofShader gridShader;
 	ofVbo gridMajor;
 	ofColor gridColor, gridMajorColor;
-	float gridAlpha, gridMajorAlpha;
+	float gridAlpha, gridMajorAlpha, gridBrightness, gridMajorBrightness;
 	
 	ofVbo model;
 	ofShader* modelShader;

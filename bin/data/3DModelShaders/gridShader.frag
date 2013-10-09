@@ -12,9 +12,16 @@ varying vec3 ePos;
 varying float dist;
 varying vec2 endVal;
 
+float linearizeDepth( in float d ) {
+    return (2.0) / (falloffDist + 1. - d * (falloffDist - 1.));
+}
+
+
 void main(void)
 {
-	float alpha = pow( max(0., 1. - dist / falloffDist) * falloffScl, falloffExpo );
-	alpha *= 1. - length(endVal) / halfGridDim;
+	float alpha = pow(1. - linearizeDepth( gl_FragCoord.z ), falloffExpo) * falloffScl;// pow( max(0., 1. - dist / falloffDist) * falloffScl, falloffExpo );
+//	alpha *=  1. - length(endVal) / halfGridDim;
+	
+	
 	gl_FragColor = vec4( gl_Color.xyz, gl_Color.w * alpha * alphaScale);
 }

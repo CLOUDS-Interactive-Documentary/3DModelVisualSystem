@@ -55,15 +55,24 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	gridGui->addSlider("majorGridLineWidth", 0.5, 10, &majorGridLineWidth);
 	gridGui->addSlider("gridScale", 1., 100., &gridScale);
 	gridGui->addSlider("gridMajorScale", 1, 25, &gridMajorScale );
+	
+	gridGui->addSpacer();
+	
 	gridGui->addImageSampler("gridColor", &colorMap, (float)colorMap.getWidth()/2, (float)colorMap.getHeight()/2 );
 	gridGui->addSlider("gridAlpha", 0, 255, &gridAlpha );
+	gridGui->addSlider("gridBrightness", 0, 1, &gridBrightness );
 	gridGui->addImageSampler("gridMajorColor", &colorMap, (float)colorMap.getWidth()/2, (float)colorMap.getHeight()/2 );
 	gridGui->addSlider("gridMajorAlpha", 0, 255, &gridMajorAlpha );
+	gridGui->addSlider("gridMajorBrightness", 0, 1, &gridMajorBrightness );
+	
+	gridGui->addSpacer();
 	
 	gridGui->addSlider("gridFalloffDist", 100, 5000, &gridFalloff );
 	gridGui->addSlider("gridFalloffExpo", .6, 10, &gridFalloffExpo );
 	gridGui->addSlider("gridFalloffScale", .5, 2., &gridFalloffScale );
 	gridGui->addSlider("gridAlphaScale", .5, 2., &gridAlphaScale );
+	
+	
 	
 	gridGui->addSpacer();
 		
@@ -291,11 +300,12 @@ void CloudsVisualSystem3DModel::selfSetup()
 	gridFalloffScale = 1.2;
 	gridAlphaScale = 1.;
 	gridLineWidth = 1.;
-	gridDim = 250;
+	gridDim = 1000;
 	majorGridLineWidth = 1.5;
 	gridColor.set(255);
 	gridMajorColor.set(255);
 	gridAlpha = gridMajorAlpha = .5;
+	gridBrightness = gridMajorBrightness = 1.;
 	
 	bWireframe = false;
 	wireframeLinewidth = .5;
@@ -970,7 +980,7 @@ void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle v
 	ofScale( gridScale * gms,gridScale * gms, gridScale * gms );
 	
 	glLineWidth( majorGridLineWidth );
-	ofSetColor( gridMajorColor.r, gridMajorColor.g, gridMajorColor.b, gridMajorAlpha );
+	ofSetColor( gridMajorColor.r*gridMajorBrightness, gridMajorColor.g*gridMajorBrightness, gridMajorColor.b*gridMajorBrightness, gridMajorAlpha );
 	grid.draw(GL_LINES, 0, numGridVertices );
 	
 	ofPopMatrix();
@@ -980,7 +990,7 @@ void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle v
 	ofScale( gridScale, gridScale, gridScale );
 	
 	glLineWidth( gridLineWidth );
-	ofSetColor( gridColor.r, gridColor.g, gridColor.b, gridAlpha );
+	ofSetColor( gridColor.r*gridBrightness, gridColor.g*gridBrightness, gridColor.b*gridBrightness, gridAlpha );
 	grid.draw(GL_LINES, 0, numGridVertices );
 	
 	ofPopMatrix();
