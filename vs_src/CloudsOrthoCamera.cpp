@@ -98,14 +98,14 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 		}
 		
 		ofVec3f vel = getLookAtDir();
-//		move( vel * ofClamp(1. - dist, 0, 1) * cameraSpeed );
-		move( vel * cameraSpeed );
+		move( vel * ofClamp(1. - dist, 0, 1) * cameraSpeed );
+//		move( vel * cameraSpeed );
 		
 		target.setPosition( getPosition() + vel * 10. );
 	}
-	if(!viewport.inside( ofGetMouseX(), ofGetMouseY()) && bExploreMode){
-		cout << "mouse not in view port" << ofGetFrameNum()<< endl;
-	}
+//	if(!viewport.inside( ofGetMouseX(), ofGetMouseY()) && bExploreMode){
+//		cout << "mouse not in view port" << ofGetFrameNum()<< endl;
+//	}
 }
 //----------------------------------------
 void CloudsOrthoCamera::begin(ofRectangle viewport ){
