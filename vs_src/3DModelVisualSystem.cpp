@@ -102,6 +102,7 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 
 void CloudsVisualSystem3DModel::selfGuiEvent(ofxUIEventArgs &e)
 {
+	cout << "e.getName(): " << e.getName() << endl;
 	string name = e.widget->getName();
 	int kind = e.widget->getKind();
 	
@@ -164,34 +165,44 @@ void CloudsVisualSystem3DModel::selfGuiEvent(ofxUIEventArgs &e)
 				frontCam.disableMouseInput();
 				planCam.disableMouseInput();
 				perspCam.disableMouseInput();
+				bLeftCamIsActive = bFrontCamIsActive = bPlanCamIsActive = bPerspCamIsActive = false;
 				
-				if(name == "left view" )
+				if(name == "left view")
 				{
 					currentSingleCam = &leftCam;
 					leftCam.enableMouseInput();
 					bFourView = false;
+					
+					bLeftCamIsActive = true;
 				}
-				else if(name == "front view" )
+				else if(name == "front view")
 				{
 					currentSingleCam = &frontCam;
 					frontCam.enableMouseInput();
 					bFourView = false;
+					
+					bFrontCamIsActive = true;
 				}
-				else if(name == "persp view" )
+				else if(name == "persp view")
 				{
 					currentSingleCam = &getCameraRef();
 					perspCam.enableMouseInput();
 					bFourView = false;
+					
+					bPerspCamIsActive = true;
 				}
-				else if(name == "plan view" )
+				else if(name == "plan view")
 				{
 					currentSingleCam = &planCam;
 					planCam.enableMouseInput();
 					bFourView = false;
+					
+					bPlanCamIsActive = true;
 				}
 				else if( name == "four view")
 				{
 					bFourView = true;
+					
 					perspCam.enableMouseInput();
 					
 					leftCam.enableMouseInput();
@@ -199,6 +210,8 @@ void CloudsVisualSystem3DModel::selfGuiEvent(ofxUIEventArgs &e)
 					frontCam.enableMouseInput();
 					
 					planCam.enableMouseInput();
+					
+					bLeftCamIsActive = bFrontCamIsActive = bPlanCamIsActive = bPerspCamIsActive = true;
 				}
 			}
 		}
@@ -293,26 +306,26 @@ void CloudsVisualSystem3DModel::selfSetup()
 	
 	//setup boundBox vbo
 	setupBoundingBoxVbo();
-	calcBoundingBox();
-	
-	
-	//muliple views setup
-	setupMultipleCameras( ofVec3f(0, 100, 0));
-	
 }
 
 // selfPresetLoaded is called whenever a new preset is triggered
 // it'll be called right before selfBegin() and you may wish to
 // refresh anything that a preset may offset, such as stored colors or particles
-void CloudsVisualSystem3DModel::selfPresetLoaded(string presetPath){
-	
+void CloudsVisualSystem3DModel::selfPresetLoaded(string presetPath)
+{
+	calcBoundingBox();
+	updateModelTransform();
+	setupMultipleCameras( modelTransform.getPosition() );
 }
 
 // selfBegin is called when the system is ready to be shown
 // this is a good time to prepare for transitions
 // but try to keep it light weight as to not cause stuttering
-void CloudsVisualSystem3DModel::selfBegin(){
-	
+void CloudsVisualSystem3DModel::selfBegin()
+{
+	calcBoundingBox();
+	updateModelTransform();
+	setupMultipleCameras( modelTransform.getPosition() );
 }
 
 //do things like ofRotate/ofTranslate here
@@ -325,26 +338,34 @@ void CloudsVisualSystem3DModel::selfSceneTransformation(){
 void CloudsVisualSystem3DModel::selfUpdate(){
 
 //	cout << "WTF" << endl;
-	
-	
 }
 
 // selfDraw draws in 3D using the default ofEasyCamera
 // you can change the camera by returning getCameraRef()
 void CloudsVisualSystem3DModel::selfDraw()
 {
+	//???: update... for some reason the selfUpdate is being called in stand alone.
+//	bLeftCamIsActive = bFrontCamIsActive = bPlanCamIsActive = bPerspCamIsActive = false;
+	if( cursorIsOverGUI() )
+	{
+		leftCam.disableMouseInput();
+		planCam.disableMouseInput();
+		frontCam.disableMouseInput();
+		perspCam.disableMouseInput();
+		
+	}
+	else
+	{
+		if( bLeftCamIsActive && !leftCam.getMouseInputEnabled() )	leftCam.enableMouseInput();
+		if( bFrontCamIsActive && !frontCam.getMouseInputEnabled() )	frontCam.enableMouseInput();
+		if( bPlanCamIsActive && !planCam.getMouseInputEnabled() )	planCam.enableMouseInput();
+		if( bPerspCamIsActive && !perspCam.getMouseInputEnabled() )	perspCam.enableMouseInput();
+	}
 	
-	//update the model transforms
-	modelRot.makeRotate( 0, 0, 1, 0);//ofGetElapsedTimef()*2
-	if(modelScl.length() == 0.)	modelScl.y = .00001;
 	
-	modelTransform.setPosition( modelPos );//+ ofVec3f(0,min(maxBound.y,minBound.y),0) );
-	modelTransform.move(0, -minBound.y * modelScl.y * modelScale, 0);
-	modelTransform.setOrientation( modelRot );
-	modelTransform.setScale( modelScl * modelScale );
+	updateModelTransform();
 	
 //	aimMultipleViews( modelTransform.getPosition() );
-	setupMultipleCameras( modelTransform.getPosition() );
 	
 	//draw from single view
 	if( bFourView )
@@ -377,6 +398,20 @@ void CloudsVisualSystem3DModel::selfDraw()
 	{
 		drawScenePlan();
 	}
+}
+
+void CloudsVisualSystem3DModel::updateModelTransform()
+{
+	//update the model transforms
+	modelRot.makeRotate( 0, 0, 1, 0);//ofGetElapsedTimef()*2
+	if(modelScl.length() == 0.)	modelScl.y = .00001;
+	
+	boundCenter = (minBound + maxBound) * .5;
+	
+	modelTransform.setOrientation( modelRot );
+	modelTransform.setScale( modelScl * modelScale );
+	modelTransform.setPosition( -boundCenter * modelScl * modelScale);
+	modelTransform.move(0,  (maxBound.y - minBound.y) * .5 * modelScl.y * modelScale, 0);
 }
 
 // draw any debug stuff here
@@ -477,6 +512,13 @@ void CloudsVisualSystem3DModel::calcBoundingBox(){
 	
 	//cout << minBound << " : " << maxBound << endl;
 	boundCenter = ( minBound + maxBound ) * .5;
+	
+	minBound -= boundCenter;
+	maxBound -= boundCenter;
+	
+	for (int i=0; i<v.size(); i++) {
+		modelMesh.setVertex( i, v[i] - boundCenter );
+	}
 };
 
 void CloudsVisualSystem3DModel::loadCameraLineModel( ofVbo& vbo, string loc ){
@@ -515,7 +557,10 @@ void CloudsVisualSystem3DModel::setupMultipleCameras( ofVec3f targetPos, float d
 	frontCam.enableOrtho();
 	frontCam.setPosition(0, targetPos.y, -distance + targetPos.z );
 	
+	perspCam.setPosition( frontCam.getPosition() );
+	
 	aimMultipleViews( targetPos );
+	
 }
 
 void CloudsVisualSystem3DModel::aimMultipleViews( ofVec3f targetPos )
@@ -525,6 +570,8 @@ void CloudsVisualSystem3DModel::aimMultipleViews( ofVec3f targetPos )
 	planCam.lookAt( targetPos, ofVec3f(0,0,1) );
 	
 	frontCam.lookAt( targetPos );
+	
+	perspCam.lookAt( targetPos );
 }
 
 void CloudsVisualSystem3DModel::drawMultipleViewCameras( float cameraScale, ofCamera* cam )
@@ -673,8 +720,11 @@ void CloudsVisualSystem3DModel::loadModel( string fileName, bool bSmoothMesh )
 		smoothMesh( modelMesh, modelMesh );
 	}
 	
+	updateModelTransform();
 	
-	setupMultipleCameras( (minBound + maxBound) * .2, minBound.distance(maxBound) );
+	cout << modelTransform.getPosition() << endl;
+	
+	setupMultipleCameras( modelTransform.getPosition() );
 }
 
 string CloudsVisualSystem3DModel::vec3ToString( ofVec3f v, int precision )

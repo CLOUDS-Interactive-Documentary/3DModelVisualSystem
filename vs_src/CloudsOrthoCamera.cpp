@@ -206,6 +206,7 @@ void CloudsOrthoCamera::disableMouseInput(){
 		//ofUnregisterMouseEvents(this);
 		ofRemoveListener(ofEvents().update, this, &CloudsOrthoCamera::update);
 	}
+	setDrag( 0 );
 }
 //----------------------------------------
 bool CloudsOrthoCamera::getMouseInputEnabled(){
