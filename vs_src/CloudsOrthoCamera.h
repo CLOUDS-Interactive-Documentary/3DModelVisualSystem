@@ -17,7 +17,7 @@ public:
 	~CloudsOrthoCamera();
 	
 	// TODO: this should be ofGetViewRect() eventually
-	virtual void begin(ofRectangle viewport = ofGetCurrentViewport(), float viewPortScale = 1.);
+	virtual void begin(ofRectangle viewport = ofGetCurrentViewport() );
 	void reset();
 	
 	//----------------------------------------
@@ -50,9 +50,9 @@ public:
     void setAutoDistance(bool bAutoDistance);
 	
 	//----------------------------------------
-	ofMatrix4x4 getProjectionMatrix(ofRectangle viewport) const;
+	ofMatrix4x4 getProjectionMatrix(ofRectangle viewport = ofGetCurrentViewport()) const;
 	//----------------------------------------
-	ofMatrix4x4 getModelViewMatrix(ofRectangle viewport) const;
+	ofMatrix4x4 getModelViewMatrix(ofRectangle viewport = ofGetCurrentViewport()) const;
 	
 private:
 	void setDistance(float distance, bool save);
@@ -103,4 +103,6 @@ private:
 	ofQuaternion curRot;
     
 	ofRectangle viewport;// having the  viewport saved localy will make it easier for all the needed maths dealing with viewport.
+	
+	float orthoViewScale;
 };

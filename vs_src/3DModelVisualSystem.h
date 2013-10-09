@@ -106,7 +106,7 @@ class CloudsVisualSystem3DModel : public CloudsVisualSystem {
 	void aimMultipleViews( ofVec3f targetPos );
 	void drawMultipleViewCameras(float cameraScale, ofCamera* cam = NULL );
 		
-	void drawScene( CloudsOrthoCamera* cam = NULL, ofRectangle viewRect=ofGetCurrentViewport(), float viewPortScale = 1. );
+	void drawScene( CloudsOrthoCamera* cam = NULL, ofRectangle viewRect=ofGetCurrentViewport() );
 	
 	void drawScenePerspective( ofRectangle viewRect=ofGetCurrentViewport(), float viewPortScale = 1. );
 	void drawScenePlan( ofRectangle viewRect=ofGetCurrentViewport(), float viewPortScale = 1. );
@@ -150,11 +150,13 @@ protected:
 	ofShader facingRatioShader;
 	ofShader phongShader;
 	
-	float gridLineWidth, gridScale, majorGridLineWidth, gridDim, gridFalloff, gridFalloffExpo, gridFalloffScale, gridAlphaScale;
+	float gridLineWidth, gridScale, majorGridLineWidth, gridDim, gridFalloff, gridFalloffExpo, gridFalloffScale, gridAlphaScale, gridMajorScale;
 	int numGridVertices, numGridMajorVertices;
 	ofVbo grid;
 	ofShader gridShader;
 	ofVbo gridMajor;
+	ofColor gridColor, gridMajorColor;
+	float gridAlpha, gridMajorAlpha;
 	
 	ofVbo model;
 	ofShader* modelShader;

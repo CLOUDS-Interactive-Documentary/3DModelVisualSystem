@@ -43,6 +43,7 @@ CloudsOrthoCamera::CloudsOrthoCamera(){
 	reset();
 	enableMouseInput();
 	
+	orthoViewScale = 2.;
 }
 
 //----------------------------------------
@@ -69,7 +70,7 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 	}
 }
 //----------------------------------------
-void CloudsOrthoCamera::begin(ofRectangle viewport, float viewPortScale){
+void CloudsOrthoCamera::begin(ofRectangle viewport ){
 	this->viewport = viewport;
 //	ofCamera::begin(viewport);
 	
@@ -95,7 +96,7 @@ void CloudsOrthoCamera::begin(ofRectangle viewport, float viewPortScale){
 ofMatrix4x4 CloudsOrthoCamera::getProjectionMatrix(ofRectangle viewport) const {
 	if(isOrtho) {
 		ofMatrix4x4 ortho;
-		ortho.makeOrthoMatrix(0, viewport.width, 0, viewport.height, nearClip, farClip);
+		ortho.makeOrthoMatrix(0, viewport.width * orthoViewScale, 0, viewport.height * orthoViewScale, nearClip, farClip);
 		return ortho;
 	}else{
 		float aspect = forceAspectRatio ? aspectRatio : viewport.width/viewport.height;
@@ -107,11 +108,10 @@ ofMatrix4x4 CloudsOrthoCamera::getProjectionMatrix(ofRectangle viewport) const {
 }
 //----------------------------------------
 ofMatrix4x4 CloudsOrthoCamera::getModelViewMatrix(ofRectangle viewport) const {
-	ofMatrix4x4 gtm = getGlobalTransformMatrix();
 	ofMatrix4x4 matModelView;
-	matModelView.makeInvertOf( gtm );
+	matModelView.makeInvertOf( getGlobalTransformMatrix() );
 
-	if(getOrtho())	matModelView.translate( viewport.getWidth()/2, viewport.getHeight()/2, 0);
+	if(getOrtho())	matModelView.translate( orthoViewScale * viewport.getWidth()/2, orthoViewScale * viewport.getHeight()/2, 0);
 	
 	return matModelView;
 }
@@ -235,6 +235,8 @@ void CloudsOrthoCamera::updateTranslation(){
 		}
 	}
 	move((getXAxis() * moveX) + (getYAxis() * moveY) + (getZAxis() * moveZ));
+	
+	if( getOrtho() )	orthoViewScale = ofClamp( orthoViewScale + moveZ * .1, .1, 100 );
 }
 //----------------------------------------
 void CloudsOrthoCamera::updateRotation(){

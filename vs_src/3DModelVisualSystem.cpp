@@ -52,9 +52,13 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	gridGui->addSpacer();
 	
 	gridGui->addSlider("gridLineWidth", 0.5, 10, &gridLineWidth);
-	gridGui->addSlider("boundBoxLineWidth", 0.5, 10, &boundBoxLineWidth);
 	gridGui->addSlider("majorGridLineWidth", 0.5, 10, &majorGridLineWidth);
 	gridGui->addSlider("gridScale", 1., 100., &gridScale);
+	gridGui->addSlider("gridMajorScale", 1, 25, &gridMajorScale );
+	gridGui->addImageSampler("gridColor", &colorMap, (float)colorMap.getWidth()/2, (float)colorMap.getHeight()/2 );
+	gridGui->addSlider("gridAlpha", 0, 255, &gridAlpha );
+	gridGui->addImageSampler("gridMajorColor", &colorMap, (float)colorMap.getWidth()/2, (float)colorMap.getHeight()/2 );
+	gridGui->addSlider("gridMajorAlpha", 0, 255, &gridMajorAlpha );
 	
 	gridGui->addSlider("gridFalloffDist", 100, 5000, &gridFalloff );
 	gridGui->addSlider("gridFalloffExpo", .6, 10, &gridFalloffExpo );
@@ -74,6 +78,9 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	modelUIGui->setName("modelUIGui");
 	modelUIGui->setWidgetFontSize(OFX_UI_FONT_SMALL);
 	modelUIGui->addSpacer();
+	
+	modelUIGui->addSlider("boundBoxLineWidth", 0.5, 10, &boundBoxLineWidth);
+	
 	modelUIGui->addLabel("arrows");
 	modelUIGui->addSlider("arrowRadius", 1, 50, &arrowRadius);
 	modelUIGui->addSlider("arrowHeight", 1, 250, &arrowHeight);
@@ -124,6 +131,16 @@ void CloudsVisualSystem3DModel::selfGuiEvent(ofxUIEventArgs &e)
 	else if( e.widget->getName() == "c1"){
 		ofxUIImageSampler* sampler = (ofxUIImageSampler *) e.widget;
 		modelColor = sampler->getColor();
+	}
+	
+	else if( e.widget->getName() == "gridColor"){
+		ofxUIImageSampler* sampler = (ofxUIImageSampler *) e.widget;
+		gridColor = sampler->getColor();
+	}
+	
+	else if( e.widget->getName() == "gridMajorColor"){
+		ofxUIImageSampler* sampler = (ofxUIImageSampler *) e.widget;
+		gridMajorColor = sampler->getColor();
 	}
 	
 	else if( kind == OFX_UI_WIDGET_TOGGLE)
@@ -268,6 +285,7 @@ void CloudsVisualSystem3DModel::selfSetup()
 	specularScale = .75;
 	
 	gridScale = 25.;
+	gridMajorScale = 10;
 	gridFalloff =  2000.;
 	gridFalloffExpo = 2.;
 	gridFalloffScale = 1.2;
@@ -275,6 +293,9 @@ void CloudsVisualSystem3DModel::selfSetup()
 	gridLineWidth = 1.;
 	gridDim = 250;
 	majorGridLineWidth = 1.5;
+	gridColor.set(255);
+	gridMajorColor.set(255);
+	gridAlpha = gridMajorAlpha = .5;
 	
 	bWireframe = false;
 	wireframeLinewidth = .5;
@@ -352,14 +373,13 @@ void CloudsVisualSystem3DModel::selfDraw()
 		planCam.disableMouseInput();
 		frontCam.disableMouseInput();
 		perspCam.disableMouseInput();
-		
 	}
 	else
 	{
-		if( bLeftCamIsActive && !leftCam.getMouseInputEnabled() )	leftCam.enableMouseInput();
-		if( bFrontCamIsActive && !frontCam.getMouseInputEnabled() )	frontCam.enableMouseInput();
-		if( bPlanCamIsActive && !planCam.getMouseInputEnabled() )	planCam.enableMouseInput();
-		if( bPerspCamIsActive && !perspCam.getMouseInputEnabled() )	perspCam.enableMouseInput();
+		if( bLeftCamIsActive && !leftCam.getMouseInputEnabled())	leftCam.enableMouseInput();
+		if( bFrontCamIsActive && !frontCam.getMouseInputEnabled())	frontCam.enableMouseInput();
+		if( bPlanCamIsActive && !planCam.getMouseInputEnabled())	planCam.enableMouseInput();
+		if( bPerspCamIsActive && !perspCam.getMouseInputEnabled())	perspCam.enableMouseInput();
 	}
 	
 	
@@ -373,13 +393,13 @@ void CloudsVisualSystem3DModel::selfDraw()
 		int hw = ofGetWidth()/2;
 		int hh = ofGetHeight()/2;
 		
-		drawSceneLeft( ofRectangle(0,0,hw,hh), .5 );
+		drawSceneLeft( ofRectangle(0,0,hw,hh) );
 		
-		drawSceneFront( ofRectangle(hw,0,hw,hh), .5 );
+		drawSceneFront( ofRectangle(hw,0,hw,hh) );
 		
-		drawScenePlan( ofRectangle(0,hh,hw,hh), .5 );
+		drawScenePlan( ofRectangle(0,hh,hw,hh) );
 		
-		drawScenePerspective( ofRectangle(hw,hh,hw,hh), .5 );
+		drawScenePerspective( ofRectangle(hw,hh,hw,hh) );
 		
 	}
 	else if(currentSingleCam == &perspCam)
@@ -867,11 +887,11 @@ void CloudsVisualSystem3DModel::resizeTheArrowMesh( float radius, float height, 
 	arrowScale.set( radius/2, height, radius/2 );
 }
 
-void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle viewRect, float viewPortScale )
+void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle viewRect )
 {
 	if(cam != NULL)
 	{
-		cam->begin( viewRect, viewPortScale );
+		cam->begin( viewRect );
 	}
 	
 	//draw our model
@@ -944,11 +964,13 @@ void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle v
 	gridShader.setUniform1f("alphaScale", gridAlphaScale );
 	
 	ofPushMatrix();
-	ofTranslate( floor(camPos.x/(gridScale*5.))*5.*gridScale, 0, floor(camPos.z/(gridScale*5.))*5.*gridScale);
-	ofScale( gridScale * 5,gridScale * 5,gridScale * 5 );
+	int gms = gridMajorScale;
+	ofTranslate( floor(camPos.x/(gridScale*gms))*gms*gridScale, 0, floor(camPos.z/(gridScale*gms))*gms*gridScale);
+	
+	ofScale( gridScale * gms,gridScale * gms, gridScale * gms );
 	
 	glLineWidth( majorGridLineWidth );
-	//	gridMajor.draw(GL_LINES, 0, numGridMajorVertices );
+	ofSetColor( gridMajorColor.r, gridMajorColor.g, gridMajorColor.b, gridMajorAlpha );
 	grid.draw(GL_LINES, 0, numGridVertices );
 	
 	ofPopMatrix();
@@ -958,6 +980,7 @@ void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle v
 	ofScale( gridScale, gridScale, gridScale );
 	
 	glLineWidth( gridLineWidth );
+	ofSetColor( gridColor.r, gridColor.g, gridColor.b, gridAlpha );
 	grid.draw(GL_LINES, 0, numGridVertices );
 	
 	ofPopMatrix();
@@ -974,22 +997,22 @@ void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle v
 void CloudsVisualSystem3DModel::drawScenePerspective( ofRectangle viewRect, float viewPortScale )
 {
 	//draws a perspective view with our default camera
-	drawScene( &perspCam, viewRect, viewPortScale );
+	drawScene( &perspCam, viewRect );
 }
 
 void CloudsVisualSystem3DModel::drawScenePlan( ofRectangle viewRect, float viewPortScale )
 {
-	drawScene( &planCam, viewRect, viewPortScale );
+	drawScene( &planCam, viewRect );
 }
 
 void CloudsVisualSystem3DModel::drawSceneFront( ofRectangle viewRect, float viewPortScale )
 {
-	drawScene( &frontCam, viewRect, viewPortScale  );
+	drawScene( &frontCam, viewRect );
 }
 
 void CloudsVisualSystem3DModel::drawSceneLeft( ofRectangle viewRect, float viewPortScale )
 {
-	drawScene( &leftCam, viewRect, viewPortScale );
+	drawScene( &leftCam, viewRect );
 }
 
 
