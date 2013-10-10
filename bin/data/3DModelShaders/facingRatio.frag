@@ -23,9 +23,9 @@ float linearizeDepth( in float d ) {
 
 void main(void)
 {
-	float fr = dot( -normalize(ePos), normalize( norm ) ) ;
+	float fr = abs(dot( -normalize(ePos), normalize( norm ) ) );
 	
-	if( abs(fr) > discardThreshold)	discard;
+	if( fr > discardThreshold)	discard;
 	fr *= specularScale * pow( fr* .5 + .5, specularExpo);
 	
 	gl_FragColor = vec4( gl_Color.xyz + fr, gl_Color.w );
