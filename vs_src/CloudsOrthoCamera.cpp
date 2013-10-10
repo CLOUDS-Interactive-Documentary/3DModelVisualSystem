@@ -70,12 +70,14 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 		}
 	}
 	
-	float mouseScl = .5;
-	float moveZone = .1;
-	float cameraSpeed = 1.;
 	
-	if(viewport.inside( ofGetMouseX(), ofGetMouseY()) && !ofGetMousePressed())
+	if( bExploreMode && !ofGetMousePressed()) //  viewport.inside( ofGetMouseX(), ofGetMouseY())
 	{
+		float mouseScl = .5;
+		float moveZone = .1;
+		float cameraSpeed = 1.;
+		float pitchScale = .005;
+		
 		//convert mouse coords in to somethin we can work with
 		float mx = ofMap( ofGetMouseX(), viewport.getLeft(), viewport.getRight(), 1., -1., true );
 		float my = ofMap( ofGetMouseY(), viewport.getTop(), viewport.getBottom(), 1., -1., true );
@@ -95,17 +97,21 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 			//rotate our camera accordingly
 			pan( panVal );
 			tilt( tiltVal );
+			roll( getPitch() * -pitchScale );
 		}
 		
 		ofVec3f vel = getLookAtDir();
 		move( vel * ofClamp(1. - dist, 0, 1) * cameraSpeed );
-//		move( vel * cameraSpeed );
 		
 		target.setPosition( getPosition() + vel * 10. );
+		
+//		if( ofGetFrameNum() % 30 == 0 )
+//		{
+//			cout << "getRoll(): "<< getRoll() << endl;
+//			cout << "getPitch(): " << getPitch() << endl;
+//		}
+		
 	}
-//	if(!viewport.inside( ofGetMouseX(), ofGetMouseY()) && bExploreMode){
-//		cout << "mouse not in view port" << ofGetFrameNum()<< endl;
-//	}
 }
 //----------------------------------------
 void CloudsOrthoCamera::begin(ofRectangle viewport ){
