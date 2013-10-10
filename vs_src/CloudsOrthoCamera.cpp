@@ -119,7 +119,7 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 		float pitchScale = .01;
 		
 		//convert mouse coords in to somethin we can work with
-		float mx = ofMap( ofGetMouseX(), viewport.getLeft(), viewport.getRight(), 1., -1., true );
+		float mx = ofMap( ofGetMouseX(), viewport.getLeft(), viewport.getRight(), -1., 1., true );
 		float my = ofMap( ofGetMouseY(), viewport.getTop(), viewport.getBottom(), -1., 1., true );
 		float dist = ofVec2f(mx, my).length();
 		

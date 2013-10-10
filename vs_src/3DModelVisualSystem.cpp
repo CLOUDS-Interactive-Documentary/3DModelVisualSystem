@@ -410,7 +410,7 @@ void CloudsVisualSystem3DModel::selfDraw()
 	
 	updateModelTransform();
 	
-//	aimMultipleViews( modelTransform.getPosition() );
+	aimMultipleViews( modelTransform.getPosition() );
 	
 	//draw from single view
 	if( bFourView )
