@@ -75,7 +75,7 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 	}
 	
 	
-	if( bExploreMode && !ofGetMousePressed()) //  viewport.inside( ofGetMouseX(), ofGetMouseY())
+	if( bExploreMode && !ofGetMousePressed() && viewport.inside( ofGetMouseX(), ofGetMouseY() ) )
 	{
 		float mouseScl = .5;
 		float moveZone = .1;
@@ -110,7 +110,7 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 		target.setPosition( getPosition() + vel * 10. );
 	}
 	
-	if(bOrbitMode)
+	if(bOrbitMode && viewport.inside( ofGetMouseX(), ofGetMouseY() ) )
 	{
 		//TODO: make getters and setters for these attributes
 		float mouseScl = .5;
