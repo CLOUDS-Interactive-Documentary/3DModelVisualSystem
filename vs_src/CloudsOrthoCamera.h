@@ -57,6 +57,7 @@ public:
 	
 	bool bExploreMode;
 	bool bOrbitMode;
+	bool bDisableEasyCamControls;
 	
 private:
 	void setDistance(float distance, bool save);

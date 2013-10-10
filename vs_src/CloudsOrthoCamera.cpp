@@ -44,6 +44,10 @@ CloudsOrthoCamera::CloudsOrthoCamera(){
 	enableMouseInput();
 	
 	orthoViewScale = 1.;
+	
+	bDisableEasyCamControls = false;
+	bOrbitMode = true;
+	bExploreMode = false;
 }
 
 //----------------------------------------
@@ -56,7 +60,7 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
         setDistance(getImagePlaneDistance(viewport), true);
     }
 	
-    if(bMouseInputEnabled){
+    if(bDisableEasyCamControls && bMouseInputEnabled){
 		
 		rotationFactor = sensitivityRot * 180 / min(viewport.width, viewport.height);
 		if (bMouseInputEnabled) {
@@ -108,6 +112,7 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 	
 	if(bOrbitMode)
 	{
+		//TODO: make getters and setters for these attributes
 		float mouseScl = .5;
 		float deadZone = .1;
 		float cameraSpeed = 1.;
@@ -115,25 +120,25 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 		
 		//convert mouse coords in to somethin we can work with
 		float mx = ofMap( ofGetMouseX(), viewport.getLeft(), viewport.getRight(), 1., -1., true );
-		float my = ofMap( ofGetMouseY(), viewport.getTop(), viewport.getBottom(), 1., -1., true );
+		float my = ofMap( ofGetMouseY(), viewport.getTop(), viewport.getBottom(), -1., 1., true );
 		float dist = ofVec2f(mx, my).length();
 		
 		if(dist > deadZone)
 		{
+			//the deadzone is an area in the center of the screen where we don't rotate
 			float weight = ofMap( dist - deadZone, 0, 1, 0, 1, true );
-			
 			
 			//so that we don't rotate past verticle we'll scale down our rotation as it approaches 90 degrees
 			float xScl = ofMap( abs(getRoll()), 60, 89, 1, 0, true );
 			
+			//get our rotation values and update the rotation aroundd the target
 			xRot = my * weight * mouseScl * xScl;
 			yRot = mx * weight * mouseScl;
 			zRot = 0;
-			
 			updateRotation();
 			
-			roll( getPitch() * -pitchScale );
-			
+			//auto level
+			roll( getPitch() * -pitchScale ); // it seems like easy cams get pitch and get roll are reversed...
 		}
 	}
 }

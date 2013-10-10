@@ -119,6 +119,7 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	cameraViewsGui->copyCanvasProperties(gui);
 	cameraViewsGui->setName("cameraViewsGui");
 	cameraViewsGui->setWidgetFontSize(OFX_UI_FONT_SMALL);
+	cameraViewsGui->addToggle("enableEasyCam controls", &perspCam.bDisableEasyCamControls );
 	cameraViewsGui->addSpacer();
 	cameraViewsGui->addRadio("camera views", viewNames );
 	
