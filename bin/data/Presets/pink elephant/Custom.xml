@@ -1,7 +1,7 @@
 <Canvas>
     <Kind>42</Kind>
     <Name>Custom</Name>
-    <IsMinified>1</IsMinified>
+    <IsMinified>0</IsMinified>
     <XPosition>1.000000000</XPosition>
     <YPosition>1.000000000</YPosition>
 </Canvas>
@@ -63,6 +63,11 @@
 <Widget>
     <Kind>2</Kind>
     <Name>Man_Bicycle.obj</Name>
+    <Value>0</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>voronoi.obj</Name>
     <Value>0</Value>
 </Widget>
 <Widget>

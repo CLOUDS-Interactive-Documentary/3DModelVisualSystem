@@ -1,10 +1,15 @@
 <Canvas>
     <Kind>42</Kind>
     <Name>cameraViewsGui</Name>
-    <IsMinified>1</IsMinified>
-    <XPosition>1.000000000</XPosition>
-    <YPosition>93.000000000</YPosition>
+    <IsMinified>0</IsMinified>
+    <XPosition>425.000000000</XPosition>
+    <YPosition>319.000000000</YPosition>
 </Canvas>
+<Widget>
+    <Kind>2</Kind>
+    <Name>enableEasyCam controls</Name>
+    <Value>1</Value>
+</Widget>
 <Widget>
     <Kind>2</Kind>
     <Name>front view</Name>

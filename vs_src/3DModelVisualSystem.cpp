@@ -352,6 +352,9 @@ void CloudsVisualSystem3DModel::selfSetup()
 	
 	//setup boundBox vbo
 	setupBoundingBoxVbo();
+	
+	
+	setupMultipleCameras( ofVec3f( 0, 100, 0) );
 }
 
 // selfPresetLoaded is called whenever a new preset is triggered
@@ -359,9 +362,6 @@ void CloudsVisualSystem3DModel::selfSetup()
 // refresh anything that a preset may offset, such as stored colors or particles
 void CloudsVisualSystem3DModel::selfPresetLoaded(string presetPath)
 {
-	calcBoundingBox();
-	updateModelTransform();
-	setupMultipleCameras( modelTransform.getPosition() );
 }
 
 // selfBegin is called when the system is ready to be shown
@@ -369,9 +369,6 @@ void CloudsVisualSystem3DModel::selfPresetLoaded(string presetPath)
 // but try to keep it light weight as to not cause stuttering
 void CloudsVisualSystem3DModel::selfBegin()
 {
-	calcBoundingBox();
-	updateModelTransform();
-	setupMultipleCameras( modelTransform.getPosition() );
 }
 
 //do things like ofRotate/ofTranslate here
@@ -763,13 +760,15 @@ void CloudsVisualSystem3DModel::loadModel( string fileName, bool bSmoothMesh )
 	if(bSmoothMesh)
 	{
 		smoothMesh( modelMesh, modelMesh );
+	}else{
+		facetMesh( modelMesh, modelMesh );
 	}
 	
 	updateModelTransform();
 	
 	cout << modelTransform.getPosition() << endl;
 	
-	setupMultipleCameras( modelTransform.getPosition() );
+	aimMultipleViews( modelTransform.getPosition() );
 }
 
 string CloudsVisualSystem3DModel::vec3ToString( ofVec3f v, int precision )

@@ -129,7 +129,7 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 			float weight = ofMap( dist - deadZone, 0, 1, 0, 1, true );
 			
 			//so that we don't rotate past verticle we'll scale down our rotation as it approaches 90 degrees
-			float xScl = ofMap( abs(getRoll()), 60, 89, 1, 0, true );
+			float xScl = 1.;//ofMap( abs(getRoll()), 60, 80, 1, 0, true );
 			
 			//get our rotation values and update the rotation aroundd the target
 			xRot = my * weight * mouseScl * xScl;
