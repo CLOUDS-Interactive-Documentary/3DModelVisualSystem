@@ -333,7 +333,8 @@ void CloudsVisualSystem3DModel::selfSetup()
 	
 	colorMap.loadImage( getVisualSystemDataPath() + "GUI/defaultColorPalette.png" );
 	
-	perspCam.bExploreMode = true;
+	perspCam.bExploreMode = false;
+	perspCam.bOrbitMode = true;
 	
 	//load our shaders
 	loadShaders();
@@ -1012,7 +1013,6 @@ void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle v
 	ofPopMatrix();
 	
 	gridShader.end();
-	
 	
 	//draw wireframe view cameras to the scene
 	drawMultipleViewCameras( cameraLineScale, cam );

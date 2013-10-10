@@ -104,13 +104,37 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 		move( vel * ofClamp(1. - dist, 0, 1) * cameraSpeed );
 		
 		target.setPosition( getPosition() + vel * 10. );
+	}
+	
+	if(bOrbitMode)
+	{
+		float mouseScl = .5;
+		float deadZone = .1;
+		float cameraSpeed = 1.;
+		float pitchScale = .01;
 		
-//		if( ofGetFrameNum() % 30 == 0 )
-//		{
-//			cout << "getRoll(): "<< getRoll() << endl;
-//			cout << "getPitch(): " << getPitch() << endl;
-//		}
+		//convert mouse coords in to somethin we can work with
+		float mx = ofMap( ofGetMouseX(), viewport.getLeft(), viewport.getRight(), 1., -1., true );
+		float my = ofMap( ofGetMouseY(), viewport.getTop(), viewport.getBottom(), 1., -1., true );
+		float dist = ofVec2f(mx, my).length();
 		
+		if(dist > deadZone)
+		{
+			float weight = ofMap( dist - deadZone, 0, 1, 0, 1, true );
+			
+			
+			//so that we don't rotate past verticle we'll scale down our rotation as it approaches 90 degrees
+			float xScl = ofMap( abs(getRoll()), 60, 89, 1, 0, true );
+			
+			xRot = my * weight * mouseScl * xScl;
+			yRot = mx * weight * mouseScl;
+			zRot = 0;
+			
+			updateRotation();
+			
+			roll( getPitch() * -pitchScale );
+			
+		}
 	}
 }
 //----------------------------------------
@@ -280,6 +304,8 @@ void CloudsOrthoCamera::updateTranslation(){
 	}
 	move((getXAxis() * moveX) + (getYAxis() * moveY) + (getZAxis() * moveZ));
 	
+	
+	//ortho zoom
 	if( getOrtho() )	orthoViewScale = ofClamp( orthoViewScale + moveZ * .01, .1, 100 );
 }
 //----------------------------------------

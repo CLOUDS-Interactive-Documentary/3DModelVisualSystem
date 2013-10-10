@@ -56,6 +56,7 @@ public:
 	
 	
 	bool bExploreMode;
+	bool bOrbitMode;
 	
 private:
 	void setDistance(float distance, bool save);
