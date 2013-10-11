@@ -110,36 +110,44 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 		target.setPosition( getPosition() + vel * 10. );
 	}
 	
-	if(bOrbitMode && viewport.inside( ofGetMouseX(), ofGetMouseY() ) )
+	if(bOrbitMode)
 	{
 		//TODO: make getters and setters for these attributes
 		float mouseScl = .5;
-		float deadZone = .1;
-		float cameraSpeed = 1.;
+		float deadZone = .05;
+		float cameraSpeed = 2.;
 		float pitchScale = .01;
+		float tiltLimit = 80;
+		float orbitVelAttenuation = .97;
 		
 		//convert mouse coords in to somethin we can work with
 		float mx = ofMap( ofGetMouseX(), viewport.getLeft(), viewport.getRight(), -1., 1., true );
 		float my = ofMap( ofGetMouseY(), viewport.getTop(), viewport.getBottom(), -1., 1., true );
 		float dist = ofVec2f(mx, my).length();
 		
-		if(dist > deadZone)
+		//get our rotation values and update the rotation aroundd the target
+		float xScl = ofMap( abs(getRoll()), 60, tiltLimit, 1, 0, true );
+		
+		//orbit velocity attenuation
+		orbitVel *= orbitVelAttenuation;
+		
+		if(dist > deadZone && viewport.inside( ofGetMouseX(), ofGetMouseY() ) )
 		{
 			//the deadzone is an area in the center of the screen where we don't rotate
 			float weight = ofMap( dist - deadZone, 0, 1, 0, 1, true );
 			
-			//so that we don't rotate past verticle we'll scale down our rotation as it approaches 90 degrees
-			float xScl = 1.;//ofMap( abs(getRoll()), 60, 80, 1, 0, true );
-			
-			//get our rotation values and update the rotation aroundd the target
-			xRot = my * weight * mouseScl * xScl;
-			yRot = mx * weight * mouseScl;
-			zRot = 0;
-			updateRotation();
-			
-			//auto level
-			roll( getPitch() * -pitchScale ); // it seems like easy cams get pitch and get roll are reversed...
+			//so that we don't rotate past verticle we'll scale down our rotation as it approaches verticle(tiltLimit)
+			orbitVel.x = ofClamp( orbitVel.x + .02 * my * weight * mouseScl, -tiltLimit, tiltLimit);
+			orbitVel.y += .02 * mx * weight * mouseScl;
 		}
+		
+		xRot = orbitVel.x * xScl;
+		yRot = orbitVel.y;
+		zRot = 0;
+		updateRotation();
+		
+		//auto level
+		roll( getPitch() * -pitchScale ); // it seems like easy cam's get pitch and get roll are reversed...
 	}
 }
 //----------------------------------------

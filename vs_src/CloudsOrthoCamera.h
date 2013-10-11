@@ -110,4 +110,6 @@ private:
 	ofRectangle viewport;// having the  viewport saved localy will make it easier for all the needed maths dealing with viewport.
 	
 	float orthoViewScale;
+	
+	ofVec2f orbitVel;
 };
