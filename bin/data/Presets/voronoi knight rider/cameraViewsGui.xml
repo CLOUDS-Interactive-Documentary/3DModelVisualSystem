@@ -1,9 +1,9 @@
 <Canvas>
     <Kind>42</Kind>
     <Name>cameraViewsGui</Name>
-    <IsMinified>1</IsMinified>
-    <XPosition>1.000000000</XPosition>
-    <YPosition>93.000000000</YPosition>
+    <IsMinified>0</IsMinified>
+    <XPosition>965.000000000</XPosition>
+    <YPosition>66.000000000</YPosition>
 </Canvas>
 <Widget>
     <Kind>2</Kind>
@@ -34,4 +34,49 @@
     <Kind>2</Kind>
     <Name>four view</Name>
     <Value>0</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>mouseScl</Name>
+    <Value>1.000000000</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>deadZone</Name>
+    <Value>0.050000001</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>cameraSpeed</Name>
+    <Value>4.945812702</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>pitchScale</Name>
+    <Value>0.010000000</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>tiltLimit</Name>
+    <Value>50.270935059</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>orbitVelAttenuation</Name>
+    <Value>0.987182736</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>minOrbitDistance</Name>
+    <Value>127.044334412</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>maxOrbitDistance</Name>
+    <Value>395.270935059</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>orbitZoomFrequency</Name>
+    <Value>1.000000000</Value>
 </Widget>
