@@ -156,11 +156,14 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 		if(dist > deadZone && viewport.inside( ofGetMouseX(), ofGetMouseY() ) )
 		{
 			//the deadzone is an area in the center of the screen where we don't rotate
-			float weight = ofMap( dist - deadZone, 0, 1, 0, 1, true );
+			float weight = ofMap( dist - deadZone, deadZone, 1, 0, 1, true );
+			
+			//exponentially scale the weight 
+			weight *= weight;
 			
 			//so that we don't rotate past verticle we'll scale down our rotation as it approaches verticle(tiltLimit)
 			orbitVel.x = ofClamp( orbitVel.x + (1. - orbitVelAttenuation) * my * weight * mouseScl, -tiltLimit, tiltLimit);
-			orbitVel.y += .02 * mx * weight * mouseScl;
+			orbitVel.y += (1. - orbitVelAttenuation) * mx * weight * mouseScl;
 		}
 		
 		xRot = orbitVel.x * xScl;
