@@ -9,6 +9,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "CloudsVisualSystem.h"
 
 class CloudsOrthoCamera : public ofCamera {
 public:
@@ -72,6 +73,9 @@ public:
 		return minOrbitDistance;
 	}
 	
+	void addSlidersToGui( ofxUISuperCanvas* gui, string label );
+	
+	
 private:
 	void setDistance(float distance, bool save);
 	
@@ -126,4 +130,8 @@ private:
 	
 	ofVec2f orbitVel;
 	float maxOrbitDistance, minOrbitDistance, orbitZoomFrequency;
+	
+	
+	ofxUISuperCanvas* gui;
+	float mouseScl, deadZone, cameraSpeed, pitchScale, tiltLimit, orbitVelAttenuation;
 };

@@ -51,12 +51,38 @@ CloudsOrthoCamera::CloudsOrthoCamera(){
 	
 	
 	maxOrbitDistance = 300 ,minOrbitDistance = 100, orbitZoomFrequency = 2.;
+	
+	
+	mouseScl = .5;
+	deadZone = .05;
+	cameraSpeed = 4.;
+	pitchScale = .01;
+	tiltLimit = 70;
+	orbitVelAttenuation = .97;
 }
 
 //----------------------------------------
 CloudsOrthoCamera::~CloudsOrthoCamera(){
 	disableMouseInput();
 }
+
+
+
+void CloudsOrthoCamera::addSlidersToGui( ofxUISuperCanvas* gui, string label )
+{
+	gui->addLabel( label );
+	gui->addSlider("mouseScl", 0, 1, &mouseScl );
+	gui->addSlider("deadZone", 0, .3, &deadZone );
+	gui->addSlider("cameraSpeed", 1, 10, &cameraSpeed );
+	gui->addSlider("pitchScale", 0.001, .05, &pitchScale );
+	gui->addSlider("tiltLimit", 10, 85, &tiltLimit );
+	gui->addSlider("orbitVelAttenuation", .8, .99999, &orbitVelAttenuation );
+	
+	gui->addSlider("minOrbitDistance", 10, 1000, &minOrbitDistance);
+	gui->addSlider("maxOrbitDistance", 10, 1000, &maxOrbitDistance);
+	gui->addSlider("orbitZoomFrequency", 1, 2, &orbitZoomFrequency);
+}
+
 //----------------------------------------
 void CloudsOrthoCamera::update(ofEventArgs & args){
     if(!bDistanceSet && bAutoDistance){
@@ -80,19 +106,19 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 	
 	if( bExploreMode && !ofGetMousePressed() && viewport.inside( ofGetMouseX(), ofGetMouseY() ) )
 	{
-		float mouseScl = .5;
-		float moveZone = .1;
-		float cameraSpeed = 1.;
-		float pitchScale = .005;
+//		float mouseScl = .5;
+//		float moveZone = .1;
+//		float cameraSpeed = 1.;
+//		float pitchScale = .005;
 		
 		//convert mouse coords in to somethin we can work with
 		float mx = ofMap( ofGetMouseX(), viewport.getLeft(), viewport.getRight(), 1., -1., true );
 		float my = ofMap( ofGetMouseY(), viewport.getTop(), viewport.getBottom(), 1., -1., true );
 		float dist = ofVec2f(mx, my).length();
 		
-		if(dist > moveZone)
+		if(dist > deadZone)
 		{
-			float weight = ofMap( dist - moveZone, 0, 1, 0, 1, true );
+			float weight = ofMap( dist - deadZone, 0, 1, 0, 1, true );
 			
 			//dead zone in the middle where nowe just sit an stare
 			mx *= weight;
@@ -115,14 +141,6 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 	
 	if(bOrbitMode)
 	{
-		
-		//TODO: make getters and setters for these attributes
-		float mouseScl = .5;
-		float deadZone = .05;
-		float cameraSpeed = 4.;
-		float pitchScale = .01;
-		float tiltLimit = 70;
-		float orbitVelAttenuation = .97;
 		
 		//convert mouse coords in to somethin we can work with
 		float mx = ofMap( ofGetMouseX(), viewport.getLeft(), viewport.getRight(), -1., 1., true );

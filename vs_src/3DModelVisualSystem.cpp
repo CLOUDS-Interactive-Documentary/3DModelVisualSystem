@@ -123,6 +123,9 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	cameraViewsGui->addSpacer();
 	cameraViewsGui->addRadio("camera views", viewNames );
 	
+	
+	perspCam.addSlidersToGui( cameraViewsGui, "orbit cam" );
+	
 	ofAddListener(cameraViewsGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
 	guis.push_back(cameraViewsGui);
 	guimap[cameraViewsGui->getName()] = cameraViewsGui;
@@ -312,7 +315,7 @@ void CloudsVisualSystem3DModel::selfSetup()
 	fogFalloffScale = 1.2;
 	gridAlphaScale = 1.;
 	gridLineWidth = 1.;
-	gridDim = 1000;
+	gridDim = 2000;
 	majorGridLineWidth = 1.5;
 	gridColor.set(255);
 	gridMajorColor.set(255);
