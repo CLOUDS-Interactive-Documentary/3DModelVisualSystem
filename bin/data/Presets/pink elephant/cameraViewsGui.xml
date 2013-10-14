@@ -1,9 +1,9 @@
 <Canvas>
     <Kind>42</Kind>
     <Name>cameraViewsGui</Name>
-    <IsMinified>1</IsMinified>
-    <XPosition>1.000000000</XPosition>
-    <YPosition>93.000000000</YPosition>
+    <IsMinified>0</IsMinified>
+    <XPosition>905.000000000</XPosition>
+    <YPosition>79.000000000</YPosition>
 </Canvas>
 <Widget>
     <Kind>2</Kind>
@@ -57,8 +57,13 @@
 </Widget>
 <Widget>
     <Kind>4</Kind>
-    <Name>tiltLimit</Name>
-    <Value>50.270935059</Value>
+    <Name>minTilt</Name>
+    <Value>0.886703491</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>maxTilt</Name>
+    <Value>38.719207764</Value>
 </Widget>
 <Widget>
     <Kind>4</Kind>
@@ -68,12 +73,12 @@
 <Widget>
     <Kind>4</Kind>
     <Name>minOrbitDistance</Name>
-    <Value>127.044334412</Value>
+    <Value>400.147766113</Value>
 </Widget>
 <Widget>
     <Kind>4</Kind>
     <Name>maxOrbitDistance</Name>
-    <Value>395.270935059</Value>
+    <Value>565.960632324</Value>
 </Widget>
 <Widget>
     <Kind>4</Kind>

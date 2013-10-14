@@ -46,7 +46,7 @@ CloudsOrthoCamera::CloudsOrthoCamera(){
 	orthoViewScale = 1.;
 	
 	bDisableEasyCamControls = false;
-	bOrbitMode = true;
+	bOrbitMode = false;
 	bExploreMode = false;
 	
 	
