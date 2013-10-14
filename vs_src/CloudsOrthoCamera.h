@@ -133,5 +133,5 @@ private:
 	
 	
 	ofxUISuperCanvas* gui;
-	float mouseScl, deadZone, cameraSpeed, pitchScale, tiltLimit, orbitVelAttenuation;
+	float mouseScl, deadZone, cameraSpeed, pitchScale, tiltLimit, orbitVelAttenuation, minTilt, maxTilt;
 };

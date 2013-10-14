@@ -57,7 +57,8 @@ CloudsOrthoCamera::CloudsOrthoCamera(){
 	deadZone = .05;
 	cameraSpeed = 4.;
 	pitchScale = .01;
-	tiltLimit = 70;
+	minTilt = -20;
+	maxTilt = 50;
 	orbitVelAttenuation = .97;
 }
 
@@ -75,7 +76,8 @@ void CloudsOrthoCamera::addSlidersToGui( ofxUISuperCanvas* gui, string label )
 	gui->addSlider("deadZone", 0, .3, &deadZone );
 	gui->addSlider("cameraSpeed", 1, 10, &cameraSpeed );
 	gui->addSlider("pitchScale", 0.001, .05, &pitchScale );
-	gui->addSlider("tiltLimit", 10, 85, &tiltLimit );
+	gui->addSlider("minTilt", -60, 60, &minTilt );
+	gui->addSlider("maxTilt", -60, 60, &maxTilt );
 	gui->addSlider("orbitVelAttenuation", .8, .99999, &orbitVelAttenuation );
 	
 	gui->addSlider("minOrbitDistance", 10, 1000, &minOrbitDistance);
@@ -141,18 +143,28 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 	
 	if(bOrbitMode)
 	{
-		
 		//convert mouse coords in to somethin we can work with
 		float mx = ofMap( ofGetMouseX(), viewport.getLeft(), viewport.getRight(), -1., 1., true );
 		float my = ofMap( ofGetMouseY(), viewport.getTop(), viewport.getBottom(), -1., 1., true );
 		float dist = ofVec2f(mx, my).length();
 		
 		//get our rotation values and update the rotation aroundd the target
-		float xScl = ofMap( abs(getRoll()), 0, tiltLimit, 1, 0, true );
+		float xScl = 1.;
+		float ourRoll = -getRoll();
+		
+		float rollMix = ofMap( ourRoll, min(minTilt, maxTilt), max(minTilt, maxTilt), -1, 1, true );
+		
+		if( (my < 0 && rollMix > 0) || (my>0 && rollMix < 0))
+		{
+			xScl *= 1. - abs( rollMix );
+		}
+
 		
 		//orbit velocity attenuation
 		orbitVel *= orbitVelAttenuation;
+		float invAtt = 1. - orbitVelAttenuation;
 		
+		//mouse input
 		if(dist > deadZone && viewport.inside( ofGetMouseX(), ofGetMouseY() ) )
 		{
 			//the deadzone is an area in the center of the screen where we don't rotate
@@ -161,21 +173,19 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 			//exponentially scale the weight 
 			weight *= weight;
 			
-			//so that we don't rotate past verticle we'll scale down our rotation as it approaches verticle(tiltLimit)
-			orbitVel.x = ofClamp( orbitVel.x + (1. - orbitVelAttenuation) * my * weight * mouseScl, -tiltLimit, tiltLimit);
-			orbitVel.y += (1. - orbitVelAttenuation) * mx * weight * mouseScl;
+			//so that we don't rotate past verticle we'll scale down our rotation as it approaches our tilt limits
+			orbitVel.x += invAtt * my * mouseScl * weight * xScl;
+			orbitVel.y += invAtt * mx * mouseScl * weight;
 		}
 		
 		xRot = orbitVel.x * xScl;
-		yRot = ofClamp( orbitVel.y, -tiltLimit, tiltLimit);
+		yRot = orbitVel.y;
 		zRot = 0;
 		
 		updateRotation();
 		
 		//auto level
 		roll( getPitch() * -pitchScale ); // it seems like easy cam's get pitch and get roll are reversed...
-
-		
 		
 		//set distance
 		ofVec3f tPos = getTarget().getPosition();
@@ -187,9 +197,6 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 		float targetDistance = ofMap(mixval, -1, 1, minOrbitDistance, maxOrbitDistance, true);
 		
 		setDistance( targetDistance );
-//
-//		float currentDistance = getPosition().distance( tPos );
-//		setPosition( delta.normalized() * targetDistance + tPos );
 	}
 }
 //----------------------------------------
