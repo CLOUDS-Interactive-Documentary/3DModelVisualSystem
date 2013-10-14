@@ -600,6 +600,7 @@ void CloudsVisualSystem3DModel::setupMultipleCameras( ofVec3f targetPos, float d
 	frontCam.setPosition(0, targetPos.y, -distance + targetPos.z );
 	
 	perspCam.setPosition( frontCam.getPosition() );
+	perspCam.setTarget( targetPos );
 	
 	aimMultipleViews( targetPos );
 	
@@ -751,6 +752,8 @@ void CloudsVisualSystem3DModel::drawBoundingBox()
 
 void CloudsVisualSystem3DModel::loadModel( string fileName, bool bSmoothMesh )
 {
+//	perspCam.reset();
+	
 	ofxObjLoader::load( getVisualSystemDataPath() + fileName, modelMesh, true );
 	calcBoundingBox();
 	
@@ -766,9 +769,7 @@ void CloudsVisualSystem3DModel::loadModel( string fileName, bool bSmoothMesh )
 	
 	updateModelTransform();
 	
-	cout << modelTransform.getPosition() << endl;
-	
-	aimMultipleViews( modelTransform.getPosition() );
+	setupMultipleCameras( modelTransform.getPosition() );
 }
 
 string CloudsVisualSystem3DModel::vec3ToString( ofVec3f v, int precision )
@@ -978,8 +979,9 @@ void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle v
 	
 	
 	//draw infinite grid by positioning it infront of the camera
-	ofVec3f camPos = cam->getPosition();
-	camPos += cam->getUpDir().cross(cam->getSideDir()).normalize() * gridDim * gridScale * .5;
+	ofVec3f camPos;
+//	camPos = cam->getPosition();
+//	camPos += cam->getUpDir().cross(cam->getSideDir()).normalize() * gridDim * gridScale * .5;
 
 	ofSetColor(255,255, 255, 150 );// make this an adjustable color in th GUI
 	

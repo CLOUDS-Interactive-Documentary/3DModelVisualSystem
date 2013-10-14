@@ -121,7 +121,7 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 		float deadZone = .05;
 		float cameraSpeed = 4.;
 		float pitchScale = .01;
-		float tiltLimit = 80;
+		float tiltLimit = 70;
 		float orbitVelAttenuation = .97;
 		
 		//convert mouse coords in to somethin we can work with
@@ -130,7 +130,7 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 		float dist = ofVec2f(mx, my).length();
 		
 		//get our rotation values and update the rotation aroundd the target
-		float xScl = ofMap( abs(getRoll()), 60, tiltLimit, 1, 0, true );
+		float xScl = ofMap( abs(getRoll()), 30, tiltLimit, 1, 0, true );
 		
 		//orbit velocity attenuation
 		orbitVel *= orbitVelAttenuation;
@@ -146,24 +146,29 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 		}
 		
 		xRot = orbitVel.x * xScl;
-		yRot = orbitVel.y;
+		yRot = ofClamp( orbitVel.y, -tiltLimit, tiltLimit);
 		zRot = 0;
+		
 		updateRotation();
 		
 		//auto level
 		roll( getPitch() * -pitchScale ); // it seems like easy cam's get pitch and get roll are reversed...
+
+		
 		
 		//set distance
 		ofVec3f tPos = getTarget().getPosition();
+		ofVec3f delta = getPosition() - tPos;
 		ofVec3f orientation = getOrientationEuler();
 		
 		float mixval = ofMap( orientation.y, -180, 180, -1, 1, true);
 		mixval = cos(mixval * PI * orbitZoomFrequency);
 		float targetDistance = ofMap(mixval, -1, 1, minOrbitDistance, maxOrbitDistance, true);
 		
-		ofVec3f targetDelta = (tPos - getPosition()).normalized() * targetDistance;
-		
-		setPosition(tPos - targetDelta);
+		setDistance( targetDistance );
+//
+//		float currentDistance = getPosition().distance( tPos );
+//		setPosition( delta.normalized() * targetDistance + tPos );
 	}
 }
 //----------------------------------------
