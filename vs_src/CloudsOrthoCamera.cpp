@@ -148,7 +148,7 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 		float dist = ofVec2f(mx, my).length();
 		
 		//get our rotation values and update the rotation aroundd the target
-		float xScl = ofMap( abs(getRoll()), 30, tiltLimit, 1, 0, true );
+		float xScl = ofMap( abs(getRoll()), 0, tiltLimit, 1, 0, true );
 		
 		//orbit velocity attenuation
 		orbitVel *= orbitVelAttenuation;
@@ -159,7 +159,7 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 			float weight = ofMap( dist - deadZone, 0, 1, 0, 1, true );
 			
 			//so that we don't rotate past verticle we'll scale down our rotation as it approaches verticle(tiltLimit)
-			orbitVel.x = ofClamp( orbitVel.x + .02 * my * weight * mouseScl, -tiltLimit, tiltLimit);
+			orbitVel.x = ofClamp( orbitVel.x + (1. - orbitVelAttenuation) * my * weight * mouseScl, -tiltLimit, tiltLimit);
 			orbitVel.y += .02 * mx * weight * mouseScl;
 		}
 		

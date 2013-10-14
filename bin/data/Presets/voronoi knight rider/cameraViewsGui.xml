@@ -2,8 +2,8 @@
     <Kind>42</Kind>
     <Name>cameraViewsGui</Name>
     <IsMinified>0</IsMinified>
-    <XPosition>965.000000000</XPosition>
-    <YPosition>66.000000000</YPosition>
+    <XPosition>373.000000000</XPosition>
+    <YPosition>68.000000000</YPosition>
 </Canvas>
 <Widget>
     <Kind>2</Kind>
@@ -63,7 +63,7 @@
 <Widget>
     <Kind>4</Kind>
     <Name>orbitVelAttenuation</Name>
-    <Value>0.987182736</Value>
+    <Value>0.972405195</Value>
 </Widget>
 <Widget>
     <Kind>4</Kind>
