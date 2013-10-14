@@ -142,9 +142,7 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 	}
 	
 	if(bOrbitMode)
-	{
-		cout << "wtf" << endl;
-		
+	{	
 		//convert mouse coords in to somethin we can work with
 		float mx = ofMap( ofGetMouseX(), viewport.getLeft(), viewport.getRight(), -1., 1., true );
 		float my = ofMap( ofGetMouseY(), viewport.getTop(), viewport.getBottom(), -1., 1., true );
