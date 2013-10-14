@@ -340,6 +340,10 @@ void CloudsVisualSystem3DModel::selfSetup()
 	perspCam.bExploreMode = false;
 	perspCam.bOrbitMode = true;
 	
+	leftCam.bDisableEasyCamControls = false;
+	planCam.bDisableEasyCamControls = false;
+	frontCam.bDisableEasyCamControls = false;
+	
 	//load our shaders
 	loadShaders();
 	

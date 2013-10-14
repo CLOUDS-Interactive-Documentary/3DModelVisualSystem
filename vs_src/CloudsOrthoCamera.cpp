@@ -91,7 +91,7 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
         setDistance(getImagePlaneDistance(viewport), true);
     }
 	
-    if(bDisableEasyCamControls && bMouseInputEnabled){
+    if( !bDisableEasyCamControls && bMouseInputEnabled){
 		
 		rotationFactor = sensitivityRot * 180 / min(viewport.width, viewport.height);
 		if (bMouseInputEnabled) {
@@ -143,6 +143,8 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 	
 	if(bOrbitMode)
 	{
+		cout << "wtf" << endl;
+		
 		//convert mouse coords in to somethin we can work with
 		float mx = ofMap( ofGetMouseX(), viewport.getLeft(), viewport.getRight(), -1., 1., true );
 		float my = ofMap( ofGetMouseY(), viewport.getTop(), viewport.getBottom(), -1., 1., true );
@@ -193,7 +195,7 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 		ofVec3f orientation = getOrientationEuler();
 		
 		float mixval = ofMap( orientation.y, -180, 180, -1, 1, true);
-		mixval = cos(mixval * PI * orbitZoomFrequency);
+		mixval = cos(mixval * PI * orbitZoomFrequency); // either 1, 2, 4
 		float targetDistance = ofMap(mixval, -1, 1, minOrbitDistance, maxOrbitDistance, true);
 		
 		setDistance( targetDistance );

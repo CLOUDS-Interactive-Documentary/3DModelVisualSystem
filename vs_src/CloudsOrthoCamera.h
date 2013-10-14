@@ -56,10 +56,6 @@ public:
 	ofMatrix4x4 getModelViewMatrix(ofRectangle viewport = ofGetCurrentViewport()) const;
 	
 	
-	bool bExploreMode;
-	bool bOrbitMode;
-	bool bDisableEasyCamControls;
-	
 	void setMaxOrbitDistance( float dist ){
 		maxOrbitDistance = dist;
 	}
@@ -74,6 +70,10 @@ public:
 	}
 	
 	void addSlidersToGui( ofxUISuperCanvas* gui, string label );
+	
+	bool bExploreMode;
+	bool bOrbitMode;
+	bool bDisableEasyCamControls;
 	
 	
 private:
