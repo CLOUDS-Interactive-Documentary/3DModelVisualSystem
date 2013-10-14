@@ -50,7 +50,7 @@ CloudsOrthoCamera::CloudsOrthoCamera(){
 	bExploreMode = false;
 	
 	
-	maxOrbitDistance = 300 ,minOrbitDistance = 100;
+	maxOrbitDistance = 300 ,minOrbitDistance = 100, orbitZoomFrequency = 2.;
 }
 
 //----------------------------------------
@@ -158,7 +158,7 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 		ofVec3f orientation = getOrientationEuler();
 		
 		float mixval = ofMap( orientation.y, -180, 180, -1, 1, true);
-		mixval = cos(mixval * PI);
+		mixval = cos(mixval * PI * orbitZoomFrequency);
 		float targetDistance = ofMap(mixval, -1, 1, minOrbitDistance, maxOrbitDistance, true);
 		
 		ofVec3f targetDelta = (tPos - getPosition()).normalized() * targetDistance;

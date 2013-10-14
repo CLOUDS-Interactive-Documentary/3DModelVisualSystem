@@ -125,5 +125,5 @@ private:
 	float orthoViewScale;
 	
 	ofVec2f orbitVel;
-	float maxOrbitDistance, minOrbitDistance;
+	float maxOrbitDistance, minOrbitDistance, orbitZoomFrequency;
 };
