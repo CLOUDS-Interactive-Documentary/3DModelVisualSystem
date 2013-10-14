@@ -49,9 +49,9 @@ CloudsOrthoCamera::CloudsOrthoCamera(){
 	bOrbitMode = false;
 	bExploreMode = false;
 	
-	
-	maxOrbitDistance = 300 ,minOrbitDistance = 100, orbitZoomFrequency = 2.;
-	
+	maxOrbitDistance = 300;
+	minOrbitDistance = 100;
+	orbitZoomFrequency = 2.;
 	
 	mouseScl = .5;
 	deadZone = .05;

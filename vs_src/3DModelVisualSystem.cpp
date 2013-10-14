@@ -599,16 +599,20 @@ void CloudsVisualSystem3DModel::setupMultipleCameras( ofVec3f targetPos, float d
 {
 	leftCam.enableOrtho();
 	leftCam.setPosition(-distance + targetPos.x, targetPos.y, 0 );
+	leftCam.setTarget( targetPos );
 	
 	planCam.enableOrtho();
 	planCam.setPosition( targetPos.x, targetPos.y + distance, targetPos.z );
-	
+	planCam.setTarget( targetPos );
+	planCam.lookAt( targetPos, ofVec3f(0,0,1) );
+
 	frontCam.enableOrtho();
 	frontCam.setPosition(0, targetPos.y, -distance + targetPos.z );
+	frontCam.setTarget( targetPos );
 	
 	perspCam.setPosition( frontCam.getPosition() );
 	perspCam.setTarget( targetPos );
-	
+
 	aimMultipleViews( targetPos );
 	
 }
@@ -616,7 +620,7 @@ void CloudsVisualSystem3DModel::setupMultipleCameras( ofVec3f targetPos, float d
 void CloudsVisualSystem3DModel::aimMultipleViews( ofVec3f targetPos )
 {
 	leftCam.lookAt( targetPos );
-	
+
 	planCam.lookAt( targetPos, ofVec3f(0,0,1) );
 	
 	frontCam.lookAt( targetPos );
