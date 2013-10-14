@@ -59,6 +59,19 @@ public:
 	bool bOrbitMode;
 	bool bDisableEasyCamControls;
 	
+	void setMaxOrbitDistance( float dist ){
+		maxOrbitDistance = dist;
+	}
+	void setMinOrbitDistance( float dist ){
+		minOrbitDistance = dist;
+	}
+	float getMaxOrbitDistance( float dist ){
+		return maxOrbitDistance;
+	}
+	void getMinOrbitDistance( float dist ){
+		return minOrbitDistance;
+	}
+	
 private:
 	void setDistance(float distance, bool save);
 	
@@ -112,4 +125,5 @@ private:
 	float orthoViewScale;
 	
 	ofVec2f orbitVel;
+	float maxOrbitDistance, minOrbitDistance;
 };

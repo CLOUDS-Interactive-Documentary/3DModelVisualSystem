@@ -48,6 +48,9 @@ CloudsOrthoCamera::CloudsOrthoCamera(){
 	bDisableEasyCamControls = false;
 	bOrbitMode = true;
 	bExploreMode = false;
+	
+	
+	maxOrbitDistance = 300 ,minOrbitDistance = 100;
 }
 
 //----------------------------------------
@@ -112,10 +115,11 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 	
 	if(bOrbitMode)
 	{
+		
 		//TODO: make getters and setters for these attributes
 		float mouseScl = .5;
 		float deadZone = .05;
-		float cameraSpeed = 2.;
+		float cameraSpeed = 4.;
 		float pitchScale = .01;
 		float tiltLimit = 80;
 		float orbitVelAttenuation = .97;
@@ -148,6 +152,18 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 		
 		//auto level
 		roll( getPitch() * -pitchScale ); // it seems like easy cam's get pitch and get roll are reversed...
+		
+		//set distance
+		ofVec3f tPos = getTarget().getPosition();
+		ofVec3f orientation = getOrientationEuler();
+		
+		float mixval = ofMap( orientation.y, -180, 180, -1, 1, true);
+		mixval = cos(mixval * PI);
+		float targetDistance = ofMap(mixval, -1, 1, minOrbitDistance, maxOrbitDistance, true);
+		
+		ofVec3f targetDelta = (tPos - getPosition()).normalized() * targetDistance;
+		
+		setPosition(tPos - targetDelta);
 	}
 }
 //----------------------------------------
