@@ -216,5 +216,7 @@ protected:
 	bool bFourView;
 	
 	bool bLeftCamIsActive, bFrontCamIsActive, bPlanCamIsActive, bPerspCamIsActive;
+	
+	bool bDrawBoundingBox, bDrawArrows, bDrawCameras, bDrawGrid;
 
 };

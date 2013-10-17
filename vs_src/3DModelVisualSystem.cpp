@@ -17,6 +17,11 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	
 	customGui->addSpacer();
 	
+	customGui->addToggle("bounding box", &bDrawBoundingBox);
+	customGui->addToggle("draw arrows", &bDrawArrows);
+	customGui->addToggle("draw cameras", &bDrawCameras);
+	customGui->addToggle("draw gid", &bDrawGrid);
+	customGui->addSpacer();
 	customGui->addToggle("smooth model", false );
 	customGui->addToggle("wireframe", &bWireframe );
 	customGui->addSlider("wireframeLinewidth", 0.5, 10, &wireframeLinewidth);
@@ -65,7 +70,6 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	gridGui->addSlider("gridMajorAlpha", 0, 255, &gridMajorAlpha );
 	gridGui->addSlider("gridMajorBrightness", 0, 1, &gridMajorBrightness );
 	gridGui->addSlider("gridAlphaScale", .5, 2., &gridAlphaScale );
-	
 	
 	gridGui->addSpacer();
 		
@@ -297,6 +301,11 @@ void CloudsVisualSystem3DModel::selfSetup()
 	
 	//set our defaults
 	videoLoaded = false;
+	
+	bDrawBoundingBox = true;
+	bDrawArrows = true;
+	bDrawCameras = true;
+	bDrawGrid = true;
 	
 	boundBoxLineWidth = 1.;
 	discardThreshold = 1.;
@@ -956,81 +965,93 @@ void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle v
 	
 	
 	//draw bounding box
-	ofSetColor(255, 255, 255, 255);
-	drawBoundingBox();
+	if(bDrawBoundingBox)
+	{	
+		ofSetColor(255, 255, 255, 255);
+		drawBoundingBox();
+	}
 	
 	ofPopMatrix();
 	
+	if(bDrawArrows)
+	{
+		//draw arrows at model's min bound
+		ofPushMatrix();
+		ofTranslate( minBound * modelTransform.getGlobalTransformMatrix() );
+		ofMultMatrix( modelTransform.getGlobalOrientation() );
+		
+		ofSetColor(0, 255, 0);
+		ofPushMatrix();
+		ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
+		arrowMesh.draw();
+		ofPopMatrix();
+		
+		ofSetColor(255, 0, 0);
+		ofPushMatrix();
+		ofRotate(90, 1, 0, 0);
+		ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
+		arrowMesh.draw();
+		ofPopMatrix();
+		
+		ofSetColor(0, 0, 255);
+		ofPushMatrix();
+		ofRotate(90, 1, 0, 0);
+		ofRotate(90, 0, 0, -1);
+		ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
+		arrowMesh.draw();
+		ofPopMatrix();
+		
+		ofPopMatrix();
+	}
 	
-	//draw arrows at model's min bound
-	ofPushMatrix();
-	ofTranslate( minBound * modelTransform.getGlobalTransformMatrix() );
-	ofMultMatrix( modelTransform.getGlobalOrientation() );
-	
-	ofSetColor(0, 255, 0);
-	ofPushMatrix();
-	ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
-	arrowMesh.draw();
-	ofPopMatrix();
-	
-	ofSetColor(255, 0, 0);
-	ofPushMatrix();
-	ofRotate(90, 1, 0, 0);
-	ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
-	arrowMesh.draw();
-	ofPopMatrix();
-	
-	ofSetColor(0, 0, 255);
-	ofPushMatrix();
-	ofRotate(90, 1, 0, 0);
-	ofRotate(90, 0, 0, -1);
-	ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
-	arrowMesh.draw();
-	ofPopMatrix();
-	
-	ofPopMatrix();
 	
 	
 	//draw infinite grid by positioning it infront of the camera
-//	ofVec3f camPos;
-//	camPos = cam->getPosition();
-//	camPos += cam->getUpDir().cross(cam->getSideDir()).normalize() * gridDim * gridScale * .5;
-
-	ofSetColor(255,255, 255, 150 );// make this an adjustable color in th GUI
-	
-	gridShader.begin();
-	gridShader.setUniform1f("halfGridDim", gridDim * .5 );
-	gridShader.setUniform1f("falloffDist", fogFalloffDistance );
-	gridShader.setUniform1f("falloffExpo", fogFalloffExpo );
-	gridShader.setUniform1f("falloffScl", fogFalloffScale );
-	gridShader.setUniform1f("alphaScale", gridAlphaScale );
-	
-	ofPushMatrix();
-	int gms = gridMajorScale;
-//	ofTranslate( floor(camPos.x/(gridScale*gms))*gms*gridScale, 0, floor(camPos.z/(gridScale*gms))*gms*gridScale);
-	
-	ofScale( gridScale * gms,gridScale * gms, gridScale * gms );
-	
-	glLineWidth( majorGridLineWidth );
-	ofSetColor( gridMajorColor.r*gridMajorBrightness, gridMajorColor.g*gridMajorBrightness, gridMajorColor.b*gridMajorBrightness, gridMajorAlpha );
-	grid.draw(GL_LINES, 0, numGridVertices );
-	
-	ofPopMatrix();
-	
-	ofPushMatrix();
-//	ofTranslate( floor(camPos.x/gridScale) * gridScale, 0, floor(camPos.z/gridScale) * gridScale );
-	ofScale( gridScale, gridScale, gridScale );
-	
-	glLineWidth( gridLineWidth );
-	ofSetColor( gridColor.r*gridBrightness, gridColor.g*gridBrightness, gridColor.b*gridBrightness, gridAlpha );
-	grid.draw(GL_LINES, 0, numGridVertices );
-	
-	ofPopMatrix();
-	
-	gridShader.end();
+	if(bDrawGrid)
+	{
+		//	ofVec3f camPos;
+		//	camPos = cam->getPosition();
+		//	camPos += cam->getUpDir().cross(cam->getSideDir()).normalize() * gridDim * gridScale * .5;
+		
+		ofSetColor(255,255, 255, 150 );// make this an adjustable color in th GUI
+		
+		gridShader.begin();
+		gridShader.setUniform1f("halfGridDim", gridDim * .5 );
+		gridShader.setUniform1f("falloffDist", fogFalloffDistance );
+		gridShader.setUniform1f("falloffExpo", fogFalloffExpo );
+		gridShader.setUniform1f("falloffScl", fogFalloffScale );
+		gridShader.setUniform1f("alphaScale", gridAlphaScale );
+		
+		ofPushMatrix();
+		int gms = gridMajorScale;
+		//	ofTranslate( floor(camPos.x/(gridScale*gms))*gms*gridScale, 0, floor(camPos.z/(gridScale*gms))*gms*gridScale);
+		
+		ofScale( gridScale * gms,gridScale * gms, gridScale * gms );
+		
+		glLineWidth( majorGridLineWidth );
+		ofSetColor( gridMajorColor.r*gridMajorBrightness, gridMajorColor.g*gridMajorBrightness, gridMajorColor.b*gridMajorBrightness, gridMajorAlpha );
+		grid.draw(GL_LINES, 0, numGridVertices );
+		
+		ofPopMatrix();
+		
+		ofPushMatrix();
+		//	ofTranslate( floor(camPos.x/gridScale) * gridScale, 0, floor(camPos.z/gridScale) * gridScale );
+		ofScale( gridScale, gridScale, gridScale );
+		
+		glLineWidth( gridLineWidth );
+		ofSetColor( gridColor.r*gridBrightness, gridColor.g*gridBrightness, gridColor.b*gridBrightness, gridAlpha );
+		grid.draw(GL_LINES, 0, numGridVertices );
+		
+		ofPopMatrix();
+		
+		gridShader.end();
+	}
 	
 	//draw wireframe view cameras to the scene
-	drawMultipleViewCameras( cameraLineScale, cam );
+	if(bDrawCameras)
+	{
+		drawMultipleViewCameras( cameraLineScale, cam );
+	}
 	
 	if( cam != NULL)	cam->end();
 }
