@@ -25,7 +25,7 @@ void main(void)
 {
 	float fr = abs(dot( -normalize(ePos), normalize( norm ) ) );
 	
-	if( fr > discardThreshold)	discard;
+//	if( fr > discardThreshold)	discard;
 	fr *= specularScale * pow( fr* .5 + .5, specularExpo);
 	
 	gl_FragColor = vec4( gl_Color.xyz + fr, gl_Color.w );
