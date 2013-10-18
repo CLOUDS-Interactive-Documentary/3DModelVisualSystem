@@ -357,7 +357,7 @@ void CloudsVisualSystem3DModel::selfSetup()
 	loadShaders();
 	
 	//load our non-model meshes
-	ofxObjLoader::load("arrow.obj", arrowMesh, true );
+	ofxObjLoader::load(getVisualSystemDataPath() + "arrow.obj", arrowMesh, true );
 	resizeTheArrowMesh( arrowRadius, arrowHeight, arrowPointHeight );
 	
 	loadCameraLineModel( cameraLines, "cameraVertices.txt" );
