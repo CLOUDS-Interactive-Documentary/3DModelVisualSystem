@@ -34,11 +34,6 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	
 	customGui->addSpacer();
 	
-	customGui->addLabel("obj files:");
-	customGui->addRadio("model files", objFiles );
-	
-	customGui->addSpacer();
-	
 	customGui->addLabel("shaders:");
 	customGui->addRadio("shaders", shaderNames );
 	
@@ -109,6 +104,11 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	modelUIGui->addSlider("arrowRadius", 1, 50, &arrowRadius);
 	modelUIGui->addSlider("arrowHeight", 1, 250, &arrowHeight);
 	modelUIGui->addSlider("arrowPointHeight", 0, .9, &arrowPointHeight);
+	
+	modelUIGui->addSpacer();
+	
+	modelUIGui->addLabel("obj files:");
+	modelUIGui->addRadio("model files", objFiles );
 
 	ofAddListener(modelUIGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
 	guis.push_back(modelUIGui);
