@@ -13,29 +13,21 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	customGui->copyCanvasProperties(gui);
 	customGui->setName("Custom");
 	customGui->setWidgetFontSize(OFX_UI_FONT_SMALL);
-	customGui->addFPS();
+//	customGui->addFPS();
 	
-	customGui->addSpacer();
+//	customGui->addSpacer();
 	
-	customGui->addSlider("globalRotation.x", -180, 180, &globalRotation.x )->setIncrement(.01);
-	customGui->addSlider("globalRotation.y", -180, 180, &globalRotation.y )->setIncrement(.01);
-	customGui->addSlider("globalRotation.z", -180, 180, &globalRotation.z )->setIncrement(.01);
-	
-	customGui->addSlider("globalRotationVel.x", -40, 40, &globalRotationVelocity.x )->setIncrement(.01);
-	customGui->addSlider("globalRotationVel.y", -40, 40, &globalRotationVelocity.y )->setIncrement(.01);
-	customGui->addSlider("globalRotationVel.z", -40, 40, &globalRotationVelocity.z )->setIncrement(.01);
-	
-	customGui->addSpacer();
+//	customGui->addSpacer();
 	
 	customGui->addToggle("bounding box", &bDrawBoundingBox);
 	customGui->addToggle("draw arrows", &bDrawArrows);
 	customGui->addToggle("draw cameras", &bDrawCameras);
 	customGui->addToggle("draw gid", &bDrawGrid);
-	customGui->addSpacer();
+//	customGui->addSpacer();
 	customGui->addToggle("smooth model", false );
 	customGui->addToggle("wireframe", &bWireframe );
 	customGui->addSlider("wireframeLinewidth", 0.5, 10, &wireframeLinewidth);
-	customGui->addSlider("discardThreshold", 0., 1, &discardThreshold);
+//	customGui->addSlider("discardThreshold", 0., 1, &discardThreshold);
 	customGui->addSlider("modelScale", .1, 10., &modelScale);
 	customGui->addImageSampler("c1", &colorMap, (float)colorMap.getWidth()/2, (float)colorMap.getHeight()/2 );
 	
@@ -51,6 +43,29 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	ofAddListener(customGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
 	guis.push_back(customGui);
 	guimap[customGui->getName()] = customGui;
+	
+	
+	transformGui = new ofxUISuperCanvas("transform", gui);
+	transformGui->copyCanvasStyle(gui);
+	transformGui->copyCanvasProperties(gui);
+	transformGui->setName("transform");
+	
+	transformGui->setWidgetFontSize(OFX_UI_FONT_SMALL);
+	transformGui->addSlider("positionOffset.x", -1000, 1000, &positionOffset.x )->setIncrement(1);
+	transformGui->addSlider("positionOffset.y", -1000, 1000, &positionOffset.y )->setIncrement(1);
+	transformGui->addSlider("positionOffset.z", -1000, 1000, &positionOffset.z )->setIncrement(1);
+	
+	transformGui->addSlider("globalRotation.x", -180, 180, &globalRotation.x )->setIncrement(.01);
+	transformGui->addSlider("globalRotation.y", -180, 180, &globalRotation.y )->setIncrement(.01);
+	transformGui->addSlider("globalRotation.z", -180, 180, &globalRotation.z )->setIncrement(.01);
+	
+	transformGui->addSlider("globalRotationVel.x", -40, 40, &globalRotationVelocity.x )->setIncrement(.01);
+	transformGui->addSlider("globalRotationVel.y", -40, 40, &globalRotationVelocity.y )->setIncrement(.01);
+	transformGui->addSlider("globalRotationVel.z", -40, 40, &globalRotationVelocity.z )->setIncrement(.01);
+	
+	ofAddListener(transformGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
+	guis.push_back(transformGui);
+	guimap[customGui->getName()] = transformGui;
 	
 	
 	gridGui = new ofxUISuperCanvas("Grid", gui);
@@ -1047,6 +1062,7 @@ void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle v
 	
 	ofMultMatrix( modelTransform.getGlobalTransformMatrix() );
 	
+	ofTranslate( positionOffset );
 	ofRotateX( globalRotation.x + accumulatedRotation.x );
 	ofRotateY( globalRotation.y + accumulatedRotation.y );
 	ofRotateZ( globalRotation.z + accumulatedRotation.z );
