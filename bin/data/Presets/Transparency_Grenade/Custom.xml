@@ -53,12 +53,12 @@
 <Widget>
     <Kind>2</Kind>
     <Name>draw gid</Name>
-    <Value>0</Value>
+    <Value>1</Value>
 </Widget>
 <Widget>
     <Kind>2</Kind>
     <Name>smooth model</Name>
-    <Value>0</Value>
+    <Value>1</Value>
 </Widget>
 <Widget>
     <Kind>2</Kind>
@@ -78,11 +78,11 @@
 <Widget>
     <Kind>28</Kind>
     <Name>c1</Name>
-    <XValue>0.578125000</XValue>
-    <YValue>0.382812500</YValue>
-    <RColor>138</RColor>
-    <GColor>0</GColor>
-    <BColor>136</BColor>
+    <XValue>0.437500000</XValue>
+    <YValue>0.468750000</YValue>
+    <RColor>4</RColor>
+    <GColor>44</GColor>
+    <BColor>72</BColor>
     <AColor>255</AColor>
 </Widget>
 <Widget>
@@ -108,10 +108,10 @@
 <Widget>
     <Kind>2</Kind>
     <Name>facingRatio</Name>
-    <Value>1</Value>
+    <Value>0</Value>
 </Widget>
 <Widget>
     <Kind>2</Kind>
     <Name>xRay</Name>
-    <Value>0</Value>
+    <Value>1</Value>
 </Widget>

@@ -48,7 +48,7 @@
 <Widget>
     <Kind>4</Kind>
     <Name>cameraSpeed</Name>
-    <Value>4.945812702</Value>
+    <Value>5.034482956</Value>
 </Widget>
 <Widget>
     <Kind>4</Kind>
@@ -58,7 +58,7 @@
 <Widget>
     <Kind>4</Kind>
     <Name>minTilt</Name>
-    <Value>0.886703491</Value>
+    <Value>-5.024631500</Value>
 </Widget>
 <Widget>
     <Kind>4</Kind>
@@ -68,17 +68,17 @@
 <Widget>
     <Kind>4</Kind>
     <Name>orbitVelAttenuation</Name>
-    <Value>0.987182736</Value>
+    <Value>0.979301333</Value>
 </Widget>
 <Widget>
     <Kind>4</Kind>
     <Name>minOrbitDistance</Name>
-    <Value>400.147766113</Value>
+    <Value>88.029556274</Value>
 </Widget>
 <Widget>
     <Kind>4</Kind>
     <Name>maxOrbitDistance</Name>
-    <Value>565.960632324</Value>
+    <Value>502.561584473</Value>
 </Widget>
 <Widget>
     <Kind>4</Kind>

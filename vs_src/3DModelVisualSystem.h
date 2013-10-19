@@ -136,6 +136,7 @@ protected:
 	ofxUISuperCanvas* gridGui;
 	ofxUISuperCanvas* cameraViewsGui;
 	ofxUISuperCanvas* fogGui;
+	ofxUISuperCanvas* transformGui;
 	
 	bool videoLoaded;
 	ofImage someImage;
@@ -221,6 +222,9 @@ protected:
 	bool bDrawBoundingBox, bDrawArrows, bDrawCameras, bDrawGrid;
 	
 	
+
+	ofVec3f positionOffset;//Eular angles
+
 	ofVec3f globalRotation;//Eular angles
 	ofVec3f globalRotationVelocity;//multiplied against elapsed time
 	ofVec3f accumulatedRotation;

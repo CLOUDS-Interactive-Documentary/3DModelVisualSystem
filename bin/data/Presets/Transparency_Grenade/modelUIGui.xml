@@ -43,7 +43,7 @@
 <Widget>
     <Kind>2</Kind>
     <Name>elephant.obj</Name>
-    <Value>1</Value>
+    <Value>0</Value>
 </Widget>
 <Widget>
     <Kind>2</Kind>
@@ -68,7 +68,7 @@
 <Widget>
     <Kind>2</Kind>
     <Name>Hive_triangulated2.obj</Name>
-    <Value>0</Value>
+    <Value>1</Value>
 </Widget>
 <Widget>
     <Kind>2</Kind>
