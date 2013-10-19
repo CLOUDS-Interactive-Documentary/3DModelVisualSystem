@@ -219,5 +219,10 @@ protected:
 	bool bLeftCamIsActive, bFrontCamIsActive, bPlanCamIsActive, bPerspCamIsActive;
 	
 	bool bDrawBoundingBox, bDrawArrows, bDrawCameras, bDrawGrid;
+	
+	
+	ofVec3f globalRotation;//Eular angles
+	ofVec3f globalRotationVelocity;//multiplied against elapsed time
+	ofVec3f accumulatedRotation;
 
 };

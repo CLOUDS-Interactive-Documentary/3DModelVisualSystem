@@ -17,6 +17,16 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	
 	customGui->addSpacer();
 	
+	customGui->addSlider("globalRotation.x", -180, 180, &globalRotation.x )->setIncrement(.01);
+	customGui->addSlider("globalRotation.y", -180, 180, &globalRotation.y )->setIncrement(.01);
+	customGui->addSlider("globalRotation.z", -180, 180, &globalRotation.z )->setIncrement(.01);
+	
+	customGui->addSlider("globalRotationVel.x", -40, 40, &globalRotationVelocity.x )->setIncrement(.01);
+	customGui->addSlider("globalRotationVel.y", -40, 40, &globalRotationVelocity.y )->setIncrement(.01);
+	customGui->addSlider("globalRotationVel.z", -40, 40, &globalRotationVelocity.z )->setIncrement(.01);
+	
+	customGui->addSpacer();
+	
 	customGui->addToggle("bounding box", &bDrawBoundingBox);
 	customGui->addToggle("draw arrows", &bDrawArrows);
 	customGui->addToggle("draw cameras", &bDrawCameras);
@@ -31,6 +41,7 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	
 	customGui->addSlider("specularExpo", 1, 128, &specularExpo);
 	customGui->addSlider("specularScale", 0., 1.0, &specularScale);
+	
 	
 	customGui->addSpacer();
 	
@@ -941,11 +952,16 @@ void CloudsVisualSystem3DModel::resizeTheArrowMesh( float radius, float height, 
 
 void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle viewRect )
 {
+	
 	if(cam != NULL)
 	{
 		cam->begin( viewRect );
 	}
 	
+	
+	//rotation velocity
+	float t = ofGetElapsedTimef();
+	accumulatedRotation += globalRotationVelocity * 1. / ofGetFrameRate();
 	
 	//draw infinite grid by positioning it infront of the camera
 	if(bDrawGrid)
@@ -1028,10 +1044,13 @@ void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle v
 	
 	//draw our model
 	ofPushMatrix();
+	
 	ofMultMatrix( modelTransform.getGlobalTransformMatrix() );
 	
-	
-	
+	ofRotateX( globalRotation.x + accumulatedRotation.x );
+	ofRotateY( globalRotation.y + accumulatedRotation.y );
+	ofRotateZ( globalRotation.z + accumulatedRotation.z );
+		
 	//draw bounding box
 	if(bDrawBoundingBox)
 	{
