@@ -659,11 +659,11 @@ void CloudsVisualSystem3DModel::setupMultipleCameras( ofVec3f targetPos, float d
 
 void CloudsVisualSystem3DModel::aimMultipleViews( ofVec3f targetPos )
 {
-	leftCam.lookAt( targetPos );
+	leftCam.setTarget( targetPos );
 
 	planCam.lookAt( targetPos, ofVec3f(0,0,1) );
 	
-	frontCam.lookAt( targetPos );
+	frontCam.setTarget( targetPos );
 	
 	perspCam.setTarget( targetPos );
 }
