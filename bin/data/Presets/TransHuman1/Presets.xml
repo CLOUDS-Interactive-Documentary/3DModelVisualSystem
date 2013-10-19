@@ -1,14 +1,19 @@
 <Canvas>
     <Kind>42</Kind>
     <Name>Presets</Name>
-    <IsMinified>0</IsMinified>
-    <XPosition>1915.000000000</XPosition>
-    <YPosition>1.000000000</YPosition>
+    <IsMinified>1</IsMinified>
+    <XPosition>1.000000000</XPosition>
+    <YPosition>333.000000000</YPosition>
 </Canvas>
 <Widget>
     <Kind>2</Kind>
     <Name>BigBlueCube</Name>
     <Value>0</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>BigData</Name>
+    <Value>1</Value>
 </Widget>
 <Widget>
     <Kind>2</Kind>
@@ -97,7 +102,12 @@
 </Widget>
 <Widget>
     <Kind>2</Kind>
-    <Name>TransHuman1_</Name>
+    <Name>TransHuman1</Name>
+    <Value>1</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>TransHuman_female</Name>
     <Value>0</Value>
 </Widget>
 <Widget>
@@ -134,14 +144,4 @@
     <Kind>2</Kind>
     <Name>xray</Name>
     <Value>0</Value>
-</Widget>
-<Widget>
-    <Kind>2</Kind>
-    <Name>TransMan2</Name>
-    <Value>0</Value>
-</Widget>
-<Widget>
-    <Kind>2</Kind>
-    <Name>TransHuman1</Name>
-    <Value>1</Value>
 </Widget>

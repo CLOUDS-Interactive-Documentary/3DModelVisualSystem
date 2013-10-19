@@ -1,9 +1,9 @@
 <Canvas>
     <Kind>42</Kind>
     <Name>Presets</Name>
-    <IsMinified>0</IsMinified>
+    <IsMinified>1</IsMinified>
     <XPosition>1.000000000</XPosition>
-    <YPosition>310.000000000</YPosition>
+    <YPosition>333.000000000</YPosition>
 </Canvas>
 <Widget>
     <Kind>2</Kind>
@@ -12,8 +12,18 @@
 </Widget>
 <Widget>
     <Kind>2</Kind>
+    <Name>BigData</Name>
+    <Value>1</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
     <Name>CheeseDoodles</Name>
     <Value>0</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>Clock2</Name>
+    <Value>1</Value>
 </Widget>
 <Widget>
     <Kind>2</Kind>
@@ -37,12 +47,22 @@
 </Widget>
 <Widget>
     <Kind>2</Kind>
+    <Name>Kelp_Xray</Name>
+    <Value>0</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
     <Name>LovelyTangle</Name>
     <Value>0</Value>
 </Widget>
 <Widget>
     <Kind>2</Kind>
     <Name>Nest_1</Name>
+    <Value>0</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>Nest_CoolTransparent</Name>
     <Value>0</Value>
 </Widget>
 <Widget>
@@ -57,12 +77,47 @@
 </Widget>
 <Widget>
     <Kind>2</Kind>
+    <Name>Sphere_Clock</Name>
+    <Value>1</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
     <Name>StackOfChairs</Name>
     <Value>0</Value>
 </Widget>
 <Widget>
     <Kind>2</Kind>
     <Name>Succulent</Name>
+    <Value>0</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>Succulent_BlueXray</Name>
+    <Value>1</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>Tangle_Transparent</Name>
+    <Value>0</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>TransHuman1</Name>
+    <Value>0</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>TransHuman_female</Name>
+    <Value>0</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>Transparency_Grenade</Name>
+    <Value>0</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>Virus1</Name>
     <Value>0</Value>
 </Widget>
 <Widget>
@@ -82,11 +137,11 @@
 </Widget>
 <Widget>
     <Kind>2</Kind>
-    <Name>xray</Name>
+    <Name>Vroi</Name>
     <Value>0</Value>
 </Widget>
 <Widget>
     <Kind>2</Kind>
-    <Name>Succulent_BlueXray</Name>
-    <Value>1</Value>
+    <Name>xray</Name>
+    <Value>0</Value>
 </Widget>
