@@ -34,7 +34,7 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	
 	customGui->addSpacer();
 	
-	customGui->addLabel("shaders:");
+	customGui->addLabel("shaders");
 	customGui->addRadio("shaders", shaderNames );
 	
 	ofAddListener(customGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
@@ -107,7 +107,7 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	
 	modelUIGui->addSpacer();
 	
-	modelUIGui->addLabel("obj files:");
+	modelUIGui->addLabel("obj files");
 	modelUIGui->addRadio("model files", objFiles );
 
 	ofAddListener(modelUIGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
@@ -173,11 +173,12 @@ void CloudsVisualSystem3DModel::selfGuiEvent(ofxUIEventArgs &e)
 	
 	else if( kind == OFX_UI_WIDGET_TOGGLE)
 	{
-		string parent = e.getToggle()->getParent()->getName();
 		
 		if( e.getToggle()->getValue() )
 		{
-			
+			string parent = e.getToggle()->getParent()->getName();
+//			cout << "**** " << name << " TRIGGERED TOGGLE " << parent << endl;
+		
 			if (parent == "shaders")
 			{
 				//switch to this active shader from a shader map
@@ -779,7 +780,7 @@ void CloudsVisualSystem3DModel::drawBoundingBox()
 void CloudsVisualSystem3DModel::loadModel( string fileName, bool bSmoothMesh )
 {
 //	perspCam.reset();
-	
+	cout << "*** LOADING MODEL " << fileName << endl;
 	ofxObjLoader::load( getVisualSystemDataPath() + fileName, modelMesh, true );
 	calcBoundingBox();
 	
