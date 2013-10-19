@@ -34,11 +34,6 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	
 	customGui->addSpacer();
 	
-	customGui->addLabel("obj files:");
-	customGui->addRadio("model files", objFiles );
-	
-	customGui->addSpacer();
-	
 	customGui->addLabel("shaders:");
 	customGui->addRadio("shaders", shaderNames );
 	
@@ -109,6 +104,11 @@ void CloudsVisualSystem3DModel::selfSetupGui(){
 	modelUIGui->addSlider("arrowRadius", 1, 50, &arrowRadius);
 	modelUIGui->addSlider("arrowHeight", 1, 250, &arrowHeight);
 	modelUIGui->addSlider("arrowPointHeight", 0, .9, &arrowPointHeight);
+	
+	modelUIGui->addSpacer();
+	
+	modelUIGui->addLabel("obj files:");
+	modelUIGui->addRadio("model files", objFiles );
 
 	ofAddListener(modelUIGui->newGUIEvent, this, &CloudsVisualSystem3DModel::selfGuiEvent);
 	guis.push_back(modelUIGui);
@@ -357,10 +357,11 @@ void CloudsVisualSystem3DModel::selfSetup()
 	loadShaders();
 	
 	//load our non-model meshes
-	ofxObjLoader::load("arrow.obj", arrowMesh, true );
+
+	ofxObjLoader::load( getVisualSystemDataPath() + "arrow.obj", arrowMesh, true );
 	resizeTheArrowMesh( arrowRadius, arrowHeight, arrowPointHeight );
 	
-	loadCameraLineModel( cameraLines, "cameraVertices.txt" );
+	loadCameraLineModel( cameraLines, getVisualSystemDataPath() + "cameraVertices.txt" );
 
 	
 	//setup a grid vbos
@@ -537,11 +538,14 @@ void CloudsVisualSystem3DModel::loadShaders()
 	normalShader.load( getVisualSystemDataPath() + "3DModelShaders/normalShader" );
 	gridShader.load( getVisualSystemDataPath() + "3DModelShaders/gridShader" );
 	facingRatioShader.load( getVisualSystemDataPath() + "3DModelShaders/facingRatio" );
+	XRayShader.load( getVisualSystemDataPath() + "3DModelShaders/XRayShader" );
+	
 	
 	shaderNames.clear();
 	addToShaderMap( "normalShader", &normalShader );
 	addToShaderMap( "gridShader", &gridShader );
 	addToShaderMap( "facingRatio", &facingRatioShader );
+	addToShaderMap( "xRay", &XRayShader );
 }
 			  
 void CloudsVisualSystem3DModel::addToShaderMap( string name, ofShader* shader )
@@ -941,70 +945,6 @@ void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle v
 		cam->begin( viewRect );
 	}
 	
-	//draw our model
-	ofPushMatrix();
-	ofMultMatrix( modelTransform.getGlobalTransformMatrix() );
-	
-	ofSetColor(modelColor);
-	if(activeShader != NULL )
-	{
-		
-		activeShader->begin();
-		activeShader->setUniform1f( "discardThreshold", discardThreshold );
-		activeShader->setUniform1f( "specularExpo", specularExpo );
-		activeShader->setUniform1f( "specularScale", specularScale );
-		activeShader->setUniform1f("falloffDist", fogFalloffDistance );
-		activeShader->setUniform1f("falloffExpo", fogFalloffExpo );
-		activeShader->setUniform1f("falloffScl", fogFalloffScale );
-		
-		if(bWireframe)	glLineWidth( wireframeLinewidth );
-		bWireframe?	modelMesh.drawWireframe() : modelMesh.draw();
-		
-		activeShader->end();
-	}
-	
-	
-	//draw bounding box
-	if(bDrawBoundingBox)
-	{	
-		ofSetColor(255, 255, 255, 255);
-		drawBoundingBox();
-	}
-	
-	ofPopMatrix();
-	
-	if(bDrawArrows)
-	{
-		//draw arrows at model's min bound
-		ofPushMatrix();
-		ofTranslate( minBound * modelTransform.getGlobalTransformMatrix() );
-		ofMultMatrix( modelTransform.getGlobalOrientation() );
-		
-		ofSetColor(0, 255, 0);
-		ofPushMatrix();
-		ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
-		arrowMesh.draw();
-		ofPopMatrix();
-		
-		ofSetColor(255, 0, 0);
-		ofPushMatrix();
-		ofRotate(90, 1, 0, 0);
-		ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
-		arrowMesh.draw();
-		ofPopMatrix();
-		
-		ofSetColor(0, 0, 255);
-		ofPushMatrix();
-		ofRotate(90, 1, 0, 0);
-		ofRotate(90, 0, 0, -1);
-		ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
-		arrowMesh.draw();
-		ofPopMatrix();
-		
-		ofPopMatrix();
-	}
-	
-	
 	
 	//draw infinite grid by positioning it infront of the camera
 	if(bDrawGrid)
@@ -1053,6 +993,101 @@ void CloudsVisualSystem3DModel::drawScene( CloudsOrthoCamera* cam, ofRectangle v
 		drawMultipleViewCameras( cameraLineScale, cam );
 	}
 	
+	if(bDrawArrows)
+	{
+		//draw arrows at model's min bound
+		ofPushMatrix();
+		ofTranslate( minBound * modelTransform.getGlobalTransformMatrix() );
+		ofMultMatrix( modelTransform.getGlobalOrientation() );
+		
+		ofSetColor(0, 255, 0);
+		ofPushMatrix();
+		ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
+		arrowMesh.draw();
+		ofPopMatrix();
+		
+		ofSetColor(255, 0, 0);
+		ofPushMatrix();
+		ofRotate(90, 1, 0, 0);
+		ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
+		arrowMesh.draw();
+		ofPopMatrix();
+		
+		ofSetColor(0, 0, 255);
+		ofPushMatrix();
+		ofRotate(90, 1, 0, 0);
+		ofRotate(90, 0, 0, -1);
+		ofScale( arrowScale.x, arrowScale.y, arrowScale.z );
+		arrowMesh.draw();
+		ofPopMatrix();
+		
+		ofPopMatrix();
+	}
+	
+	
+	//draw our model
+	ofPushMatrix();
+	ofMultMatrix( modelTransform.getGlobalTransformMatrix() );
+	
+	
+	
+	//draw bounding box
+	if(bDrawBoundingBox)
+	{
+		ofSetColor(255, 255, 255, 255);
+		drawBoundingBox();
+	}
+	
+	ofSetColor(modelColor);
+	if(activeShader != NULL )
+	{
+		
+		activeShader->begin();
+		activeShader->setUniform1f( "discardThreshold", discardThreshold );
+		activeShader->setUniform1f( "specularExpo", specularExpo );
+		activeShader->setUniform1f( "specularScale", specularScale );
+		activeShader->setUniform1f("falloffDist", fogFalloffDistance );
+		activeShader->setUniform1f("falloffExpo", fogFalloffExpo );
+		activeShader->setUniform1f("falloffScl", fogFalloffScale );
+		
+		if(activeShader == &XRayShader){
+			/*
+			 sfactor
+			 Specifies how the red, green, blue, and alpha source blending factors are computed. The following symbolic constants are accepted: GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, and GL_SRC_ALPHA_SATURATE. The initial value is GL_ONE.
+			 
+			 dfactor
+			 Specifies how the red, green, blue, and alpha destination blending factors are computed. The following symbolic constants are accepted: GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA. GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, and GL_ONE_MINUS_CONSTANT_ALPHA. The initial value is GL_ZERO.
+			 */
+			
+			//GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
+			glDisable( GL_DEPTH_TEST );
+			glBlendFunc(GL_ONE, GL_ONE);
+			
+//			ofBlendMode( OF_BLENDMODE_ADD );
+//			glDisable( GL_DEPTH_TEST );
+//			glEnable( GL_CULL_FACE);
+//			glCullFace(GL_FRONT);
+			modelMesh.draw();
+			
+//			glCullFace(GL_BACK);
+//			modelMesh.draw();
+//			
+//			glDisable(GL_CULL_FACE);
+//			glDisable( GL_DEPTH_TEST );
+			
+			ofBlendMode( OF_BLENDMODE_ADD );
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+		else{
+			if(bWireframe)	glLineWidth( wireframeLinewidth );
+			bWireframe?	modelMesh.drawWireframe() : modelMesh.draw();
+		}
+		
+		activeShader->end();
+	}
+	
+	ofPopMatrix();
+		
 	if( cam != NULL)	cam->end();
 }
 
