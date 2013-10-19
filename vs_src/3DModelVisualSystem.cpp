@@ -665,7 +665,7 @@ void CloudsVisualSystem3DModel::aimMultipleViews( ofVec3f targetPos )
 	
 	frontCam.lookAt( targetPos );
 	
-	perspCam.lookAt( targetPos );
+	perspCam.setTarget( targetPos );
 }
 
 void CloudsVisualSystem3DModel::drawMultipleViewCameras( float cameraScale, ofCamera* cam )

@@ -148,11 +148,23 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 		float my = ofMap( ofGetMouseY(), viewport.getTop(), viewport.getBottom(), -1., 1., true );
 		float dist = ofVec2f(mx, my).length();
 		
-		//get our rotation values and update the rotation aroundd the target
+		//get our rotation values and update the rotation around the target
 		float xScl = 1.;
 		float ourRoll = -getRoll();
 		
-		float rollMix = ofMap( ourRoll, min(minTilt, maxTilt), max(minTilt, maxTilt), -1, 1, true );
+		float rollMix = ofMap( ourRoll, min(minTilt, maxTilt), max(minTilt, maxTilt), -1, 1, false );
+		
+		if(ourRoll < min(minTilt, maxTilt))
+		{
+			tilt(min(minTilt, maxTilt) - (ourRoll + 1));
+		}
+		if(ourRoll > max(minTilt, maxTilt))
+		{
+			tilt( ourRoll - (min(minTilt, maxTilt) + 1) );
+		}
+		
+		
+		ourRoll = -getRoll();
 		
 		if( (my < 0 && rollMix > 0) || (my>0 && rollMix < 0))
 		{
@@ -177,11 +189,11 @@ void CloudsOrthoCamera::update(ofEventArgs & args){
 			orbitVel.x += invAtt * my * mouseScl * weight * xScl;
 			orbitVel.y += invAtt * mx * mouseScl * weight;
 		}
-		
+			
 		xRot = orbitVel.x * xScl;
 		yRot = orbitVel.y;
 		zRot = 0;
-		
+
 		updateRotation();
 		
 		//auto level
