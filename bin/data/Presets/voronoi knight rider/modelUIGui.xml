@@ -25,3 +25,8 @@
     <Name>arrowPointHeight</Name>
     <Value>0.722660124</Value>
 </Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>voronoi.obj</Name>
+    <Value>1</Value>
+</Widget>

@@ -25,3 +25,8 @@
     <Name>arrowPointHeight</Name>
     <Value>0.589655161</Value>
 </Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>Vortex_Triangulated.obj</Name>
+    <Value>1</Value>
+</Widget>

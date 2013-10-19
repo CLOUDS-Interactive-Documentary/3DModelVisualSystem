@@ -25,3 +25,8 @@
     <Name>arrowPointHeight</Name>
     <Value>0.359113276</Value>
 </Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>CheesePuffsTriangulated.obj</Name>
+    <Value>1</Value>
+</Widget>
